@@ -1,0 +1,6 @@
+@KiloTaxi.Realtime_HostAddress = http://localhost:5182
+
+GET {{KiloTaxi.Realtime_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

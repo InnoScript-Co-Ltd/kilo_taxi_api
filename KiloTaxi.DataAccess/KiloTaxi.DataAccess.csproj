@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KiloTaxi.Common\KiloTaxi.Common.csproj" />
+    <ProjectReference Include="..\KiloTaxi.Converter\KiloTaxi.Converter.csproj" />
+    <ProjectReference Include="..\KiloTaxi.EntityFramework\KiloTaxi.EntityFramework.csproj" />
+    <ProjectReference Include="..\KiloTaxi.Logging\KiloTaxi.Logging.csproj" />
+    <ProjectReference Include="..\KiloTaxi.Model\KiloTaxi.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Implementation\" />
+    <Folder Include="Interface\" />
+  </ItemGroup>
+
+</Project>

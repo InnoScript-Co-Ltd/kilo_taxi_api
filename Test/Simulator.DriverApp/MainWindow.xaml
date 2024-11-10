@@ -1,0 +1,39 @@
+﻿<Window x:Class="Simulator.DriverApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Simulator.DriverApp"
+        mc:Ignorable="d"
+        Title="DriverApp Simulator" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0">
+            <Button x:Name="btnConnect" Content="Connect" Click="btnConnect_Click"></Button>
+
+            
+
+            <Line Height="40" Stretch="Fill" Stroke="Gray" X2="1"></Line>
+            <Label Content="Logs" HorizontalAlignment="Center" Background="Wheat"/>
+            <Button Content="Clear Logs" Click="btnClearLogs_Click" HorizontalAlignment="Center" Width="100" />
+
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="100" Height="310" >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name="lblLogs" Grid.Row="3" TextWrapping="WrapWithOverflow"/>
+                </Grid>
+
+            </ScrollViewer>
+        </StackPanel>
+
+
+
+    </Grid>
+</Window>
