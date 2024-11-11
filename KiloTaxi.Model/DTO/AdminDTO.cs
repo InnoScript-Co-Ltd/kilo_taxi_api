@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KiloTaxi.EntityFramework.EntityModel
+namespace KiloTaxi.Model.DTO
 {
-    public class Admin
+    public class AdminDTO
     {
         public int Id { get; set; }
 
@@ -20,11 +20,9 @@ namespace KiloTaxi.EntityFramework.EntityModel
 
         [Required]
         public string Email { get; set; }
-        public DateTime EmailVerifiedAt { get; set; }
-        public DateTime PhoneVerifiedAt { get; set; }
 
-        [Required]
-        public string Password { get; set; }
+        public DateTime? EmailVerifiedAt { get; set; }
+        public DateTime? PhoneVerifiedAt { get; set; }
 
         [Required]
         public string Gender { get; set; }
