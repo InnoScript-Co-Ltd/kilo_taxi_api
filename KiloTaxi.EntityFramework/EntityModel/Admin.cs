@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 namespace KiloTaxi.EntityFramework.EntityModel
 {
     public class Admin
-    {
+    {   
         public int Id { get; set; }
-        [Required]
+        [Required] 
         [MaxLength(100)]
         public string Name { get; set; }
         [Required]

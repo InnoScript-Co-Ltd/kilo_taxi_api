@@ -24,4 +24,8 @@
     <ProjectReference Include="..\KiloTaxi.Common\KiloTaxi.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Migrations\20241111083012_CreateTable_Driver_Vehicle.Designer.cs" />
+  </ItemGroup>
+
 </Project>

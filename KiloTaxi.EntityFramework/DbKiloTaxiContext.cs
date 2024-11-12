@@ -14,10 +14,15 @@ namespace KiloTaxi.EntityFramework
             :base(options){ }
 
         public DbSet<Admin> Admins { get; set; }
+        public DbSet<Driver> Drivers { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Admin>().ToTable("Admin");
+            modelBuilder.Entity<Driver>().ToTable("Driver");
+            modelBuilder.Entity<Vehicle>().ToTable("Vehicle");
+
         }
     }
 }

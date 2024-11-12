@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KiloTaxi.EntityFramework\KiloTaxi.EntityFramework.csproj" />
+    <ProjectReference Include="..\KiloTaxi.Logging\KiloTaxi.Logging.csproj" />
     <ProjectReference Include="..\KiloTaxi.Model\KiloTaxi.Model.csproj" />
   </ItemGroup>
 

@@ -19,4 +19,25 @@ namespace KiloTaxi.Common.Enums
         Success,
         Expired
     }
+
+    public enum DriverStatus
+    {
+        Pending,
+        Active,
+        Deactivate,
+        Suspend
+    }
+
+    public enum KycStatus
+    {
+        Pending,
+        FullKyc,
+        Reject
+    }
+
+    public enum VehicleStatus
+    {
+        Active,
+        Suspend
+    }
 }
