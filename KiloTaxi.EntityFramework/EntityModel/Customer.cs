@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KiloTaxi.EntityFramework.EntityModel
 {
-    public class Admin
+    public class Customer
     {
         public int Id { get; set; }
 
@@ -15,11 +15,22 @@ namespace KiloTaxi.EntityFramework.EntityModel
         [MaxLength(100)]
         public string Name { get; set; }
 
+        public string Profile { get; set; }
+
+        [Required]
+        public string MobilePrefix { get; set; }
+
         [Required]
         public string Phone { get; set; }
 
         [Required]
         public string Email { get; set; }
+
+        public DateTime Dob { get; set; }
+
+        public string Nrc { get; set; }
+        public string NrcImageFront { get; set; }
+        public string NrcImageBack { get; set; }
         public DateTime EmailVerifiedAt { get; set; }
         public DateTime PhoneVerifiedAt { get; set; }
 
@@ -33,6 +44,18 @@ namespace KiloTaxi.EntityFramework.EntityModel
         public string Address { get; set; }
 
         [Required]
+        public string State { get; set; }
+
+        [Required]
+        public string City { get; set; }
+
+        [Required]
+        public string Township { get; set; }
+
+        [Required]
         public string Status { get; set; }
+
+        [Required]
+        public string KycStatus { get; set; }
     }
 }
