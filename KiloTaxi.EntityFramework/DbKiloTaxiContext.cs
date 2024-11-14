@@ -16,7 +16,7 @@ namespace KiloTaxi.EntityFramework
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
-
+        public DbSet<Customer> Customers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Admin>().ToTable("Admin");

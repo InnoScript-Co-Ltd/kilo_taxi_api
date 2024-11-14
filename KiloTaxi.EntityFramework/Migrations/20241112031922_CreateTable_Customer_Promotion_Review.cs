@@ -2,7 +2,7 @@
 #nullable disable
 namespace KiloTaxi.EntityFramework.Migrations
 {
-
+//added
     public partial class CreateTable_Customer_Promotion_Review : Migration {
              protected override void Up(MigrationBuilder migrationBuilder)
          {

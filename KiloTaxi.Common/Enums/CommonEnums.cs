@@ -13,7 +13,7 @@ namespace KiloTaxi.Common.Enums
         Undefined
     }
 
-    public enum Status
+    public enum OtpStatus
     {
         Pending,
         Success,
