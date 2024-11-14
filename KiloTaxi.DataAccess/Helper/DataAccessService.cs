@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using KiloTaxi.DataAccess.Implementation;
+using KiloTaxi.DataAccess.Interface;
 
 namespace KiloTaxi.DataAccess.Helper
 {
@@ -15,7 +17,7 @@ namespace KiloTaxi.DataAccess.Helper
             IConfiguration Configuration
         )
         {
-
+            services.AddSingleton<IDriverRepository,DriverRepository>();
         }
     }
 }

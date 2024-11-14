@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using KiloTaxi.Common.Enums;
 
 namespace KiloTaxi.Model.DTO
 {
@@ -18,14 +19,17 @@ namespace KiloTaxi.Model.DTO
         [Required]
         public string Phone { get; set; }
 
-        [Required]
+        [EmailAddress]
         public string Email { get; set; }
-
+        
+        [DataType(DataType.DateTime)]
         public DateTime? EmailVerifiedAt { get; set; }
+        
+        [DataType(DataType.DateTime)]
         public DateTime? PhoneVerifiedAt { get; set; }
 
         [Required]
-        public string Gender { get; set; }
+        public GenderType Gender { get; set; }
 
         [Required]
         public string Address { get; set; }

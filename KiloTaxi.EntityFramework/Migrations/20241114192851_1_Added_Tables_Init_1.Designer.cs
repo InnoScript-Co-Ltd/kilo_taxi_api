@@ -4,6 +4,7 @@ using KiloTaxi.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KiloTaxi.EntityFramework.Migrations
 {
     [DbContext(typeof(DbKiloTaxiContext))]
-    partial class DbKiloTaxiContextModelSnapshot : ModelSnapshot
+    [Migration("20241114192851_1_Added_Tables_Init_1")]
+    partial class _1_Added_Tables_Init_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

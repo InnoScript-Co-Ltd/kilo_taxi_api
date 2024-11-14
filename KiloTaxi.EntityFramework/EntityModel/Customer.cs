@@ -53,7 +53,7 @@ namespace KiloTaxi.EntityFramework.EntityModel
         public string Township { get; set; }
 
         [Required]
-        public string Status { get; set; }
+        public string CustomerStatus { get; set; }
 
         [Required]
         public string KycStatus { get; set; }

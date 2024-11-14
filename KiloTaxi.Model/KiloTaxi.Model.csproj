@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\KiloTaxi.Common\KiloTaxi.Common.csproj" />
+  </ItemGroup>
+
 </Project>
