@@ -1,0 +1,53 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using KiloTaxi.Common.Enums;
+
+namespace KiloTaxi.Model.DTO
+{
+    public class OrderDTO 
+    {
+
+        public int Id { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime CheckinTime { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime CheckoutTime { get; set; }
+
+        [Required]
+        [RegularExpression(@"^\$?\d+(\.(\d{2}))?$")]
+        public decimal Amount { get; set; }
+
+        [Required]
+        public PaymentType PaymentType { get; set; }
+
+        [Required]
+        public OrderStatus OrderStatus { get; set; }
+
+
+        [Required]
+        public int CustomerId { get; set; }
+
+        [Required]
+        public int DriverId { get; set; }
+
+        [AllowNull]
+        public int WalletFromId { get; set; }
+
+        [AllowNull]
+        public int WalletToId { get; set; }
+
+        [AllowNull]
+        public int PaymentChannelId { get; set; }
+
+
+    }
+}
