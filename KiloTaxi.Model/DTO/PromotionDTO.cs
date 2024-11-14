@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using KiloTaxi.Common.Enums;
 
 namespace KiloTaxi.Model.DTO
 {
@@ -16,14 +17,15 @@ namespace KiloTaxi.Model.DTO
 
         [Required]
         public DateTime ExpiredAt { get; set; }
-
-        [Range(0, 9999999.99)]
-        public float FixAmount { get; set; }
+        
+        [Required]
+        [Range(0.01, 10000.00)]
+        public decimal FixAmount { get; set; }
 
         public int Percentage { get; set; }
 
         [Required]
-        public string Status { get; set; }
+        public PromotionStatus PromotionStatus { get; set; }
 
         public int CustomerId { get; set; }
         public string? CustomerName { get; set; }
