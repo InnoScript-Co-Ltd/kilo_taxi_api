@@ -13,9 +13,9 @@ namespace KiloTaxi.DataAccess.Implementation
     {
         private readonly DbKiloTaxiContext _dbKiloTaxiContext;
 
-        public AdminRepository(DbKiloTaxiContext dbContext)
+        public AdminRepository(DbKiloTaxiContext dbKiloTaxiContext)
         {
-            _dbKiloTaxiContext = dbContext;
+            _dbKiloTaxiContext = dbKiloTaxiContext;
         }
 
         public AdminPagingDTO GetAllAdmin(PageSortParam pageSortParam)
@@ -99,7 +99,7 @@ namespace KiloTaxi.DataAccess.Implementation
                 Admin adminEntity = new Admin();
                 AdminConverter.ConvertModelToEntity(adminDTO, ref adminEntity);
 
-                _dbKiloTaxiContext.Admins.Add(adminEntity);
+                _dbKiloTaxiContext.Add(adminEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 adminDTO.Id = adminEntity.Id;

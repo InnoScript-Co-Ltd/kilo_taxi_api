@@ -74,8 +74,8 @@ namespace KiloTaxi.API.Controllers
                 {
                     return BadRequest();
                 }
-                var createdCity = _adminRepository.AddAdmin(adminDTO);
-                return CreatedAtAction(nameof(Get), new { id = createdCity.Id }, createdCity);
+                var createdAdmin = _adminRepository.AddAdmin(adminDTO);
+                return CreatedAtAction(nameof(Get), new { id = createdAdmin.Id }, createdAdmin);
             }
             catch (Exception ex)
             {

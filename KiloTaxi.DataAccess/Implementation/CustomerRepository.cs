@@ -98,7 +98,7 @@ namespace KiloTaxi.DataAccess.Implementation
                 Customer customerEntity = new Customer();
                 CustomerConverter.ConvertModelToEntity(customerDTO, ref customerEntity);
 
-                _dbKiloTaxiContext.Customers.Add(customerEntity);
+                _dbKiloTaxiContext.Add(customerEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 customerDTO.Id = customerEntity.Id;

@@ -109,7 +109,7 @@ namespace KiloTaxi.DataAccess.Implementation
                     s.Id == reviewDTO.CustomerId
                 );
 
-                _dbKiloTaxiContext.Reviews.Add(reviewEntity);
+                _dbKiloTaxiContext.Add(reviewEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 reviewDTO.Id = reviewEntity.Id;

@@ -102,7 +102,7 @@ namespace KiloTaxi.DataAccess.Implementation
                     c.Id == promotionDTO.CustomerId
                 );
 
-                _dbKiloTaxiContext.Promotions.Add(promotionEntity);
+                _dbKiloTaxiContext.Add(promotionEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 promotionDTO.Id = promotionEntity.Id;

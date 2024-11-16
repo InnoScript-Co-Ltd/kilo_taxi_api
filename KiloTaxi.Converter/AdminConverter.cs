@@ -52,18 +52,6 @@ namespace KiloTaxi.Converter
                     );
                 }
 
-                if (adminEntity == null)
-                {
-                    LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(adminEntity)),
-                        "Admin entity is null"
-                    );
-                    throw new ArgumentNullException(
-                        nameof(adminEntity),
-                        "Target adminEntity cannot be null"
-                    );
-                }
-
                 adminEntity.Id = adminDTO.Id;
                 adminEntity.Name = adminDTO.Name;
                 adminEntity.Phone = adminDTO.Phone;
@@ -73,6 +61,14 @@ namespace KiloTaxi.Converter
                 adminEntity.Gender = adminDTO.Gender.ToString();
                 adminEntity.Address = adminDTO.Address;
                 adminEntity.Status = adminDTO.Status;
+            }
+            catch (ArgumentException ex)
+            {
+                LoggerHelper.Instance.LogError(
+                    ex,
+                    "Argument exception during model-to-entity conversion"
+                );
+                throw;
             }
             catch (Exception ex)
             {
