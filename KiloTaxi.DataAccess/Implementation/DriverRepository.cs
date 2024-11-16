@@ -3,7 +3,7 @@ using KiloTaxi.Model.DTO;
 
 namespace KiloTaxi.DataAccess.Implementation;
 
-public class DriverRepository:IDriverRepository
+public class DriverRepository : IDriverRepository
 {
     public DriverDTO AddDriver(DriverDTO driverDTO)
     {

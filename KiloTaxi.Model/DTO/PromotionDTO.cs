@@ -17,7 +17,7 @@ namespace KiloTaxi.Model.DTO
 
         [Required]
         public DateTime ExpiredAt { get; set; }
-        
+
         [Required]
         [Range(0.01, 10000.00)]
         public decimal FixAmount { get; set; }
