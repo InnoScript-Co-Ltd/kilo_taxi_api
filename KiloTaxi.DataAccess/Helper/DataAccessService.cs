@@ -17,7 +17,9 @@ namespace KiloTaxi.DataAccess.Helper
             IConfiguration Configuration
         )
         {
-            services.AddSingleton<IDriverRepository,DriverRepository>();
+            services.AddScoped<IDriverRepository,DriverRepository>();
+            services.AddScoped<IVehicleRepository,VehicleRepository>();
+
         }
     }
 }

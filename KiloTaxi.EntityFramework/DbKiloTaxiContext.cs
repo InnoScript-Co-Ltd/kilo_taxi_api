@@ -30,6 +30,9 @@ namespace KiloTaxi.EntityFramework
             modelBuilder.Entity<Admin>().ToTable("Admin");
             modelBuilder.Entity<Driver>().ToTable("Driver");
             modelBuilder.Entity<Vehicle>().ToTable("Vehicle");
+            modelBuilder.Entity<Customer>().ToTable("Customer");
+            modelBuilder.Entity<Promotion>().ToTable("Promotion");
+            modelBuilder.Entity<Review>().ToTable("Review");
             modelBuilder.Entity<Order>().ToTable("Order");
             modelBuilder.Entity<Wallet>().ToTable("Wallet");
             modelBuilder.Entity<PaymentChannel>().ToTable("PaymentChannel");

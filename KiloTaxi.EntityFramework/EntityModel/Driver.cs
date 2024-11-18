@@ -31,21 +31,18 @@ public class Driver
     public DateTime Dob{get;set;}
     
     [StringLength(50)]
-    public string? Nrc{get;set;}
+    public string Nrc{get;set;}
     
     [StringLength(100)]
-    public string? NrcImageFront{get;set;}
+    public string NrcImageFront{get;set;}
     
     [StringLength(100)]
-    public string? NrcImageBack{get;set;}
+    public string NrcImageBack{get;set;}
     
-    [Required]
     public string DriverLicense{get;set;}
     
-    [Required]
     public string DriverImageLicenseFront{get;set;}
     
-    [Required]
     public string DriverImageLicenseBack{get;set;}
     
     [DataType(DataType.DateTime)]
