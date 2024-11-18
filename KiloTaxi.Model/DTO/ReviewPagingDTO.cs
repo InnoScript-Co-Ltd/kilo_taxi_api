@@ -10,6 +10,6 @@ namespace KiloTaxi.Model.DTO
     public class ReviewPagingDTO
     {
         public PagingResult Paging { get; set; }
-        public IEnumerable<ReviewDTO> reviews { get; set; }
+        public IEnumerable<ReviewDTO> Reviews { get; set; }
     }
 }

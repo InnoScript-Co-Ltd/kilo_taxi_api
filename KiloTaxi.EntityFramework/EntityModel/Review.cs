@@ -19,8 +19,10 @@ namespace KiloTaxi.EntityFramework.EntityModel
 
         [ForeignKey("Customer")]
         public int CustomerId { get; set; }
+        public virtual Customer Customer { get; set; }
 
         [ForeignKey("Driver")]
         public int DriverId { get; set; }
+        public virtual Driver Driver { get; set; }
     }
 }
