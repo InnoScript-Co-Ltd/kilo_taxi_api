@@ -61,6 +61,6 @@ namespace KiloTaxi.Model.DTO
         public CustomerStatus CustomerStatus { get; set; }
 
         [Required]
-        public string KycStatus { get; set; }
+        public KycStatus KycStatus { get; set; }
     }
 }

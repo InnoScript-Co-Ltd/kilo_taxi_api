@@ -43,7 +43,7 @@ namespace KiloTaxi.Converter
                 City = customerEntity.City,
                 Township = customerEntity.Township,
                 CustomerStatus = Enum.Parse<CustomerStatus>(customerEntity.CustomerStatus),
-                KycStatus = customerEntity.KycStatus,
+                KycStatus = Enum.Parse<KycStatus>(customerEntity.KycStatus),
             };
         }
 
@@ -97,7 +97,7 @@ namespace KiloTaxi.Converter
                 customerEntity.City = customerDTO.City;
                 customerEntity.Township = customerDTO.Township;
                 customerEntity.CustomerStatus = customerDTO.CustomerStatus.ToString();
-                customerEntity.KycStatus = customerDTO.KycStatus;
+                customerEntity.KycStatus = customerDTO.KycStatus.ToString();
             }
             catch (Exception ex)
             {

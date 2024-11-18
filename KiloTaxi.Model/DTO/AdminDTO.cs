@@ -38,6 +38,6 @@ namespace KiloTaxi.Model.DTO
         public string Address { get; set; }
 
         [Required]
-        public string Status { get; set; }
+        public OtpStatus Status { get; set; }
     }
 }

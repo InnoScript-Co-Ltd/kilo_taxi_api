@@ -33,7 +33,7 @@ namespace KiloTaxi.Converter
                 Password = adminEntity.Password,
                 Gender = Enum.Parse<GenderType>(adminEntity.Gender),
                 Address = adminEntity.Address,
-                Status = adminEntity.Status,
+                Status = Enum.Parse<OtpStatus>(adminEntity.Status),
             };
         }
 
@@ -62,7 +62,7 @@ namespace KiloTaxi.Converter
                 adminEntity.Password = adminDTO.Password;
                 adminEntity.Gender = adminDTO.Gender.ToString();
                 adminEntity.Address = adminDTO.Address;
-                adminEntity.Status = adminDTO.Status;
+                adminEntity.Status = adminDTO.Status.ToString();
             }
             catch (ArgumentException ex)
             {
