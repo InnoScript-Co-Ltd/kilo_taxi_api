@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using KiloTaxi.Common.Enums;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;

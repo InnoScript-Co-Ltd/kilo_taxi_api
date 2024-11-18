@@ -30,6 +30,7 @@ namespace KiloTaxi.Converter
                 Email = adminEntity.Email,
                 EmailVerifiedAt = adminEntity.EmailVerifiedAt,
                 PhoneVerifiedAt = adminEntity.PhoneVerifiedAt,
+                Password = adminEntity.Password,
                 Gender = Enum.Parse<GenderType>(adminEntity.Gender),
                 Address = adminEntity.Address,
                 Status = adminEntity.Status,
@@ -58,6 +59,7 @@ namespace KiloTaxi.Converter
                 adminEntity.Email = adminDTO.Email;
                 adminEntity.EmailVerifiedAt = adminDTO.EmailVerifiedAt;
                 adminEntity.PhoneVerifiedAt = adminDTO.PhoneVerifiedAt;
+                adminEntity.Password = adminDTO.Password;
                 adminEntity.Gender = adminDTO.Gender.ToString();
                 adminEntity.Address = adminDTO.Address;
                 adminEntity.Status = adminDTO.Status;

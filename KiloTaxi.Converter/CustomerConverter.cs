@@ -32,8 +32,11 @@ namespace KiloTaxi.Converter
                 Email = customerEntity.Email,
                 Dob = customerEntity.Dob,
                 Nrc = customerEntity.Nrc,
+                NrcImageFront = customerEntity.NrcImageFront,
+                NrcImageBack = customerEntity.NrcImageBack,
                 EmailVerifiedAt = customerEntity.EmailVerifiedAt,
                 PhoneVerifiedAt = customerEntity.PhoneVerifiedAt,
+                Password = customerEntity.Password,
                 Gender = Enum.Parse<GenderType>(customerEntity.Gender),
                 Address = customerEntity.Address,
                 State = customerEntity.State,
@@ -83,8 +86,11 @@ namespace KiloTaxi.Converter
                 customerEntity.Email = customerDTO.Email;
                 customerEntity.Dob = customerDTO.Dob;
                 customerEntity.Nrc = customerDTO.Nrc;
+                customerEntity.NrcImageFront = customerDTO.NrcImageFront;
+                customerEntity.NrcImageBack = customerDTO.NrcImageBack;
                 customerEntity.EmailVerifiedAt = customerDTO.EmailVerifiedAt;
                 customerEntity.PhoneVerifiedAt = customerDTO.PhoneVerifiedAt;
+                customerEntity.Password = customerDTO.Password;
                 customerEntity.Gender = customerDTO.Gender.ToString();
                 customerEntity.Address = customerDTO.Address;
                 customerEntity.State = customerDTO.State;

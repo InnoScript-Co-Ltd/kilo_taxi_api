@@ -29,6 +29,9 @@ namespace KiloTaxi.Model.DTO
         public DateTime PhoneVerifiedAt { get; set; }
 
         [Required]
+        public string Password { get; set; }
+
+        [Required]
         public GenderType Gender { get; set; }
 
         [Required]

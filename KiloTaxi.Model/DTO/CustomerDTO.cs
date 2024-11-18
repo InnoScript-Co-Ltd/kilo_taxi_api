@@ -30,12 +30,17 @@ namespace KiloTaxi.Model.DTO
         public DateTime Dob { get; set; }
 
         public string Nrc { get; set; }
+        public string NrcImageFront { get; set; }
+        public string NrcImageBack { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime EmailVerifiedAt { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime PhoneVerifiedAt { get; set; }
+
+        [Required]
+        public string Password { get; set; }
 
         [Required]
         public GenderType Gender { get; set; }

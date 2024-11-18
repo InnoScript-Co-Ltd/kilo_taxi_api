@@ -73,7 +73,6 @@ namespace KiloTaxi.Converter
                 promotionEntity.Percentage = promotionDTO.Percentage;
                 promotionEntity.PromotionStatus = promotionDTO.PromotionStatus.ToString();
                 promotionEntity.CustomerId = promotionDTO.CustomerId;
-                promotionEntity.Customer.Name = promotionDTO.CustomerName;
             }
             catch (Exception ex)
             {
