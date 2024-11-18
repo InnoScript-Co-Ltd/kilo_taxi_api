@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KiloTaxi.EntityFramework.Migrations
 {
     [DbContext(typeof(DbKiloTaxiContext))]
-    [Migration("20241114192851_1_Added_Tables_Init_1")]
+    [Migration("20241118202545_1_Added_Tables_Init_1")]
     partial class _1_Added_Tables_Init_1
     {
         /// <inheritdoc />
@@ -157,7 +157,7 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customer", (string)null);
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Driver", b =>
@@ -219,14 +219,17 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nrc")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("NrcImageBack")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("NrcImageFront")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -384,7 +387,9 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Promotions");
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Promotion", (string)null);
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Review", b =>
@@ -410,7 +415,11 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reviews");
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("DriverId");
+
+                    b.ToTable("Review", (string)null);
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.TopUpTransaction", b =>
@@ -584,6 +593,36 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Navigation("WalletFrom");
 
                     b.Navigation("WalletTo");
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Promotion", b =>
+                {
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Review", b =>
+                {
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.Driver", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Driver");
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.TopUpTransaction", b =>

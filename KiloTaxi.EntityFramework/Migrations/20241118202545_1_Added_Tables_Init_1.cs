@@ -12,7 +12,7 @@ namespace KiloTaxi.EntityFramework.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Customers",
+                name: "Customer",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -39,7 +39,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customers", x => x.Id);
+                    table.PrimaryKey("PK_Customer", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -96,7 +96,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Promotions",
+                name: "Promotion",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -110,11 +110,17 @@ namespace KiloTaxi.EntityFramework.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Promotions", x => x.Id);
+                    table.PrimaryKey("PK_Promotion", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Promotion_Customer_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reviews",
+                name: "Review",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -126,7 +132,19 @@ namespace KiloTaxi.EntityFramework.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reviews", x => x.Id);
+                    table.PrimaryKey("PK_Review", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Review_Customer_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Review_Driver_DriverId",
+                        column: x => x.DriverId,
+                        principalTable: "Driver",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -175,9 +193,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                 {
                     table.PrimaryKey("PK_Wallet", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Wallet_Customers_CustomerId",
+                        name: "FK_Wallet_Customer_CustomerId",
                         column: x => x.CustomerId,
-                        principalTable: "Customers",
+                        principalTable: "Customer",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -209,9 +227,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                 {
                     table.PrimaryKey("PK_Order", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Order_Customers_CustomerId",
+                        name: "FK_Order_Customer_CustomerId",
                         column: x => x.CustomerId,
-                        principalTable: "Customers",
+                        principalTable: "Customer",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -295,6 +313,21 @@ namespace KiloTaxi.EntityFramework.Migrations
                 column: "WalletToId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Promotion_CustomerId",
+                table: "Promotion",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Review_CustomerId",
+                table: "Review",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Review_DriverId",
+                table: "Review",
+                column: "DriverId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TopUpTransaction_PaymentChannelId",
                 table: "TopUpTransaction",
                 column: "PaymentChannelId");
@@ -327,10 +360,10 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "Order");
 
             migrationBuilder.DropTable(
-                name: "Promotions");
+                name: "Promotion");
 
             migrationBuilder.DropTable(
-                name: "Reviews");
+                name: "Review");
 
             migrationBuilder.DropTable(
                 name: "TopUpTransaction");
@@ -345,7 +378,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "Wallet");
 
             migrationBuilder.DropTable(
-                name: "Customers");
+                name: "Customer");
 
             migrationBuilder.DropTable(
                 name: "Driver");
