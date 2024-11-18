@@ -18,9 +18,10 @@ namespace KiloTaxi.DataAccess.Helper
             IConfiguration Configuration
         )
         {
+            services.AddScoped<IDriverRepository,DriverRepository>();
+            services.AddScoped<IVehicleRepository,VehicleRepository>();
             services.AddScoped<IAdminRepository, AdminRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
-            services.AddSingleton<IDriverRepository, DriverRepository>();
             services.AddScoped<IPromotionRepository, PromotionRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
         }

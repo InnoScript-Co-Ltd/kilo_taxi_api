@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using KiloTaxi.Common.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace KiloTaxi.Model.DTO;
 
@@ -28,5 +29,9 @@ public class VehicleDTO
     public VehicleStatus VehicleStatus { get; set; }
     
     public int DriverId { get; set; }
+    
+    public IFormFile? File_BusinessLicenseImage{ get; set; }
+    public IFormFile? File_VehicleLicenseFront { get; set; }
+    public IFormFile? File_VehicleLicenseBack{ get; set; }
     
 }

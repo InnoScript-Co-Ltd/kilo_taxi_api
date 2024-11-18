@@ -19,7 +19,7 @@ public static class DriverConverter
         {
             Id = driverEntity.Id,
             Name = driverEntity.Name,
-            Profile = driverEntity.Profile,
+            Profile = mediaHostUrl +driverEntity.Profile,
             MobilePrefix = driverEntity.MobilePrefix,
             Phone = driverEntity.Phone,
             Email = driverEntity.Email,

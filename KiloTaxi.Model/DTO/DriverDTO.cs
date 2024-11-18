@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using KiloTaxi.Common.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace KiloTaxi.Model.DTO;
 
@@ -34,14 +35,11 @@ public class DriverDTO
     [StringLength(100)]
     public string? NrcImageBack{get;set;}
     
-    [Required]
-    public string DriverLicense{get;set;}
+    public string? DriverLicense{get;set;}
     
-    [Required]
-    public string DriverImageLicenseFront{get;set;}
+    public string? DriverImageLicenseFront{get;set;}
     
-    [Required]
-    public string DriverImageLicenseBack{get;set;}
+    public string? DriverImageLicenseBack{get;set;}
     
     [DataType(DataType.DateTime)]
     public DateTime EmailVerifiedAt{get;set;}
@@ -69,9 +67,16 @@ public class DriverDTO
     [Required]
     public GenderType Gender{get;set;}
     
-    [Required]
     public DriverStatus DriverStatus{get;set;}
     
-    [Required]
     public KycStatus KycStatus{get;set;}
+    
+    public IEnumerable<VehicleDTO> Vehicle { get; set; }
+    public IEnumerable<WalletDTO> Wallet { get; set; }
+    
+    public IFormFile? File_NrcImageFront { get; set; }
+    public IFormFile? File_NrcImageBack { get; set; }
+    public IFormFile? File_DriverImageLicenseFront{ get; set; }
+    public IFormFile? File_DriverImageLicenseBack{ get; set; }
+    public IFormFile? File_Profile{ get; set; }
 }
