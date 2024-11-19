@@ -8,7 +8,7 @@ namespace KiloTaxi.Converter
 {
     public static class CustomerConverter
     {
-        public static CustomerDTO ConvertEntityToModel(Customer customerEntity)
+        public static CustomerDTO ConvertEntityToModel(Customer customerEntity, string mediaHostUrl)
         {
             if (customerEntity == null)
             {
@@ -26,14 +26,14 @@ namespace KiloTaxi.Converter
             {
                 Id = customerEntity.Id,
                 Name = customerEntity.Name,
-                Profile = customerEntity.Profile,
+                Profile = mediaHostUrl + customerEntity.Profile,
                 MobilePrefix = customerEntity.MobilePrefix,
                 Phone = customerEntity.Phone,
                 Email = customerEntity.Email,
                 Dob = customerEntity.Dob,
                 Nrc = customerEntity.Nrc,
-                NrcImageFront = customerEntity.NrcImageFront,
-                NrcImageBack = customerEntity.NrcImageBack,
+                NrcImageFront = mediaHostUrl + customerEntity.NrcImageFront,
+                NrcImageBack = mediaHostUrl + customerEntity.NrcImageBack,
                 EmailVerifiedAt = customerEntity.EmailVerifiedAt,
                 PhoneVerifiedAt = customerEntity.PhoneVerifiedAt,
                 Password = customerEntity.Password,

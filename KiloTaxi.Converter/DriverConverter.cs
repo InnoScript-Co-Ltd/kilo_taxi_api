@@ -11,15 +11,21 @@ public static class DriverConverter
     {
         if (driverEntity == null)
         {
-            LoggerHelper.Instance.LogError(new ArgumentNullException(nameof(driverEntity)), "Driver entity is null");
-            throw new ArgumentNullException(nameof(driverEntity), "Source Driver entity cannot be null");
+            LoggerHelper.Instance.LogError(
+                new ArgumentNullException(nameof(driverEntity)),
+                "Driver entity is null"
+            );
+            throw new ArgumentNullException(
+                nameof(driverEntity),
+                "Source Driver entity cannot be null"
+            );
         }
 
         return new DriverDTO()
         {
             Id = driverEntity.Id,
             Name = driverEntity.Name,
-            Profile = mediaHostUrl +driverEntity.Profile,
+            Profile = mediaHostUrl + driverEntity.Profile,
             MobilePrefix = driverEntity.MobilePrefix,
             Phone = driverEntity.Phone,
             Email = driverEntity.Email,
@@ -38,19 +44,24 @@ public static class DriverConverter
             TownShip = driverEntity.TownShip,
             Gender = Enum.Parse<GenderType>(driverEntity.Gender),
             DriverStatus = Enum.Parse<DriverStatus>(driverEntity.DriverStatus),
-            KycStatus = Enum.Parse<KycStatus>(driverEntity.KycStatus)
+            KycStatus = Enum.Parse<KycStatus>(driverEntity.KycStatus),
         };
-
     }
 
-    public static void  ConvertModelToEntity(DriverDTO driverDTO, ref Driver driverEntity)
+    public static void ConvertModelToEntity(DriverDTO driverDTO, ref Driver driverEntity)
     {
         try
         {
             if (driverDTO == null)
             {
-                LoggerHelper.Instance.LogError(new ArgumentNullException(nameof(driverDTO)), "DriverDTO model is null");
-                throw new ArgumentNullException(nameof(driverDTO), "Source DriverDTO model cannot be null");
+                LoggerHelper.Instance.LogError(
+                    new ArgumentNullException(nameof(driverDTO)),
+                    "DriverDTO model is null"
+                );
+                throw new ArgumentNullException(
+                    nameof(driverDTO),
+                    "Source DriverDTO model cannot be null"
+                );
             }
 
             driverEntity.Id = driverDTO.Id;
@@ -76,18 +87,22 @@ public static class DriverConverter
             driverEntity.Gender = driverDTO.Gender.ToString();
             driverEntity.DriverStatus = driverDTO.DriverStatus.ToString();
             driverEntity.KycStatus = driverDTO.KycStatus.ToString();
-
         }
         catch (ArgumentException ex)
         {
-            LoggerHelper.Instance.LogError(ex, "Argument exception during model-to-entity conversion");
+            LoggerHelper.Instance.LogError(
+                ex,
+                "Argument exception during model-to-entity conversion"
+            );
             throw;
         }
         catch (Exception ex)
         {
-            LoggerHelper.Instance.LogError(ex, "Unexpected error during model-to-entity conversion");
+            LoggerHelper.Instance.LogError(
+                ex,
+                "Unexpected error during model-to-entity conversion"
+            );
             throw;
         }
-    }   
+    }
 }
-

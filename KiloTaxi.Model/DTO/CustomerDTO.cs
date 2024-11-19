@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KiloTaxi.Common.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace KiloTaxi.Model.DTO
 {
@@ -62,5 +63,9 @@ namespace KiloTaxi.Model.DTO
 
         [Required]
         public KycStatus KycStatus { get; set; }
+
+        public IFormFile? File_NrcImageFront { get; set; }
+        public IFormFile? File_NrcImageBack { get; set; }
+        public IFormFile? File_Profile { get; set; }
     }
 }

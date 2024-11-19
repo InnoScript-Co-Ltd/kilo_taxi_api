@@ -16,7 +16,10 @@ public class DriverRepository : IDriverRepository
     private readonly DbKiloTaxiContext _dbKiloTaxiContext;
     private string _mediaHostUrl;
 
-    public DriverRepository(DbKiloTaxiContext dbKiloTaxiContext, IOptions<MediaSettings> mediaSettings)
+    public DriverRepository(
+        DbKiloTaxiContext dbKiloTaxiContext,
+        IOptions<MediaSettings> mediaSettings
+    )
     {
         _dbKiloTaxiContext = dbKiloTaxiContext;
         _mediaHostUrl = mediaSettings.Value.MediaHostUrl;
@@ -30,7 +33,9 @@ public class DriverRepository : IDriverRepository
             if (!string.IsNullOrEmpty(pageSortParam.SearchTerm))
             {
                 query = query.Where(p =>
-                    p.Name.Contains(pageSortParam.SearchTerm) || p.Email.Contains(pageSortParam.SearchTerm));
+                    p.Name.Contains(pageSortParam.SearchTerm)
+                    || p.Email.Contains(pageSortParam.SearchTerm)
+                );
             }
 
             int totalCount = query.Count();
@@ -40,36 +45,49 @@ public class DriverRepository : IDriverRepository
                 var property = Expression.Property(param, pageSortParam.SortField);
                 var sortExpression = Expression.Lambda(property, param);
 
-                string sortMethod = pageSortParam.SortDir == SortDirection.ASC ? "OrderBy" : "OrderByDescending";
-                var orderByMethod = typeof(Queryable).GetMethods()
+                string sortMethod =
+                    pageSortParam.SortDir == SortDirection.ASC ? "OrderBy" : "OrderByDescending";
+                var orderByMethod = typeof(Queryable)
+                    .GetMethods()
                     .Single(m => m.Name == sortMethod && m.GetParameters().Length == 2)
                     .MakeGenericMethod(typeof(Driver), property.Type);
-                query = (IQueryable<Driver>)(orderByMethod.Invoke(_dbKiloTaxiContext,
-                    new object[] { query, sortExpression }) ?? Enumerable.Empty<Driver>().AsQueryable());
+                query =
+                    (IQueryable<Driver>)(
+                        orderByMethod.Invoke(
+                            _dbKiloTaxiContext,
+                            new object[] { query, sortExpression }
+                        ) ?? Enumerable.Empty<Driver>().AsQueryable()
+                    );
             }
 
             if (query.Count() > pageSortParam.PageSize)
             {
-                query = query.Skip((pageSortParam.CurrentPage - 1) * pageSortParam.PageSize)
+                query = query
+                    .Skip((pageSortParam.CurrentPage - 1) * pageSortParam.PageSize)
                     .Take(pageSortParam.PageSize);
             }
 
-            var drivers = query.Select(driver => DriverConverter.ConvertEntityToModel(driver, _mediaHostUrl)).ToList();
+            var drivers = query
+                .Select(driver => DriverConverter.ConvertEntityToModel(driver, _mediaHostUrl))
+                .ToList();
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSortParam.PageSize);
             var pagingResult = new PagingResult
             {
                 TotalCount = totalCount,
                 TotalPages = totalPages,
-                PreviousPage = pageSortParam.CurrentPage > 1 ? pageSortParam.CurrentPage - 1 : (int?)null,
-                NextPage = pageSortParam.CurrentPage < totalPages ? pageSortParam.CurrentPage + 1 : (int?)null,
+                PreviousPage =
+                    pageSortParam.CurrentPage > 1 ? pageSortParam.CurrentPage - 1 : (int?)null,
+                NextPage =
+                    pageSortParam.CurrentPage < totalPages
+                        ? pageSortParam.CurrentPage + 1
+                        : (int?)null,
                 FirstRowOnPage = ((pageSortParam.CurrentPage - 1) * pageSortParam.PageSize) + 1,
-                LastRowOnPage = Math.Min(totalCount, pageSortParam.CurrentPage * pageSortParam.PageSize)
+                LastRowOnPage = Math.Min(
+                    totalCount,
+                    pageSortParam.CurrentPage * pageSortParam.PageSize
+                ),
             };
-            return new DriverPagingDTO()
-            {
-                Paging = pagingResult,
-                Drivers = drivers,
-            };
+            return new DriverPagingDTO() { Paging = pagingResult, Drivers = drivers };
         }
         catch (Exception ex)
         {
@@ -82,13 +100,16 @@ public class DriverRepository : IDriverRepository
     {
         try
         {
-          var driverDTO= DriverConverter.ConvertEntityToModel(_dbKiloTaxiContext.Drivers.FirstOrDefault(x => x.Id == id),
-                _mediaHostUrl);
-          var vehicleDTO = _dbKiloTaxiContext.Vehicles.Where(v => v.DriverId == driverDTO.Id)
-                                                                      .Select(vehicle => VehicleConverter.ConvertEntityToModel(vehicle, _mediaHostUrl))
-                                                                      .ToList();
+            var driverDTO = DriverConverter.ConvertEntityToModel(
+                _dbKiloTaxiContext.Drivers.FirstOrDefault(x => x.Id == id),
+                _mediaHostUrl
+            );
+            var vehicleDTO = _dbKiloTaxiContext
+                .Vehicles.Where(v => v.DriverId == driverDTO.Id)
+                .Select(vehicle => VehicleConverter.ConvertEntityToModel(vehicle, _mediaHostUrl))
+                .ToList();
             driverDTO.Vehicle = vehicleDTO;
-            
+
             return driverDTO;
         }
         catch (Exception ex)
@@ -114,13 +135,15 @@ public class DriverRepository : IDriverRepository
             {
                 (nameof(driverEntity.NrcImageFront), driverEntity.NrcImageFront),
                 (nameof(driverEntity.NrcImageBack), driverEntity.NrcImageBack),
-                (nameof(driverEntity.DriverImageLicenseFront), driverEntity.DriverImageLicenseFront),
+                (
+                    nameof(driverEntity.DriverImageLicenseFront),
+                    driverEntity.DriverImageLicenseFront
+                ),
                 (nameof(driverEntity.DriverImageLicenseBack), driverEntity.DriverImageLicenseBack),
-                (nameof(driverEntity.Profile), driverEntity.Profile)
+                (nameof(driverEntity.Profile), driverEntity.Profile),
             };
             foreach (var (propertyName, filePath) in filePaths)
             {
-
                 if (!filePath.Contains("default.png"))
                 {
                     if (propertyName == nameof(driverEntity.NrcImageFront))
@@ -166,20 +189,27 @@ public class DriverRepository : IDriverRepository
                 (nameof(driverDTO.NrcImageBack), driverEntity.NrcImageBack),
                 (nameof(driverDTO.DriverImageLicenseFront), driverEntity.DriverImageLicenseFront),
                 (nameof(driverDTO.DriverImageLicenseBack), driverEntity.DriverImageLicenseBack),
-                (nameof(driverDTO.Profile), driverEntity.Profile)
+                (nameof(driverDTO.Profile), driverEntity.Profile),
             };
 
             // Loop through image properties and update paths if necessary
             foreach (var (driverDTOProperty, driverEntityFile) in imageProperties)
             {
-                var dtoValue = typeof(DriverDTO).GetProperty(driverDTOProperty)?.GetValue(driverDTO)?.ToString();
+                var dtoValue = typeof(DriverDTO)
+                    .GetProperty(driverDTOProperty)
+                    ?.GetValue(driverDTO)
+                    ?.ToString();
                 if (string.IsNullOrEmpty(dtoValue))
                 {
-                    typeof(DriverDTO).GetProperty(driverDTOProperty)?.SetValue(driverDTO, driverEntityFile);
+                    typeof(DriverDTO)
+                        .GetProperty(driverDTOProperty)
+                        ?.SetValue(driverDTO, driverEntityFile);
                 }
                 else if (dtoValue != driverEntityFile)
                 {
-                    typeof(DriverDTO).GetProperty(driverDTOProperty)?.SetValue(driverDTO, $"driver/{driverDTO.Id}{dtoValue}");
+                    typeof(DriverDTO)
+                        .GetProperty(driverDTOProperty)
+                        ?.SetValue(driverDTO, $"driver/{driverDTO.Id}{dtoValue}");
                 }
             }
 
@@ -190,36 +220,34 @@ public class DriverRepository : IDriverRepository
         }
         catch (Exception ex)
         {
-            LoggerHelper.Instance.LogError(ex, $"Error occurred while updating driver with Id: {driverDTO.Id}");
+            LoggerHelper.Instance.LogError(
+                ex,
+                $"Error occurred while updating driver with Id: {driverDTO.Id}"
+            );
             throw;
         }
     }
 
-
-
     public bool DeleteDriver(int id)
+    {
+        bool result = false;
+        try
         {
-            bool result = false;
-            try
+            var driverEntity = _dbKiloTaxiContext.Drivers.FirstOrDefault(x => x.Id == id);
+            if (driverEntity == null)
             {
-                var driverEntity=_dbKiloTaxiContext.Drivers.FirstOrDefault(x => x.Id == id);
-                if (driverEntity == null)
-                {
-                    return result;
-                }
-                
-                _dbKiloTaxiContext.Drivers.Remove(driverEntity);
-                _dbKiloTaxiContext.SaveChanges();
-                result = true;
                 return result;
             }
-            catch (Exception ex)
-            {
-                LoggerHelper.Instance.LogError(ex,$"Error occurred while delete driver with id: {id}");
-                throw;
-            }
+
+            _dbKiloTaxiContext.Drivers.Remove(driverEntity);
+            _dbKiloTaxiContext.SaveChanges();
+            result = true;
+            return result;
         }
-
-
+        catch (Exception ex)
+        {
+            LoggerHelper.Instance.LogError(ex, $"Error occurred while delete driver with id: {id}");
+            throw;
+        }
+    }
 }
-
