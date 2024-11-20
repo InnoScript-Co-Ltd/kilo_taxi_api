@@ -37,7 +37,7 @@ public static class DriverConverter
             City = driverEntity.City,
             TownShip = driverEntity.TownShip,
             Gender = driverEntity.Gender,
-            DriverStatus = driverEntity.DriverStatus,
+            Status = driverEntity.Status,
             KycStatus = driverEntity.KycStatus
         };
 
@@ -74,7 +74,7 @@ public static class DriverConverter
             driverEntity.City = driverDTO.City;
             driverEntity.TownShip = driverDTO.TownShip;
             driverEntity.Gender = driverDTO.Gender.ToString();
-            driverEntity.DriverStatus = driverDTO.DriverStatus.ToString();
+            driverEntity.Status = driverDTO.Status.ToString();
             driverEntity.KycStatus = driverDTO.KycStatus.ToString();
 
         }

@@ -26,8 +26,6 @@ public class VehicleRepository:IVehicleRepository
         try
         {
             Vehicle vehicleEntity=new Vehicle();
-            vehicleEntity.VehicleStatus = VehicleStatus.Active.ToString();
-            
             VehicleConverter.ConvertModelToEntity(vehicleDTO,ref vehicleEntity);
             
             _dbKiloTaxiContext.Add(vehicleEntity);

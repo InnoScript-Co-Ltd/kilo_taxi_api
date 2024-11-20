@@ -1,10 +1,13 @@
 using System.Linq.Expressions;
+using KiloTaxi.Common.ConfigurationSettings;
+using KiloTaxi.Common.Enums;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using Microsoft.Extensions.Options;
 
 namespace KiloTaxi.DataAccess.Implementation
 {
@@ -12,9 +15,15 @@ namespace KiloTaxi.DataAccess.Implementation
     {
         private readonly DbKiloTaxiContext _dbKiloTaxiContext;
 
-        public CustomerRepository(DbKiloTaxiContext dbContext)
+        private string _mediaHostUrl;
+
+        public CustomerRepository(
+            DbKiloTaxiContext dbContext,
+            IOptions<MediaSettings> mediaSettings
+        )
         {
             _dbKiloTaxiContext = dbContext;
+            _mediaHostUrl = mediaSettings.Value.MediaHostUrl;
         }
 
         public CustomerPagingDTO GetAllCustomer(PageSortParam pageSortParam)
@@ -62,7 +71,11 @@ namespace KiloTaxi.DataAccess.Implementation
                         .Take(pageSortParam.PageSize);
                 }
 
-                var customers = query.Select(CustomerConverter.ConvertEntityToModel).ToList();
+                var customers = query
+                    .Select(customer =>
+                        CustomerConverter.ConvertEntityToModel(customer, _mediaHostUrl)
+                    )
+                    .ToList();
 
                 var totalPages = (int)Math.Ceiling((double)totalCount / pageSortParam.PageSize);
                 var pagingResult = new PagingResult
@@ -96,12 +109,50 @@ namespace KiloTaxi.DataAccess.Implementation
             try
             {
                 Customer customerEntity = new Customer();
+                customerEntity.Status = CustomerStatus.Pending.ToString();
+                customerEntity.KycStatus = KycStatus.Pending.ToString();
                 CustomerConverter.ConvertModelToEntity(customerDTO, ref customerEntity);
 
                 _dbKiloTaxiContext.Add(customerEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 customerDTO.Id = customerEntity.Id;
+
+                var filePaths = new List<(string PropertyName, string FilePath)>
+                {
+                    (nameof(customerEntity.NrcImageFront), customerEntity.NrcImageFront),
+                    (nameof(customerEntity.NrcImageBack), customerEntity.NrcImageBack),
+                    (nameof(customerEntity.Profile), customerEntity.Profile),
+                };
+                foreach (var (propertyName, filePath) in filePaths)
+                {
+                    if (!filePath.Contains("default.png"))
+                    {
+                        switch (propertyName)
+                        {
+                            case nameof(customerEntity.NrcImageFront):
+                                customerEntity.NrcImageFront =
+                                    $"customer/{customerDTO.Id}{filePath}";
+                                break;
+
+                            case nameof(customerEntity.NrcImageBack):
+                                customerEntity.NrcImageBack =
+                                    $"customer/{customerDTO.Id}{filePath}";
+                                break;
+
+                            case nameof(customerEntity.Profile):
+                                customerEntity.Profile = $"customer/{customerDTO.Id}{filePath}";
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                _dbKiloTaxiContext.SaveChanges();
+
+                customerDTO = CustomerConverter.ConvertEntityToModel(customerEntity, _mediaHostUrl);
 
                 LoggerHelper.Instance.LogInfo(
                     $"Customer added successfully with Id: {customerEntity.Id}"
@@ -126,6 +177,38 @@ namespace KiloTaxi.DataAccess.Implementation
                 if (customerEntity == null)
                 {
                     return false;
+                }
+
+                // List of image properties to update
+                var imageProperties = new List<(
+                    string customerDTOProperty,
+                    string customerEntityFile
+                )>
+                {
+                    (nameof(customerDTO.NrcImageFront), customerEntity.NrcImageFront),
+                    (nameof(customerDTO.NrcImageBack), customerEntity.NrcImageBack),
+                    (nameof(customerDTO.Profile), customerEntity.Profile),
+                };
+
+                // Loop through image properties and update paths if necessary
+                foreach (var (customerDTOProperty, customerEntityFile) in imageProperties)
+                {
+                    var dtoValue = typeof(CustomerDTO)
+                        .GetProperty(customerDTOProperty)
+                        ?.GetValue(customerDTO)
+                        ?.ToString();
+                    if (string.IsNullOrEmpty(dtoValue))
+                    {
+                        typeof(CustomerDTO)
+                            .GetProperty(customerDTOProperty)
+                            ?.SetValue(customerDTO, customerEntityFile);
+                    }
+                    else if (dtoValue != customerEntityFile)
+                    {
+                        typeof(CustomerDTO)
+                            .GetProperty(customerDTOProperty)
+                            ?.SetValue(customerDTO, $"driver/{customerDTO.Id}{dtoValue}");
+                    }
                 }
 
                 CustomerConverter.ConvertModelToEntity(customerDTO, ref customerEntity);
@@ -155,8 +238,12 @@ namespace KiloTaxi.DataAccess.Implementation
                     LoggerHelper.Instance.LogError($"Customer with Id: {id} not found.");
                     return null;
                 }
+                var customerDTO = CustomerConverter.ConvertEntityToModel(
+                    customerEntity,
+                    _mediaHostUrl
+                );
 
-                return CustomerConverter.ConvertEntityToModel(customerEntity);
+                return customerDTO;
             }
             catch (Exception ex)
             {

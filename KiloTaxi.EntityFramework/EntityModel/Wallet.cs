@@ -10,30 +10,10 @@ public class Wallet
     public int Id { get; set;}
     
     [Required]
-    public string UserName{get;set;}
+    public string WalletName{get;set;}
     
-    [Required]
-    public string PhoneNo{get;set;}
+    public DateTime CreatedDate{get;set;}
     
-    [Required]
-    public string Email{get;set;}
-    
-    [Required]
-    [Column(TypeName = "decimal(18, 2)")]
-    public decimal Balance{get;set;}
-    
-    [Required]
-    public string WalletType{get;set;}
-    
-    [Required]
-    public string WalletStatus{get;set;}
-    
-    [ForeignKey("Driver")]
-    public int DriverId{get;set;}
-    public virtual Driver Driver{get;set;}
-    
-    [ForeignKey("Customer")]
-    public int CustomerId{get;set;}
-    public virtual Customer Customer{get;set;}
+    public DateTime UpdateDate{get;set;}   
     
 }

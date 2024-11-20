@@ -25,9 +25,9 @@ public class VehicleDTO
     public string? VehicleLicenseFront{get;set;}
     
     public string? VehicleLicenseBack{get;set;}
-    
-    public string VehicleStatus { get; set; }
-    
+    [Required]
+    public string Status { get; set; }
+    [Required]
     public int DriverId { get; set; }
     
     public IFormFile? File_BusinessLicenseImage{ get; set; }

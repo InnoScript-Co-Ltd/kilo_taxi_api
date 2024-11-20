@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KiloTaxi.Common.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace KiloTaxi.Model.DTO
 {
@@ -27,7 +28,7 @@ namespace KiloTaxi.Model.DTO
         [EmailAddress]
         public string Email { get; set; }
 
-        public DateTime Dob { get; set; }
+        public DateTime? Dob { get; set; }
 
         public string Nrc { get; set; }
         public string NrcImageFront { get; set; }
@@ -58,9 +59,13 @@ namespace KiloTaxi.Model.DTO
         public string Township { get; set; }
 
         [Required]
-        public string CustomerStatus { get; set; }
+        public string Status { get; set; }
 
         [Required]
         public string KycStatus { get; set; }
+        
+        public IFormFile? File_NrcImageFront { get; set; }
+        public IFormFile? File_NrcImageBack { get; set; }
+        public IFormFile? File_Profile { get; set; }
     }
 }

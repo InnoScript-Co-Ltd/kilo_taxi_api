@@ -25,7 +25,7 @@ public static class VehicleConverter
             BusinessLicenseImage = mediaHostUrl + vehicleEntity.BusinessLicenseImage,
             VehicleLicenseFront = mediaHostUrl + vehicleEntity.VehicleLicenseFront,
             VehicleLicenseBack = mediaHostUrl + vehicleEntity.VehicleLicenseBack,
-            VehicleStatus = vehicleEntity.VehicleStatus,
+            Status = vehicleEntity.Status,
             DriverId = vehicleEntity.DriverId,
         };
     }
@@ -47,7 +47,7 @@ public static class VehicleConverter
             vehicleEntity.BusinessLicenseImage = vehicleDTO.BusinessLicenseImage;
             vehicleEntity.VehicleLicenseFront = vehicleDTO.VehicleLicenseFront;
             vehicleEntity.VehicleLicenseBack = vehicleDTO.VehicleLicenseBack;
-            vehicleEntity.VehicleStatus = vehicleDTO.VehicleStatus.ToString();
+            vehicleEntity.Status = vehicleDTO.Status.ToString();
             vehicleEntity.DriverId = vehicleDTO.DriverId;
         }
         catch (ArgumentException ex)

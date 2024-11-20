@@ -30,7 +30,7 @@ namespace KiloTaxi.Model.DTO
         public string PaymentType { get; set; }
 
         [Required]
-        public string OrderStatus { get; set; }
+        public string Status { get; set; }
 
 
         [Required]

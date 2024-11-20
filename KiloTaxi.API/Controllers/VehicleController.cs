@@ -1,4 +1,5 @@
 ﻿using KiloTaxi.API.Helper.FileHelpers;
+using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
@@ -75,6 +76,12 @@ public class VehicleController:ControllerBase
             {
                 return BadRequest(ModelState);
             }
+
+            if (VehicleStatus.Active != Enum.Parse<VehicleStatus>(vehicleDTO.Status) &&
+                VehicleStatus.Suspend != Enum.Parse<VehicleStatus>(vehicleDTO.Status))
+            {
+                return BadRequest("Invalid Format Vehicle Status!");
+            }
             var fileUploadHelper=new FileUploadHelper(_configuration,_allowedExtensions,_allowedMimeTypes,_maxFileSize);
             var filesToProcess = new List<(IFormFile? File, string FilePathProperty)>
             {
@@ -115,21 +122,25 @@ public class VehicleController:ControllerBase
         }
     }
         [HttpPut("{id}")]
-    public async Task<IActionResult> Put([FromRoute] int id, VehicleDTO vehicleDto)
+    public async Task<IActionResult> Put([FromRoute] int id, VehicleDTO vehicleDTO)
     {
         try
         {
-            if (id != vehicleDto.Id)
+            if (id != vehicleDTO.Id)
             {
                 return BadRequest();
             }
-
+            if (VehicleStatus.Active != Enum.Parse<VehicleStatus>(vehicleDTO.Status) &&
+                VehicleStatus.Suspend != Enum.Parse<VehicleStatus>(vehicleDTO.Status))
+            {
+                return BadRequest("Invalid Format Vehicle Status!");
+            }
             var fileUploadHelper = new FileUploadHelper(_configuration, _allowedExtensions, _allowedMimeTypes, _maxFileSize);
             var filesToProcess = new List<(IFormFile file, string filePathProperty)>
             {
-                (vehicleDto.File_BusinessLicenseImage, nameof(vehicleDto.BusinessLicenseImage)),
-                (vehicleDto.File_VehicleLicenseFront, nameof(vehicleDto.VehicleLicenseFront)),
-                (vehicleDto.File_VehicleLicenseBack, nameof(vehicleDto.VehicleLicenseBack))
+                (vehicleDTO.File_BusinessLicenseImage, nameof(vehicleDTO.BusinessLicenseImage)),
+                (vehicleDTO.File_VehicleLicenseFront, nameof(vehicleDTO.VehicleLicenseFront)),
+                (vehicleDTO.File_VehicleLicenseBack, nameof(vehicleDTO.VehicleLicenseBack))
             };
 
             // Validate and update file paths
@@ -142,10 +153,10 @@ public class VehicleController:ControllerBase
                         return BadRequest(errorMessage);
                     }
                     var fileName = "_" + filePathProperty + resolvedFilePath;
-                    typeof(VehicleDTO).GetProperty(filePathProperty)?.SetValue(vehicleDto, fileName);
+                    typeof(VehicleDTO).GetProperty(filePathProperty)?.SetValue(vehicleDTO, fileName);
                 }
             }
-            var isUpdated = _vehicleRepository.UpdateVehicle(vehicleDto);
+            var isUpdated = _vehicleRepository.UpdateVehicle(vehicleDTO);
             if (!isUpdated)
             {
                 return NotFound();
@@ -155,7 +166,7 @@ public class VehicleController:ControllerBase
                 if (file != null && file.Length > 0)
                 {
                     var fileExtension = Path.GetExtension(file.FileName);
-                    var fileName=vehicleDto.Id.ToString()+"_"+filePathProperty;
+                    var fileName=vehicleDTO.Id.ToString()+"_"+filePathProperty;
                     await fileUploadHelper.SaveFileAsync(file, flagDomain,fileName, fileExtension);
                 }
             }

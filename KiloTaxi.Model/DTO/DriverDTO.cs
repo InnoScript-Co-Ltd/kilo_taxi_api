@@ -24,10 +24,10 @@ public class DriverDTO
     public string Email{get;set;}
     
     [DataType(DataType.DateTime)]
-    public DateTime Dob{get;set;}
+    public DateTime? Dob{get;set;}
     
-    [StringLength(50)]
-    public string? Nrc{get;set;}
+    [Required]
+    public string Nrc{get;set;}
     
     [StringLength(100)]
     public string? NrcImageFront{get;set;}
@@ -42,10 +42,10 @@ public class DriverDTO
     public string? DriverImageLicenseBack{get;set;}
     
     [DataType(DataType.DateTime)]
-    public DateTime EmailVerifiedAt{get;set;}
+    public DateTime? EmailVerifiedAt{get;set;}
     
     [DataType(DataType.DateTime)]
-    public DateTime PhoneVerifiedAt{get;set;}
+    public DateTime? PhoneVerifiedAt{get;set;}
     
     [Required]
     [MinLength(3)]
@@ -67,8 +67,10 @@ public class DriverDTO
     [Required]
     public string Gender{get;set;}
     
-    public string DriverStatus{get;set;}
+    [Required]
+    public string Status{get;set;}
     
+    [Required]
     public string KycStatus{get;set;}
     
     public IEnumerable<VehicleDTO> Vehicle { get; set; }

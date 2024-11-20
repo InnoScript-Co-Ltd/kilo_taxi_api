@@ -1,3 +1,4 @@
+using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
@@ -74,6 +75,11 @@ namespace KiloTaxi.API.Controllers
                 {
                     return BadRequest();
                 }
+                if (CustomerStatus.Pending ==Enum.Parse<CustomerStatus>(adminDTO.Status)  || CustomerStatus.Active==Enum.Parse<CustomerStatus>(adminDTO.Status)
+                    || CustomerStatus.Suspended==Enum.Parse<CustomerStatus>(adminDTO.Status) || CustomerStatus.Deactivate==Enum.Parse<CustomerStatus>(adminDTO.Status))
+                {
+                    return BadRequest("Invalid format Customer Status!");
+                }
                 var createdAdmin = _adminRepository.AddAdmin(adminDTO);
                 return CreatedAtAction(nameof(Get), new { id = createdAdmin.Id }, createdAdmin);
             }
@@ -92,6 +98,11 @@ namespace KiloTaxi.API.Controllers
                 if (adminDTO == null || id != adminDTO.Id)
                 {
                     return BadRequest();
+                }
+                if (CustomerStatus.Pending ==Enum.Parse<CustomerStatus>(adminDTO.Status)  || CustomerStatus.Active==Enum.Parse<CustomerStatus>(adminDTO.Status)
+                    || CustomerStatus.Suspended==Enum.Parse<CustomerStatus>(adminDTO.Status) || CustomerStatus.Deactivate==Enum.Parse<CustomerStatus>(adminDTO.Status))
+                {
+                    return BadRequest("Invalid format Customer Status!");
                 }
                 var result = _adminRepository.UpdateAdmin(adminDTO);
 

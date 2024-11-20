@@ -1,5 +1,6 @@
 ﻿using System.Net.NetworkInformation;
 using KiloTaxi.API.Helper.FileHelpers;
+using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
@@ -7,21 +8,26 @@ using KiloTaxi.Model.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers;
+
 [Route("api/v1/[controller]")]
 [ApiController]
-public class DriverController:ControllerBase
+public class DriverController : ControllerBase
 {
     LoggerHelper _logHelper;
     private readonly IDriverRepository _driverRepository;
     private readonly IConfiguration _configuration;
     private readonly List<string> _allowedExtensions = new List<string> { ".jpg", ".jpeg", ".png" };
-    private readonly List<string> _allowedMimeTypes = new List<string> { "image/jpeg", "image/png" };
-    private const long _maxFileSize=5 * 1024 * 1024;
+    private readonly List<string> _allowedMimeTypes = new List<string>
+    {
+        "image/jpeg",
+        "image/png",
+    };
+    private const long _maxFileSize = 5 * 1024 * 1024;
     private const string flagDomain = "driver";
 
-    public DriverController(IDriverRepository driverRepository,IConfiguration configuration)
+    public DriverController(IDriverRepository driverRepository, IConfiguration configuration)
     {
-        _logHelper=LoggerHelper.Instance;
+        _logHelper = LoggerHelper.Instance;
         _driverRepository = driverRepository;
         _configuration = configuration;
     }
@@ -31,17 +37,17 @@ public class DriverController:ControllerBase
     {
         try
         {
-         DriverPagingDTO driverPagingDto = _driverRepository.GetAllDrivers(pageSortParam);
-         if (!driverPagingDto.Drivers.Any())
-         {
-             return NoContent();
-         }
-         return Ok(driverPagingDto);
+            DriverPagingDTO driverPagingDto = _driverRepository.GetAllDrivers(pageSortParam);
+            if (!driverPagingDto.Drivers.Any())
+            {
+                return NoContent();
+            }
+            return Ok(driverPagingDto);
         }
         catch (Exception ex)
         {
             _logHelper.LogError(ex);
-            return StatusCode(500,"An error occurred while processing your request.");
+            return StatusCode(500, "An error occurred while processing your request.");
         }
     }
 
@@ -64,7 +70,7 @@ public class DriverController:ControllerBase
         catch (Exception ex)
         {
             _logHelper.LogError(ex);
-            return StatusCode(500,"An error occurred while processing your request.");
+            return StatusCode(500, "An error occurred while processing your request.");
         }
     }
 
@@ -77,39 +83,77 @@ public class DriverController:ControllerBase
             {
                 return BadRequest(ModelState);
             }
-            var fileUploadHelper=new FileUploadHelper(_configuration,_allowedExtensions,_allowedMimeTypes,_maxFileSize);
+
+            if (DriverStatus.Pending != Enum.Parse<DriverStatus>(driverDTO.Status) && DriverStatus.Active != Enum.Parse<DriverStatus>(driverDTO.Status)
+                && DriverStatus.Deactivate != Enum.Parse<DriverStatus>(driverDTO.Status) && DriverStatus.Suspend != Enum.Parse<DriverStatus>(driverDTO.Status))
+            {
+                return BadRequest("Invalid Format Driver Status!");
+            } else if (GenderType.Male != Enum.Parse<GenderType>(driverDTO.Gender) && GenderType.Female != Enum.Parse<GenderType>(driverDTO.Gender)
+                                                                              && GenderType.Undefined != Enum.Parse<GenderType>(driverDTO.Gender))
+            {
+                return BadRequest("Invalid Format Gender Type!");
+            } else if (KycStatus.Pending != Enum.Parse<KycStatus>(driverDTO.KycStatus) && KycStatus.FullKyc != Enum.Parse<KycStatus>(driverDTO.KycStatus)
+                       && KycStatus.Reject != Enum.Parse<KycStatus>(driverDTO.KycStatus))
+            {
+                return BadRequest("Invalid Format Kyc Status!");
+            }
+            var fileUploadHelper = new FileUploadHelper(
+                _configuration,
+                _allowedExtensions,
+                _allowedMimeTypes,
+                _maxFileSize
+            );
             var filesToProcess = new List<(IFormFile? File, string FilePathProperty)>
             {
                 (driverDTO.File_NrcImageFront, nameof(driverDTO.NrcImageFront)),
                 (driverDTO.File_NrcImageBack, nameof(driverDTO.NrcImageBack)),
                 (driverDTO.File_DriverImageLicenseFront, nameof(driverDTO.DriverImageLicenseFront)),
                 (driverDTO.File_DriverImageLicenseBack, nameof(driverDTO.DriverImageLicenseBack)),
-                (driverDTO.File_Profile,nameof(driverDTO.Profile))
+                (driverDTO.File_Profile, nameof(driverDTO.Profile)),
             };
 
             foreach (var (file, filePathProperty) in filesToProcess)
             {
-                if (!fileUploadHelper.ValidateFile(file, true, flagDomain, out var resolvedFilePath, out var errorMessage))
+                if (
+                    !fileUploadHelper.ValidateFile(
+                        file,
+                        true,
+                        flagDomain,
+                        out var resolvedFilePath,
+                        out var errorMessage
+                    )
+                )
                 {
                     return BadRequest(errorMessage);
                 }
 
                 var fileName = "_" + filePathProperty + resolvedFilePath;
-                typeof(DriverDTO).GetProperty(filePathProperty)?.SetValue(driverDTO,fileName);
-
+                typeof(DriverDTO).GetProperty(filePathProperty)?.SetValue(driverDTO, fileName);
             }
-            var registerDriver=_driverRepository.DriverRegistration(driverDTO);
+            var registerDriver = _driverRepository.DriverRegistration(driverDTO);
 
             foreach (var (file, filePathProperty) in filesToProcess)
-            { 
+            {
                 if (file != null && file.Length > 0)
                 {
-                    if (!fileUploadHelper.ValidateFile(file, true, flagDomain, out var resolvedFilePath, out var errorMessage))
+                    if (
+                        !fileUploadHelper.ValidateFile(
+                            file,
+                            true,
+                            flagDomain,
+                            out var resolvedFilePath,
+                            out var errorMessage
+                        )
+                    )
                     {
                         return BadRequest(errorMessage);
                     }
-                    await fileUploadHelper.SaveFileAsync(file, flagDomain,driverDTO.Id.ToString()+"_"+filePathProperty, resolvedFilePath);
-
+                    await fileUploadHelper.SaveFileAsync(
+                        file,
+                        flagDomain,
+                        driverDTO.Id.ToString() + "_" + filePathProperty,
+                        resolvedFilePath
+                    );
                 }
             }
             return CreatedAtAction(nameof(Get), new { id = registerDriver.Id }, registerDriver);
@@ -117,7 +161,7 @@ public class DriverController:ControllerBase
         catch (Exception ex)
         {
             _logHelper.LogError(ex);
-            return StatusCode(500,"An error occurred while processing your request.");
+            return StatusCode(500, "An error occurred while processing your request.");
         }
     }
 
@@ -130,15 +174,33 @@ public class DriverController:ControllerBase
             {
                 return BadRequest();
             }
+            if (DriverStatus.Pending != Enum.Parse<DriverStatus>(driverDTO.Status) && DriverStatus.Active != Enum.Parse<DriverStatus>(driverDTO.Status)
+                && DriverStatus.Deactivate != Enum.Parse<DriverStatus>(driverDTO.Status) && DriverStatus.Suspend != Enum.Parse<DriverStatus>(driverDTO.Status))
+            {
+                return BadRequest("Invalid Format Driver Status!");
+            } else if (GenderType.Male != Enum.Parse<GenderType>(driverDTO.Gender) && GenderType.Female != Enum.Parse<GenderType>(driverDTO.Gender)
+                       && GenderType.Undefined != Enum.Parse<GenderType>(driverDTO.Gender))
+            {
+                return BadRequest("Invalid Format Gender Type!");
+            } else if (KycStatus.Pending != Enum.Parse<KycStatus>(driverDTO.KycStatus) && KycStatus.FullKyc != Enum.Parse<KycStatus>(driverDTO.KycStatus)
+                       && KycStatus.Reject != Enum.Parse<KycStatus>(driverDTO.KycStatus))
+            {
+                return BadRequest("Invalid Format Kyc Status!");
+            }
 
-            var fileUploadHelper = new FileUploadHelper(_configuration, _allowedExtensions, _allowedMimeTypes, _maxFileSize);
+            var fileUploadHelper = new FileUploadHelper(
+                _configuration,
+                _allowedExtensions,
+                _allowedMimeTypes,
+                _maxFileSize
+            );
             var filesToProcess = new List<(IFormFile file, string filePathProperty)>
             {
                 (driverDTO.File_Profile, nameof(driverDTO.Profile)),
                 (driverDTO.File_NrcImageFront, nameof(driverDTO.NrcImageFront)),
                 (driverDTO.File_NrcImageBack, nameof(driverDTO.NrcImageBack)),
                 (driverDTO.File_DriverImageLicenseFront, nameof(driverDTO.DriverImageLicenseFront)),
-                (driverDTO.File_DriverImageLicenseBack, nameof(driverDTO.DriverImageLicenseBack))
+                (driverDTO.File_DriverImageLicenseBack, nameof(driverDTO.DriverImageLicenseBack)),
             };
 
             // Validate and update file paths
@@ -146,7 +208,15 @@ public class DriverController:ControllerBase
             {
                 if (file != null && file.Length > 0)
                 {
-                    if (!fileUploadHelper.ValidateFile(file, true, flagDomain, out var resolvedFilePath, out var errorMessage))
+                    if (
+                        !fileUploadHelper.ValidateFile(
+                            file,
+                            true,
+                            flagDomain,
+                            out var resolvedFilePath,
+                            out var errorMessage
+                        )
+                    )
                     {
                         return BadRequest(errorMessage);
                     }
@@ -168,8 +238,8 @@ public class DriverController:ControllerBase
                 if (file != null && file.Length > 0)
                 {
                     var fileExtension = Path.GetExtension(file.FileName);
-                    var fileName=driverDTO.Id.ToString()+"_"+filePathProperty;
-                    await fileUploadHelper.SaveFileAsync(file, flagDomain,fileName, fileExtension);
+                    var fileName = driverDTO.Id.ToString() + "_" + filePathProperty;
+                    await fileUploadHelper.SaveFileAsync(file, flagDomain, fileName, fileExtension);
                 }
             }
 
@@ -182,34 +252,34 @@ public class DriverController:ControllerBase
         }
     }
 
-
-
-
-
     [HttpDelete("{id}")]
     public ActionResult Delete([FromRoute] int id)
     {
         try
         {
             var deleteEntity = _driverRepository.GetDriverById(id);
-            if (deleteEntity==null)
+            if (deleteEntity == null)
             {
                 return NotFound();
             }
             var filePaths = new List<string?>
             {
-                 deleteEntity.NrcImageFront,
-                 deleteEntity.NrcImageBack,
-                 deleteEntity.DriverImageLicenseFront,
-                 deleteEntity.DriverImageLicenseBack,
-                 deleteEntity.Profile
+                deleteEntity.NrcImageFront,
+                deleteEntity.NrcImageBack,
+                deleteEntity.DriverImageLicenseFront,
+                deleteEntity.DriverImageLicenseBack,
+                deleteEntity.Profile,
             };
-            foreach (var  filePath in filePaths)
+            foreach (var filePath in filePaths)
             {
-
                 if (!filePath.Contains("default.png"))
                 {
-                    var resolvedFilePath = Path.Combine(_configuration["MediaFilePath"], flagDomain, filePath.Replace($"{_configuration["MediaHostUrl"]}{flagDomain}/", "")).Replace('\\', '/');
+                    var resolvedFilePath = Path.Combine(
+                            _configuration["MediaFilePath"],
+                            flagDomain,
+                            filePath.Replace($"{_configuration["MediaHostUrl"]}{flagDomain}/", "")
+                        )
+                        .Replace('\\', '/');
                     if (System.IO.File.Exists(resolvedFilePath))
                     {
                         System.IO.File.Delete(resolvedFilePath);
@@ -226,8 +296,7 @@ public class DriverController:ControllerBase
         catch (Exception ex)
         {
             _logHelper.LogError(ex);
-            return StatusCode(500,"An error occurred while processing your request.");
+            return StatusCode(500, "An error occurred while processing your request.");
         }
     }
-    
 }

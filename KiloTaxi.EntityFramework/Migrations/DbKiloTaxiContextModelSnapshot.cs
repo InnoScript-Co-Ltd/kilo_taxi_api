@@ -38,7 +38,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EmailVerifiedAt")
+                    b.Property<DateTime?>("EmailVerifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Gender")
@@ -58,7 +58,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PhoneVerifiedAt")
+                    b.Property<DateTime?>("PhoneVerifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
@@ -86,18 +86,14 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CustomerStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Dob")
+                    b.Property<DateTime?>("Dob")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EmailVerifiedAt")
+                    b.Property<DateTime?>("EmailVerifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Gender")
@@ -118,15 +114,12 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Nrc")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NrcImageBack")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NrcImageFront")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
@@ -137,14 +130,17 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PhoneVerifiedAt")
+                    b.Property<DateTime?>("PhoneVerifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Profile")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -173,22 +169,16 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Dob")
+                    b.Property<DateTime?>("Dob")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DriverImageLicenseBack")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DriverImageLicenseFront")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DriverLicense")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DriverStatus")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -196,7 +186,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EmailVerifiedAt")
+                    b.Property<DateTime?>("EmailVerifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Gender")
@@ -216,19 +206,13 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nrc")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NrcImageBack")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NrcImageFront")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -239,13 +223,17 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PhoneVerifiedAt")
+                    b.Property<DateTime?>("PhoneVerifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Profile")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -269,10 +257,10 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<DateTime>("CheckinTime")
+                    b.Property<DateTime?>("CheckinTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CheckoutTime")
+                    b.Property<DateTime?>("CheckoutTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("CustomerId")
@@ -281,14 +269,14 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<int>("DriverId")
                         .HasColumnType("int");
 
-                    b.Property<string>("OrderStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PaymentChannelId")
                         .HasColumnType("int");
 
                     b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -368,17 +356,17 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<DateTime>("ExpiredAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("FixAmount")
+                    b.Property<decimal?>("FixAmount")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<int>("Percentage")
+                    b.Property<int?>("Percentage")
                         .HasColumnType("int");
 
                     b.Property<string>("PromoCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PromotionStatus")
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -407,7 +395,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ReviewContent")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -433,7 +420,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<int>("PaymentChannelId")
                         .HasColumnType("int");
 
-                    b.Property<string>("TopUpTransactionStatus")
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -462,7 +449,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BusinessLicenseImage")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DriverId")
@@ -476,19 +462,17 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("VehicleLicenseBack")
+                    b.Property<string>("Status")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VehicleLicenseBack")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VehicleLicenseFront")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VehicleNo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VehicleStatus")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -511,40 +495,17 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(18, 2)");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("DriverId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WalletStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WalletType")
+                    b.Property<string>("WalletName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("DriverId");
 
                     b.ToTable("Wallet", (string)null);
                 });
@@ -648,25 +609,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Driver");
-                });
-
-            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Wallet", b =>
-                {
-                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.Driver", "Driver")
-                        .WithMany()
-                        .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
 
                     b.Navigation("Driver");
                 });

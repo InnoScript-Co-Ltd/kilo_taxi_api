@@ -15,7 +15,7 @@ namespace KiloTaxi.EntityFramework.EntityModel
         [Required]
         public int Rating { get; set; }
 
-        public string ReviewContent { get; set; } //Can't use Review Because it is same as its enclosing type
+        public string? ReviewContent { get; set; } //Can't use Review Because it is same as its enclosing type
 
         [ForeignKey("Customer")]
         public int CustomerId { get; set; }

@@ -18,23 +18,23 @@ namespace KiloTaxi.EntityFramework.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Profile = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Profile = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MobilePrefix = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Dob = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Nrc = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NrcImageFront = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NrcImageBack = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EmailVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PhoneVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Dob = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Nrc = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NrcImageFront = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NrcImageBack = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PhoneVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Township = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CustomerStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     KycStatus = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -53,22 +53,22 @@ namespace KiloTaxi.EntityFramework.Migrations
                     MobilePrefix = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Dob = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Nrc = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    NrcImageFront = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    NrcImageBack = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Dob = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Nrc = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NrcImageFront = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NrcImageBack = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DriverLicense = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DriverImageLicenseFront = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DriverImageLicenseBack = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EmailVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PhoneVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DriverImageLicenseFront = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DriverImageLicenseBack = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PhoneVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Password = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TownShip = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DriverStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     KycStatus = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -96,6 +96,21 @@ namespace KiloTaxi.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Wallet",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WalletName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Wallet", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Promotion",
                 columns: table => new
                 {
@@ -103,9 +118,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PromoCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ExpiredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FixAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Percentage = table.Column<int>(type: "int", nullable: false),
-                    PromotionStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FixAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Percentage = table.Column<int>(type: "int", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -126,7 +141,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Rating = table.Column<int>(type: "int", nullable: false),
-                    ReviewContent = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReviewContent = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
                     DriverId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -157,10 +172,10 @@ namespace KiloTaxi.EntityFramework.Migrations
                     VehicleType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Model = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FuelType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BusinessLicenseImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    VehicleLicenseFront = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    VehicleLicenseBack = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    VehicleStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BusinessLicenseImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleLicenseFront = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleLicenseBack = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DriverId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -175,48 +190,16 @@ namespace KiloTaxi.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Wallet",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    WalletType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WalletStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DriverId = table.Column<int>(type: "int", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Wallet", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Wallet_Customer_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customer",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Wallet_Driver_DriverId",
-                        column: x => x.DriverId,
-                        principalTable: "Driver",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Order",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CheckinTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CheckoutTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CheckinTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CheckoutTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaymentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OrderStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
                     DriverId = table.Column<int>(type: "int", nullable: false),
                     WalletFromId = table.Column<int>(type: "int", nullable: false),
@@ -266,7 +249,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TransactionScreenShoot = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TopUpTransactionStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WalletId = table.Column<int>(type: "int", nullable: false),
                     PaymentChannelId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -341,16 +324,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "IX_Vehicle_DriverId",
                 table: "Vehicle",
                 column: "DriverId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Wallet_CustomerId",
-                table: "Wallet",
-                column: "CustomerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Wallet_DriverId",
-                table: "Wallet",
-                column: "DriverId");
         }
 
         /// <inheritdoc />
@@ -372,16 +345,36 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "Vehicle");
 
             migrationBuilder.DropTable(
+                name: "Customer");
+
+            migrationBuilder.DropTable(
                 name: "PaymentChannel");
 
             migrationBuilder.DropTable(
                 name: "Wallet");
 
             migrationBuilder.DropTable(
-                name: "Customer");
-
-            migrationBuilder.DropTable(
                 name: "Driver");
+
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "PhoneVerifiedAt",
+                table: "Admin",
+                type: "datetime2",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                oldClrType: typeof(DateTime),
+                oldType: "datetime2",
+                oldNullable: true);
+
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "EmailVerifiedAt",
+                table: "Admin",
+                type: "datetime2",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                oldClrType: typeof(DateTime),
+                oldType: "datetime2",
+                oldNullable: true);
         }
     }
 }

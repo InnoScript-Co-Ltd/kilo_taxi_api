@@ -21,9 +21,9 @@ namespace KiloTaxi.EntityFramework.EntityModel
 
         [Required]
         public string Email { get; set; }
-
+        
         public DateTime? EmailVerifiedAt { get; set; }
-
+        
         public DateTime? PhoneVerifiedAt { get; set; }
 
         [Required]

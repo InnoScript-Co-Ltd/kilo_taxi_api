@@ -29,7 +29,7 @@ namespace KiloTaxi.Converter
                 ExpiredAt = promotionEntity.ExpiredAt,
                 FixAmount = promotionEntity.FixAmount,
                 Percentage = promotionEntity.Percentage,
-                PromotionStatus = promotionEntity.PromotionStatus,
+                Status = promotionEntity.Status,
                 CustomerId = promotionEntity.CustomerId,
                 CustomerName = promotionEntity.Customer.Name,
             };
@@ -71,7 +71,7 @@ namespace KiloTaxi.Converter
                 promotionEntity.ExpiredAt = promotionDTO.ExpiredAt;
                 promotionEntity.FixAmount = promotionDTO.FixAmount;
                 promotionEntity.Percentage = promotionDTO.Percentage;
-                promotionEntity.PromotionStatus = promotionDTO.PromotionStatus.ToString();
+                promotionEntity.Status = promotionDTO.Status.ToString();
                 promotionEntity.CustomerId = promotionDTO.CustomerId;
             }
             catch (Exception ex)

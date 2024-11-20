@@ -18,14 +18,13 @@ namespace KiloTaxi.Model.DTO
         [Required]
         public DateTime ExpiredAt { get; set; }
 
-        [Required]
         [Range(0.01, 10000.00)]
-        public decimal FixAmount { get; set; }
+        public decimal? FixAmount { get; set; }
 
-        public int Percentage { get; set; }
+        public int? Percentage { get; set; }
 
         [Required]
-        public string PromotionStatus { get; set; }
+        public string Status { get; set; }
 
         public int CustomerId { get; set; }
         public string? CustomerName { get; set; }
