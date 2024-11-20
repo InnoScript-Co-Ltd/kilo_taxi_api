@@ -22,11 +22,9 @@ namespace KiloTaxi.EntityFramework.EntityModel
         [Required]
         public string Email { get; set; }
 
-        [DataType(DataType.DateTime)]
-        public DateTime EmailVerifiedAt { get; set; }
+        public DateTime? EmailVerifiedAt { get; set; }
 
-        [DataType(DataType.DateTime)]
-        public DateTime PhoneVerifiedAt { get; set; }
+        public DateTime? PhoneVerifiedAt { get; set; }
 
         [Required]
         public string Password { get; set; }

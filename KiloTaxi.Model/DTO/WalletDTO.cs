@@ -22,10 +22,10 @@ public class WalletDTO
     public decimal Balance{get;set;}
     
     [Required]
-    public WalletType WalletType{get;set;}
+    public string WalletType{get;set;}
     
     [Required]
-    public WalletStatus WalletStatus{get;set;}
+    public string WalletStatus{get;set;}
     
     public int DriverId{get;set;}
     

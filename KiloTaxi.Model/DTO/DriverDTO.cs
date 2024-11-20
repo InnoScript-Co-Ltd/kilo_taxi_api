@@ -65,11 +65,11 @@ public class DriverDTO
     public string TownShip{get;set;}
     
     [Required]
-    public GenderType Gender{get;set;}
+    public string Gender{get;set;}
     
-    public DriverStatus DriverStatus{get;set;}
+    public string DriverStatus{get;set;}
     
-    public KycStatus KycStatus{get;set;}
+    public string KycStatus{get;set;}
     
     public IEnumerable<VehicleDTO> Vehicle { get; set; }
     public IEnumerable<WalletDTO> Wallet { get; set; }

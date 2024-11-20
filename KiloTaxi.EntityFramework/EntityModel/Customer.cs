@@ -31,8 +31,10 @@ namespace KiloTaxi.EntityFramework.EntityModel
         public string Nrc { get; set; }
         public string NrcImageFront { get; set; }
         public string NrcImageBack { get; set; }
-        public DateTime EmailVerifiedAt { get; set; }
-        public DateTime PhoneVerifiedAt { get; set; }
+        
+        public DateTime? EmailVerifiedAt { get; set; }
+        
+        public DateTime? PhoneVerifiedAt { get; set; }
 
         [Required]
         public string Password { get; set; }

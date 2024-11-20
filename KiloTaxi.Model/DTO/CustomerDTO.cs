@@ -34,16 +34,16 @@ namespace KiloTaxi.Model.DTO
         public string NrcImageBack { get; set; }
 
         [DataType(DataType.DateTime)]
-        public DateTime EmailVerifiedAt { get; set; }
+        public DateTime? EmailVerifiedAt { get; set; }
 
         [DataType(DataType.DateTime)]
-        public DateTime PhoneVerifiedAt { get; set; }
+        public DateTime? PhoneVerifiedAt { get; set; }
 
         [Required]
         public string Password { get; set; }
 
         [Required]
-        public GenderType Gender { get; set; }
+        public string Gender { get; set; }
 
         [Required]
         public string Address { get; set; }
@@ -58,9 +58,9 @@ namespace KiloTaxi.Model.DTO
         public string Township { get; set; }
 
         [Required]
-        public CustomerStatus CustomerStatus { get; set; }
+        public string CustomerStatus { get; set; }
 
         [Required]
-        public KycStatus KycStatus { get; set; }
+        public string KycStatus { get; set; }
     }
 }

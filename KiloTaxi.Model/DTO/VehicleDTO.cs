@@ -26,7 +26,7 @@ public class VehicleDTO
     
     public string? VehicleLicenseBack{get;set;}
     
-    public VehicleStatus VehicleStatus { get; set; }
+    public string VehicleStatus { get; set; }
     
     public int DriverId { get; set; }
     

@@ -16,6 +16,7 @@ namespace KiloTaxi.EntityFramework.EntityModel
         public string PromoCode { get; set; }
 
         [Required]
+        [DataType(DataType.DateTime)]
         public DateTime ExpiredAt { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]

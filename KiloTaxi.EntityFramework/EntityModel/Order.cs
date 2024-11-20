@@ -15,10 +15,10 @@ namespace KiloTaxi.EntityFramework.EntityModel {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 
         public int Id { get; set; }
-
-        public DateTime CheckinTime { get; set; }
-
-        public DateTime CheckoutTime { get; set; }
+        
+        public DateTime? CheckinTime { get; set; }
+        
+        public DateTime? CheckoutTime { get; set; }
         
         [Required]
         [Column(TypeName = "decimal(18, 2)")]

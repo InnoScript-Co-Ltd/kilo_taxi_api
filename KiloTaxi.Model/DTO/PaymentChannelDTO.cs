@@ -26,5 +26,5 @@ public class PaymentChannelDTO
     public string AccountNo { get; set; }
     
     [Required]
-    public GeneralStatus GeneralStatus { get; set; }
+    public string GeneralStatus { get; set; }
 }

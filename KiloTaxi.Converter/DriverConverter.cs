@@ -36,9 +36,9 @@ public static class DriverConverter
             State = driverEntity.State,
             City = driverEntity.City,
             TownShip = driverEntity.TownShip,
-            Gender = Enum.Parse<GenderType>(driverEntity.Gender),
-            DriverStatus = Enum.Parse<DriverStatus>(driverEntity.DriverStatus),
-            KycStatus = Enum.Parse<KycStatus>(driverEntity.KycStatus)
+            Gender = driverEntity.Gender,
+            DriverStatus = driverEntity.DriverStatus,
+            KycStatus = driverEntity.KycStatus
         };
 
     }
