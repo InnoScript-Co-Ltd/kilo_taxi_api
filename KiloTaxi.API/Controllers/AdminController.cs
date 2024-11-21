@@ -75,11 +75,11 @@ namespace KiloTaxi.API.Controllers
                 {
                     return BadRequest();
                 }
-                if (CustomerStatus.Pending ==Enum.Parse<CustomerStatus>(adminDTO.Status)  || CustomerStatus.Active==Enum.Parse<CustomerStatus>(adminDTO.Status)
-                    || CustomerStatus.Suspended==Enum.Parse<CustomerStatus>(adminDTO.Status) || CustomerStatus.Deactivate==Enum.Parse<CustomerStatus>(adminDTO.Status))
-                {
-                    return BadRequest("Invalid format Customer Status!");
-                }
+                // if (CustomerStatus.Pending ==Enum.Parse<CustomerStatus>(adminDTO.Status)  || CustomerStatus.Active==Enum.Parse<CustomerStatus>(adminDTO.Status)
+                //     || CustomerStatus.Suspended==Enum.Parse<CustomerStatus>(adminDTO.Status) || CustomerStatus.Deactivate==Enum.Parse<CustomerStatus>(adminDTO.Status))
+                // {
+                //     return BadRequest("Invalid format Customer Status!");
+                // }
                 var createdAdmin = _adminRepository.AddAdmin(adminDTO);
                 return CreatedAtAction(nameof(Get), new { id = createdAdmin.Id }, createdAdmin);
             }
@@ -99,11 +99,15 @@ namespace KiloTaxi.API.Controllers
                 {
                     return BadRequest();
                 }
-                if (CustomerStatus.Pending ==Enum.Parse<CustomerStatus>(adminDTO.Status)  || CustomerStatus.Active==Enum.Parse<CustomerStatus>(adminDTO.Status)
-                    || CustomerStatus.Suspended==Enum.Parse<CustomerStatus>(adminDTO.Status) || CustomerStatus.Deactivate==Enum.Parse<CustomerStatus>(adminDTO.Status))
-                {
-                    return BadRequest("Invalid format Customer Status!");
-                }
+                // if (
+                //     CustomerStatus.Pending == Enum.Parse<CustomerStatus>(adminDTO.Status)
+                //     || CustomerStatus.Active == Enum.Parse<CustomerStatus>(adminDTO.Status)
+                //     || CustomerStatus.Suspended == Enum.Parse<CustomerStatus>(adminDTO.Status)
+                //     || CustomerStatus.Deactivate == Enum.Parse<CustomerStatus>(adminDTO.Status)
+                // )
+                // {
+                //     return BadRequest("Invalid format Customer Status!");
+                // }
                 var result = _adminRepository.UpdateAdmin(adminDTO);
 
                 if (!result)
