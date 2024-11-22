@@ -17,7 +17,7 @@ namespace KiloTaxi.Model.DTO
         [MaxLength(100)]
         public string Name { get; set; }
 
-        public string Profile { get; set; }
+        public string? Profile { get; set; }
 
         [Required]
         public string MobilePrefix { get; set; }
@@ -27,12 +27,16 @@ namespace KiloTaxi.Model.DTO
 
         [EmailAddress]
         public string Email { get; set; }
-
+        
+        [DataType(DataType.DateTime)]
         public DateTime? Dob { get; set; }
-
+        
+        [Required]
         public string Nrc { get; set; }
-        public string NrcImageFront { get; set; }
-        public string NrcImageBack { get; set; }
+        
+        public string? NrcImageFront { get; set; }
+        
+        public string? NrcImageBack { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime? EmailVerifiedAt { get; set; }
