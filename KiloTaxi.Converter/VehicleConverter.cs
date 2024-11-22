@@ -25,7 +25,7 @@ public static class VehicleConverter
             BusinessLicenseImage = mediaHostUrl + vehicleEntity.BusinessLicenseImage,
             VehicleLicenseFront = mediaHostUrl + vehicleEntity.VehicleLicenseFront,
             VehicleLicenseBack = mediaHostUrl + vehicleEntity.VehicleLicenseBack,
-            Status = vehicleEntity.Status,
+            Status = Enum.Parse<VehicleStatus>(vehicleEntity.Status),
             DriverId = vehicleEntity.DriverId,
         };
     }

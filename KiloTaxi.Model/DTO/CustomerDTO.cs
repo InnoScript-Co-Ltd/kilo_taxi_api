@@ -44,7 +44,7 @@ namespace KiloTaxi.Model.DTO
         public string Password { get; set; }
 
         [Required]
-        public string Gender { get; set; }
+        public GenderType Gender { get; set; }
 
         [Required]
         public string Address { get; set; }
@@ -59,10 +59,10 @@ namespace KiloTaxi.Model.DTO
         public string Township { get; set; }
 
         [Required]
-        public string Status { get; set; }
+        public CustomerStatus Status { get; set; }
 
         [Required]
-        public string KycStatus { get; set; }
+        public KycStatus KycStatus { get; set; }
         
         public IFormFile? File_NrcImageFront { get; set; }
         public IFormFile? File_NrcImageBack { get; set; }

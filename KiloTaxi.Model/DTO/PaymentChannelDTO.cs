@@ -20,11 +20,11 @@ public class PaymentChannelDTO
     public string BankLogo { get; set; }
     
     [Required]
-    public string PaymentMethod { get; set; }
+    public PaymentMethod PaymentMethod { get; set; }
     
     [Required]
     public string AccountNo { get; set; }
     
     [Required]
-    public string GeneralStatus { get; set; }
+    public GeneralStatus GeneralStatus { get; set; }
 }

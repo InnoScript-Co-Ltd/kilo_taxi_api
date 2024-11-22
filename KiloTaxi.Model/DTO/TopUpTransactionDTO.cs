@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using KiloTaxi.Common.Enums;
 
 namespace KiloTaxi.Model.DTO;
 
@@ -14,7 +15,7 @@ public class TopUpTransactionDTO
     public string TransactionScreenShoot { get; set; }
     
     [Required]
-    public string Status { get; set; }
+    public TopUpTransactionStatus Status { get; set; }
     
     public int WalletId { get; set; }
     
