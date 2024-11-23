@@ -17,14 +17,15 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "KiloTaxi.API", Version = "v1" });
     c.OperationFilter<SwaggerFileUploadOperationFilter>();
 });
-builder
-    .Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(
-            new System.Text.Json.Serialization.JsonStringEnumConverter()
-        );
-    });
+
+// builder
+// .Services.AddControllers()
+// .AddJsonOptions(options =>
+// {
+//     options.JsonSerializerOptions.Converters.Add(
+//         new System.Text.Json.Serialization.JsonStringEnumConverter()
+//     );
+// });
 
 builder.Services.AddCors(options =>
 {
