@@ -13,9 +13,7 @@ namespace KiloTaxi.Model.DTO
         public decimal Balance { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
-        [Required]
         public WalletType WalletType { get; set; }
-        [Required]
         public WalletStatus Status { get; set; }
         [Required]
         public int WalletId { get; set; }

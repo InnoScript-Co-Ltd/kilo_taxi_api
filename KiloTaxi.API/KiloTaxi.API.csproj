@@ -9,14 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\WalletUserMappingController.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Controllers\WalletUserMappingController.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
