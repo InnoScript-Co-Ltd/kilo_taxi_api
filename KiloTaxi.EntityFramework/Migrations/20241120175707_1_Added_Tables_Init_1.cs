@@ -104,6 +104,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                     WalletName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+
                 },
                 constraints: table =>
                 {

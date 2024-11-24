@@ -84,19 +84,6 @@ public class DriverController : ControllerBase
                 return BadRequest(ModelState);
             }
 
-            if (DriverStatus.Pending != Enum.Parse<DriverStatus>(driverDTO.Status) && DriverStatus.Active != Enum.Parse<DriverStatus>(driverDTO.Status)
-                && DriverStatus.Deactivate != Enum.Parse<DriverStatus>(driverDTO.Status) && DriverStatus.Suspend != Enum.Parse<DriverStatus>(driverDTO.Status))
-            {
-                return BadRequest("Invalid Format Driver Status!");
-            } else if (GenderType.Male != Enum.Parse<GenderType>(driverDTO.Gender) && GenderType.Female != Enum.Parse<GenderType>(driverDTO.Gender)
-                                                                              && GenderType.Undefined != Enum.Parse<GenderType>(driverDTO.Gender))
-            {
-                return BadRequest("Invalid Format Gender Type!");
-            } else if (KycStatus.Pending != Enum.Parse<KycStatus>(driverDTO.KycStatus) && KycStatus.FullKyc != Enum.Parse<KycStatus>(driverDTO.KycStatus)
-                       && KycStatus.Reject != Enum.Parse<KycStatus>(driverDTO.KycStatus))
-            {
-                return BadRequest("Invalid Format Kyc Status!");
-            }
             var fileUploadHelper = new FileUploadHelper(
                 _configuration,
                 _allowedExtensions,
@@ -173,19 +160,6 @@ public class DriverController : ControllerBase
             if (id != driverDTO.Id)
             {
                 return BadRequest();
-            }
-            if (DriverStatus.Pending != Enum.Parse<DriverStatus>(driverDTO.Status) && DriverStatus.Active != Enum.Parse<DriverStatus>(driverDTO.Status)
-                && DriverStatus.Deactivate != Enum.Parse<DriverStatus>(driverDTO.Status) && DriverStatus.Suspend != Enum.Parse<DriverStatus>(driverDTO.Status))
-            {
-                return BadRequest("Invalid Format Driver Status!");
-            } else if (GenderType.Male != Enum.Parse<GenderType>(driverDTO.Gender) && GenderType.Female != Enum.Parse<GenderType>(driverDTO.Gender)
-                       && GenderType.Undefined != Enum.Parse<GenderType>(driverDTO.Gender))
-            {
-                return BadRequest("Invalid Format Gender Type!");
-            } else if (KycStatus.Pending != Enum.Parse<KycStatus>(driverDTO.KycStatus) && KycStatus.FullKyc != Enum.Parse<KycStatus>(driverDTO.KycStatus)
-                       && KycStatus.Reject != Enum.Parse<KycStatus>(driverDTO.KycStatus))
-            {
-                return BadRequest("Invalid Format Kyc Status!");
             }
 
             var fileUploadHelper = new FileUploadHelper(

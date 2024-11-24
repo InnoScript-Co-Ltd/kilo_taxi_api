@@ -31,9 +31,9 @@ namespace KiloTaxi.Converter
                 EmailVerifiedAt = adminEntity.EmailVerifiedAt,
                 PhoneVerifiedAt = adminEntity.PhoneVerifiedAt,
                 Password = adminEntity.Password,
-                Gender = adminEntity.Gender,
+                Gender = Enum.Parse<GenderType>(adminEntity.Gender),
                 Address = adminEntity.Address,
-                Status = adminEntity.Status,
+                Status = Enum.Parse<CustomerStatus>(adminEntity.Status),
             };
         }
 

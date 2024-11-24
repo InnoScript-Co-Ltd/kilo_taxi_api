@@ -77,11 +77,6 @@ public class VehicleController:ControllerBase
                 return BadRequest(ModelState);
             }
 
-            if (VehicleStatus.Active != Enum.Parse<VehicleStatus>(vehicleDTO.Status) &&
-                VehicleStatus.Suspend != Enum.Parse<VehicleStatus>(vehicleDTO.Status))
-            {
-                return BadRequest("Invalid Format Vehicle Status!");
-            }
             var fileUploadHelper=new FileUploadHelper(_configuration,_allowedExtensions,_allowedMimeTypes,_maxFileSize);
             var filesToProcess = new List<(IFormFile? File, string FilePathProperty)>
             {
@@ -130,11 +125,7 @@ public class VehicleController:ControllerBase
             {
                 return BadRequest();
             }
-            if (VehicleStatus.Active != Enum.Parse<VehicleStatus>(vehicleDTO.Status) &&
-                VehicleStatus.Suspend != Enum.Parse<VehicleStatus>(vehicleDTO.Status))
-            {
-                return BadRequest("Invalid Format Vehicle Status!");
-            }
+
             var fileUploadHelper = new FileUploadHelper(_configuration, _allowedExtensions, _allowedMimeTypes, _maxFileSize);
             var filesToProcess = new List<(IFormFile file, string filePathProperty)>
             {

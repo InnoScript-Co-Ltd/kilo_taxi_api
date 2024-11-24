@@ -68,13 +68,13 @@ public class DriverDTO
     public string Gender{get;set;}
     
     [Required]
-    public string Status{get;set;}
+    public DriverStatus Status{get;set;}
     
     [Required]
-    public string KycStatus{get;set;}
+    public KycStatus KycStatus{get;set;}
     
-    public IEnumerable<VehicleDTO> Vehicle { get; set; }
-    public IEnumerable<WalletDTO> Wallet { get; set; }
+    public IEnumerable<VehicleDTO>? Vehicle { get; set; }
+    public IEnumerable<WalletDTO>? Wallet { get; set; }
     
     public IFormFile? File_NrcImageFront { get; set; }
     public IFormFile? File_NrcImageBack { get; set; }

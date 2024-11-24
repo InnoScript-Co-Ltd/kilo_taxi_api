@@ -17,7 +17,7 @@ namespace KiloTaxi.Model.DTO
         [MaxLength(100)]
         public string Name { get; set; }
 
-        public string Profile { get; set; }
+        public string? Profile { get; set; }
 
         [Required]
         public string MobilePrefix { get; set; }
@@ -27,12 +27,17 @@ namespace KiloTaxi.Model.DTO
 
         [EmailAddress]
         public string Email { get; set; }
-
+        
+        [DataType(DataType.DateTime)]
         public DateTime? Dob { get; set; }
-
+        
+        [Required]
         public string Nrc { get; set; }
-        public string NrcImageFront { get; set; }
-        public string NrcImageBack { get; set; }
+
+        
+        public string? NrcImageFront { get; set; }
+        
+        public string? NrcImageBack { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime? EmailVerifiedAt { get; set; }
@@ -44,7 +49,7 @@ namespace KiloTaxi.Model.DTO
         public string Password { get; set; }
 
         [Required]
-        public string Gender { get; set; }
+        public GenderType Gender { get; set; }
 
         [Required]
         public string Address { get; set; }
@@ -58,11 +63,12 @@ namespace KiloTaxi.Model.DTO
         [Required]
         public string Township { get; set; }
 
-        [Required]
-        public string Status { get; set; }
 
         [Required]
-        public string KycStatus { get; set; }
+        public CustomerStatus Status { get; set; }
+
+        [Required]
+        public KycStatus KycStatus { get; set; }
         
         public IFormFile? File_NrcImageFront { get; set; }
         public IFormFile? File_NrcImageBack { get; set; }

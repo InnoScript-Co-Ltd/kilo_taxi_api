@@ -37,13 +37,14 @@ namespace KiloTaxi.Converter
                 EmailVerifiedAt = customerEntity.EmailVerifiedAt,
                 PhoneVerifiedAt = customerEntity.PhoneVerifiedAt,
                 Password = customerEntity.Password,
-                Gender = customerEntity.Gender,
+
+                Gender = Enum.Parse<GenderType>(customerEntity.Gender),
                 Address = customerEntity.Address,
                 State = customerEntity.State,
                 City = customerEntity.City,
                 Township = customerEntity.Township,
-                Status = customerEntity.Status,
-                KycStatus = customerEntity.KycStatus,
+                Status = Enum.Parse<CustomerStatus>(customerEntity.Status),
+                KycStatus = Enum.Parse<KycStatus>(customerEntity.KycStatus),
             };
         }
 

@@ -32,12 +32,12 @@ namespace KiloTaxi.Model.DTO
         public string Password { get; set; }
 
         [Required]
-        public string Gender { get; set; }
+        public GenderType Gender { get; set; }
 
         [Required]
         public string Address { get; set; }
 
         [Required]
-        public string Status { get; set; }
+        public CustomerStatus Status { get; set; }
     }
 }

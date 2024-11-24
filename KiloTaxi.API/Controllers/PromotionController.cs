@@ -77,12 +77,6 @@ namespace KiloTaxi.API.Controllers
                     return BadRequest();
                 }
 
-                if (PromotionStatus.Active != Enum.Parse<PromotionStatus>(promotionDTO.Status) && PromotionStatus.Reject != Enum.Parse<PromotionStatus>(promotionDTO.Status)
-                    && PromotionStatus.Expired != Enum.Parse<PromotionStatus>(promotionDTO.Status) && PromotionStatus.Used != Enum.Parse<PromotionStatus>(promotionDTO.Status))
-                {
-                    return BadRequest("Invalid Format Promotion Status!");
-                }
-
                 var createdPromotion = _promotionRepository.AddPromotion(promotionDTO);
                 return CreatedAtAction(
                     nameof(Get),
@@ -106,11 +100,6 @@ namespace KiloTaxi.API.Controllers
                 if (promotionDTO == null || id != promotionDTO.Id)
                 {
                     return BadRequest();
-                }
-                if (PromotionStatus.Active != Enum.Parse<PromotionStatus>(promotionDTO.Status) && PromotionStatus.Reject != Enum.Parse<PromotionStatus>(promotionDTO.Status)
-                    && PromotionStatus.Expired != Enum.Parse<PromotionStatus>(promotionDTO.Status) && PromotionStatus.Used != Enum.Parse<PromotionStatus>(promotionDTO.Status))
-                {
-                    return BadRequest("Invalid Format Promotion Status!");
                 }
 
                 var result = _promotionRepository.UpdatePromotion(promotionDTO);

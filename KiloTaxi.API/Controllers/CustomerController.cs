@@ -97,20 +97,6 @@ namespace KiloTaxi.API.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-
-                if (KycStatus.Pending !=Enum.Parse<KycStatus>(customerDTO.KycStatus) && KycStatus.FullKyc !=Enum.Parse<KycStatus>(customerDTO.KycStatus) 
-                    && KycStatus.Reject !=Enum.Parse<KycStatus>(customerDTO.KycStatus))
-                {
-                    return BadRequest("Invalid format Kyc Status!");
-                } else if (GenderType.Male != Enum.Parse<GenderType>(customerDTO.Gender)  && GenderType.Female != Enum.Parse<GenderType>(customerDTO.Gender) 
-                      && GenderType.Undefined != Enum.Parse<GenderType>(customerDTO.Gender))
-                {
-                    return BadRequest("Invalid format Gender Type!");
-                } else if (CustomerStatus.Pending != Enum.Parse<CustomerStatus>(customerDTO.Status) && CustomerStatus.Active != Enum.Parse<CustomerStatus>(customerDTO.Status)
-                      && CustomerStatus.Suspended != Enum.Parse<CustomerStatus>(customerDTO.Status) && CustomerStatus.Deactivate != Enum.Parse<CustomerStatus>(customerDTO.Status))
-                {
-                    return BadRequest("Invalid format Customer Status!");
-                }
                 
                 var fileUploadHelper = new FileUploadHelper(
                     _configuration,
@@ -190,19 +176,7 @@ namespace KiloTaxi.API.Controllers
                 {
                     return BadRequest();
                 }
-                if (KycStatus.Pending != Enum.Parse<KycStatus>(customerDTO.KycStatus) && KycStatus.FullKyc != Enum.Parse<KycStatus>(customerDTO.KycStatus) 
-                    && KycStatus.Reject != Enum.Parse<KycStatus>(customerDTO.KycStatus))
-                {
-                    return BadRequest("Invalid format Kyc Status!");
-                } else if (GenderType.Male != Enum.Parse<GenderType>(customerDTO.Gender) && GenderType.Female != Enum.Parse<GenderType>(customerDTO.Gender) 
-                           && GenderType.Undefined != Enum.Parse<GenderType>(customerDTO.Gender))
-                {
-                    return BadRequest("Invalid format Gender Type!");
-                } else if (CustomerStatus.Pending != Enum.Parse<CustomerStatus>(customerDTO.Status) && CustomerStatus.Active != Enum.Parse<CustomerStatus>(customerDTO.Status)
-                           && CustomerStatus.Suspended != Enum.Parse<CustomerStatus>(customerDTO.Status) && CustomerStatus.Deactivate != Enum.Parse<CustomerStatus>(customerDTO.Status))
-                {
-                    return BadRequest("Invalid format Customer Status!");
-                }
+
                 var fileUploadHelper = new FileUploadHelper(
                     _configuration,
                     _allowedExtensions,

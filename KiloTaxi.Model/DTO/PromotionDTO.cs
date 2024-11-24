@@ -24,7 +24,7 @@ namespace KiloTaxi.Model.DTO
         public int? Percentage { get; set; }
 
         [Required]
-        public string Status { get; set; }
+        public PromotionStatus Status { get; set; }
 
         public int CustomerId { get; set; }
         public string? CustomerName { get; set; }

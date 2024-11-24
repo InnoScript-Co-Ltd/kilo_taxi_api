@@ -29,7 +29,7 @@ namespace KiloTaxi.Converter
                 ExpiredAt = promotionEntity.ExpiredAt,
                 FixAmount = promotionEntity.FixAmount,
                 Percentage = promotionEntity.Percentage,
-                Status = promotionEntity.Status,
+                Status = Enum.Parse<PromotionStatus>(promotionEntity.Status),
                 CustomerId = promotionEntity.CustomerId,
                 CustomerName = promotionEntity.Customer.Name,
             };
