@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KiloTaxi.EntityFramework.EntityModel
 {
@@ -14,7 +10,9 @@ namespace KiloTaxi.EntityFramework.EntityModel
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int UserId { get; set; }
-        public string Balance { get; set; }
+        
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal Balance { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         [Required]

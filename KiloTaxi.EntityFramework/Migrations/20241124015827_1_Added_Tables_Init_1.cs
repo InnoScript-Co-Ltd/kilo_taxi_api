@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,6 +13,22 @@ namespace KiloTaxi.EntityFramework.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "PhoneVerifiedAt",
+                table: "Admin",
+                type: "datetime2",
+                nullable: true,
+                oldClrType: typeof(DateTime),
+                oldType: "datetime2");
+
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "EmailVerifiedAt",
+                table: "Admin",
+                type: "datetime2",
+                nullable: true,
+                oldClrType: typeof(DateTime),
+                oldType: "datetime2");
+
             migrationBuilder.CreateTable(
                 name: "Customer",
                 columns: table => new
@@ -104,7 +122,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                     WalletName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-
                 },
                 constraints: table =>
                 {
@@ -271,6 +288,31 @@ namespace KiloTaxi.EntityFramework.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "WalletUserMapping",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    WalletType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WalletId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WalletUserMapping", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WalletUserMapping_Wallet_WalletId",
+                        column: x => x.WalletId,
+                        principalTable: "Wallet",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Order_CustomerId",
                 table: "Order",
@@ -325,6 +367,11 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "IX_Vehicle_DriverId",
                 table: "Vehicle",
                 column: "DriverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WalletUserMapping_WalletId",
+                table: "WalletUserMapping",
+                column: "WalletId");
         }
 
         /// <inheritdoc />
@@ -346,16 +393,19 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "Vehicle");
 
             migrationBuilder.DropTable(
+                name: "WalletUserMapping");
+
+            migrationBuilder.DropTable(
                 name: "Customer");
 
             migrationBuilder.DropTable(
                 name: "PaymentChannel");
 
             migrationBuilder.DropTable(
-                name: "Wallet");
+                name: "Driver");
 
             migrationBuilder.DropTable(
-                name: "Driver");
+                name: "Wallet");
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "PhoneVerifiedAt",

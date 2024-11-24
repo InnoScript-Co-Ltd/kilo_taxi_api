@@ -1,4 +1,5 @@
-﻿using KiloTaxi.EntityFramework.EntityModel;
+﻿using KiloTaxi.Common.Enums;
+using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Model.DTO;
 
 namespace KiloTaxi.Converter;
@@ -15,8 +16,8 @@ public static class WalletUserMappingConverter
             Id = walletUserMappingEntity.Id,
             UserId = walletUserMappingEntity.UserId,
             Balance = walletUserMappingEntity.Balance,
-            WalletType = walletUserMappingEntity.WalletType,
-            Status = walletUserMappingEntity.Status,
+            WalletType = Enum.Parse<WalletType>(walletUserMappingEntity.WalletType),
+            Status = Enum.Parse<WalletStatus>(walletUserMappingEntity.Status),
             WalletId = walletUserMappingEntity.WalletId,
             CreatedDate = walletUserMappingEntity.CreatedDate,
             UpdatedDate = walletUserMappingEntity.UpdatedDate
@@ -31,8 +32,8 @@ public static class WalletUserMappingConverter
         walletUserMappingEntity.Id = walletUserMappingDTO.Id;
         walletUserMappingEntity.UserId = walletUserMappingDTO.UserId;
         walletUserMappingEntity.Balance = walletUserMappingDTO.Balance;
-        walletUserMappingEntity.WalletType = walletUserMappingDTO.WalletType;
-        walletUserMappingEntity.Status = walletUserMappingDTO.Status;
+        walletUserMappingEntity.WalletType = walletUserMappingDTO.WalletType.ToString();
+        walletUserMappingEntity.Status = walletUserMappingDTO.Status.ToString();
         walletUserMappingEntity.WalletId = walletUserMappingDTO.WalletId;
         walletUserMappingEntity.CreatedDate = walletUserMappingDTO.CreatedDate;
         walletUserMappingEntity.UpdatedDate = walletUserMappingDTO.UpdatedDate;

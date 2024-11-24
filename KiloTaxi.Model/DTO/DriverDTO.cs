@@ -65,7 +65,7 @@ public class DriverDTO
     public string TownShip{get;set;}
     
     [Required]
-    public string Gender{get;set;}
+    public GenderType Gender{get;set;}
     
     [Required]
     public DriverStatus Status{get;set;}

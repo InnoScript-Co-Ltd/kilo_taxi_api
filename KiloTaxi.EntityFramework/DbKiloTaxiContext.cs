@@ -24,6 +24,7 @@ namespace KiloTaxi.EntityFramework
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<PaymentChannel> PaymentChannels { get; set; }
         public DbSet<TopUpTransaction> TopUpTransactions { get; set; }
+        public DbSet<WalletUserMapping> WalletUserMappings { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,6 +38,7 @@ namespace KiloTaxi.EntityFramework
             modelBuilder.Entity<Wallet>().ToTable("Wallet");
             modelBuilder.Entity<PaymentChannel>().ToTable("PaymentChannel");
             modelBuilder.Entity<TopUpTransaction>().ToTable("TopUpTransaction");
+            modelBuilder.Entity<WalletUserMapping>().ToTable("WalletUserMapping");
 
         }
     }
