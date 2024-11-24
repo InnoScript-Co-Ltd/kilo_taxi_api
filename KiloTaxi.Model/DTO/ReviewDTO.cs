@@ -14,7 +14,7 @@ namespace KiloTaxi.Model.DTO
         [Required]
         public int Rating { get; set; }
 
-        public string ReviewContent { get; set; }
+        public string? ReviewContent { get; set; }
         public int CustomerId { get; set; }
         public string? CustomerName { get; set; }
         public int DriverId { get; set; }

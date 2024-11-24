@@ -16,17 +16,19 @@ namespace KiloTaxi.EntityFramework.EntityModel
         public string PromoCode { get; set; }
 
         [Required]
+        [DataType(DataType.DateTime)]
         public DateTime ExpiredAt { get; set; }
-        
+
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal FixAmount { get; set; }
-        
-        public int Percentage { get; set; }
+        public decimal? FixAmount { get; set; }
+
+        public int? Percentage { get; set; }
 
         [Required]
-        public string PromotionStatus { get; set; }
+        public string Status { get; set; }
 
         [ForeignKey("Customer")]
         public int CustomerId { get; set; }
+        public virtual Customer Customer { get; set; }
     }
 }

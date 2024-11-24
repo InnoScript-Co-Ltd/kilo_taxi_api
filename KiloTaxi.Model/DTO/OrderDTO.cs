@@ -16,21 +16,21 @@ namespace KiloTaxi.Model.DTO
 
         [Required]
         [DataType(DataType.DateTime)]
-        public DateTime CheckinTime { get; set; }
+        public DateTime? CheckinTime { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]
-        public DateTime CheckoutTime { get; set; }
+        public DateTime? CheckoutTime { get; set; }
 
         [Required]
         [Range(0.01, 10000.00)]
         public decimal Amount { get; set; }
 
         [Required]
-        public PaymentType PaymentType { get; set; }
+        public string PaymentType { get; set; }
 
         [Required]
-        public OrderStatus OrderStatus { get; set; }
+        public string Status { get; set; }
 
 
         [Required]

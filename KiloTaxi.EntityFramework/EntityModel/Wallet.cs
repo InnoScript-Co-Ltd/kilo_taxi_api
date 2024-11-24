@@ -11,11 +11,7 @@ public class Wallet
     
     [Required]
     public string WalletName{get;set;}
-    
-    [Required]
-    public DateTime CreatedDate{get;set;}
-    
-    [Required]
-    public DateTime UpdateDate{get;set;}   
-    
+    public DateTime CreatedDate{get;set;} 
+    public DateTime? UpdateDate{get;set;}
+
 }

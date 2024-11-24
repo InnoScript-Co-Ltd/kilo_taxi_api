@@ -19,7 +19,7 @@ public static class DriverConverter
         {
             Id = driverEntity.Id,
             Name = driverEntity.Name,
-            Profile = driverEntity.Profile,
+            Profile = mediaHostUrl +driverEntity.Profile,
             MobilePrefix = driverEntity.MobilePrefix,
             Phone = driverEntity.Phone,
             Email = driverEntity.Email,
@@ -36,9 +36,9 @@ public static class DriverConverter
             State = driverEntity.State,
             City = driverEntity.City,
             TownShip = driverEntity.TownShip,
-            Gender = Enum.Parse<GenderType>(driverEntity.Gender),
-            DriverStatus = Enum.Parse<DriverStatus>(driverEntity.DriverStatus),
-            KycStatus = Enum.Parse<KycStatus>(driverEntity.KycStatus)
+            Gender = driverEntity.Gender,
+            Status = driverEntity.Status,
+            KycStatus = driverEntity.KycStatus
         };
 
     }
@@ -74,7 +74,7 @@ public static class DriverConverter
             driverEntity.City = driverDTO.City;
             driverEntity.TownShip = driverDTO.TownShip;
             driverEntity.Gender = driverDTO.Gender.ToString();
-            driverEntity.DriverStatus = driverDTO.DriverStatus.ToString();
+            driverEntity.Status = driverDTO.Status.ToString();
             driverEntity.KycStatus = driverDTO.KycStatus.ToString();
 
         }

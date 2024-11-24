@@ -14,7 +14,7 @@ public class TopUpTransactionDTO
     public string TransactionScreenShoot { get; set; }
     
     [Required]
-    public string TopUpTransactionStatus { get; set; }
+    public string Status { get; set; }
     
     public int WalletId { get; set; }
     

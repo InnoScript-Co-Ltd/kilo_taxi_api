@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\WalletUserMappingController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Controllers\WalletUserMappingController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
@@ -23,10 +31,6 @@
     <ProjectReference Include="..\KiloTaxi.DataAccess\KiloTaxi.DataAccess.csproj" />
     <ProjectReference Include="..\KiloTaxi.Logging\KiloTaxi.Logging.csproj" />
     <ProjectReference Include="..\KiloTaxi.Model\KiloTaxi.Model.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>

@@ -9,21 +9,25 @@ public class Vehicle
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     
+    [Required]
     public string VehicleNo { get; set; }
     
+    [Required]
     public string VehicleType { get; set; }
     
+    [Required]
     public string Model { get; set; }
     
+    [Required]
     public string FuelType { get; set; }
     
-    public string BusinessLicenseImage { get; set; }
+    public string? BusinessLicenseImage { get; set; }
     
-    public string VehicleLicenseFront { get; set; }
+    public string? VehicleLicenseFront { get; set; }
     
-    public string VehicleLicenseBack { get; set; }
-    
-    public string VehicleStatus { get; set; }
+    public string? VehicleLicenseBack { get; set; }
+    [Required]
+    public string Status { get; set; }
     
     [ForeignKey("Driver")]
     public int DriverId { get; set; }

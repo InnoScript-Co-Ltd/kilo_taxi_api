@@ -21,15 +21,18 @@ namespace KiloTaxi.Model.DTO
 
         [EmailAddress]
         public string Email { get; set; }
-        
+
         [DataType(DataType.DateTime)]
         public DateTime? EmailVerifiedAt { get; set; }
-        
+
         [DataType(DataType.DateTime)]
         public DateTime? PhoneVerifiedAt { get; set; }
 
         [Required]
-        public GenderType Gender { get; set; }
+        public string Password { get; set; }
+
+        [Required]
+        public string Gender { get; set; }
 
         [Required]
         public string Address { get; set; }
