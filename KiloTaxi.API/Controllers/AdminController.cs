@@ -75,7 +75,7 @@ namespace KiloTaxi.API.Controllers
                 {
                     return BadRequest();
                 }
-              
+
                 var createdAdmin = _adminRepository.AddAdmin(adminDTO);
                 return CreatedAtAction(nameof(Get), new { id = createdAdmin.Id }, createdAdmin);
             }
@@ -95,7 +95,7 @@ namespace KiloTaxi.API.Controllers
                 {
                     return BadRequest();
                 }
-               
+
                 var result = _adminRepository.UpdateAdmin(adminDTO);
 
                 if (!result)

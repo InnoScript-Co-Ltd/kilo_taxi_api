@@ -207,7 +207,7 @@ namespace KiloTaxi.DataAccess.Implementation
                     {
                         typeof(CustomerDTO)
                             .GetProperty(customerDTOProperty)
-                            ?.SetValue(customerDTO, $"customer/{customerDTO.Id}{dtoValue}");
+                            ?.SetValue(customerDTO, $"driver/{customerDTO.Id}{dtoValue}");
                     }
                 }
 

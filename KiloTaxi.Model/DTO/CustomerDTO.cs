@@ -33,6 +33,7 @@ namespace KiloTaxi.Model.DTO
         
         [Required]
         public string Nrc { get; set; }
+
         
         public string? NrcImageFront { get; set; }
         
@@ -61,6 +62,7 @@ namespace KiloTaxi.Model.DTO
 
         [Required]
         public string Township { get; set; }
+
 
         [Required]
         public CustomerStatus Status { get; set; }

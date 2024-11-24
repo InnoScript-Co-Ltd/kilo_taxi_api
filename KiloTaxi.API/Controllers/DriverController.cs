@@ -83,7 +83,7 @@ public class DriverController : ControllerBase
             {
                 return BadRequest(ModelState);
             }
-            
+
             var fileUploadHelper = new FileUploadHelper(
                 _configuration,
                 _allowedExtensions,

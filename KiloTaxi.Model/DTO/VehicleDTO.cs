@@ -25,8 +25,10 @@ public class VehicleDTO
     public string? VehicleLicenseFront{get;set;}
     
     public string? VehicleLicenseBack{get;set;}
+  
     [Required]
     public VehicleStatus Status { get; set; }
+  
     [Required]
     public int DriverId { get; set; }
     

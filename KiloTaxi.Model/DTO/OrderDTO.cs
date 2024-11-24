@@ -27,7 +27,7 @@ namespace KiloTaxi.Model.DTO
         public decimal Amount { get; set; }
 
         [Required]
-        public PaymentType PaymentType { get; set; }
+        public string PaymentType { get; set; }
 
         [Required]
         public OrderStatus Status { get; set; }

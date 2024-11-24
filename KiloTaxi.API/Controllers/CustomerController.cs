@@ -176,7 +176,7 @@ namespace KiloTaxi.API.Controllers
                 {
                     return BadRequest();
                 }
-               
+
                 var fileUploadHelper = new FileUploadHelper(
                     _configuration,
                     _allowedExtensions,
