@@ -19,10 +19,14 @@ namespace KiloTaxi.Model.DTO
         public DateTime ExpiredAt { get; set; }
 
         [Range(0.01, 10000.00)]
-        public decimal? FixAmount { get; set; }
-
-        public int? Percentage { get; set; }
-
+        public decimal? Value { get; set; }
+        
+        [Required]
+        public string PromotionType { get; set; }
+        
+        [Required]
+        public string ApplicableTo { get; set; }
+        
         [Required]
         public PromotionStatus Status { get; set; }
 

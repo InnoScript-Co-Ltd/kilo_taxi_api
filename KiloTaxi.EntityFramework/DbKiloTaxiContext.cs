@@ -22,7 +22,7 @@ namespace KiloTaxi.EntityFramework
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
-        public DbSet<PaymentChannel> PaymentChannels { get; set; }
+        // public DbSet<PaymentChannel> PaymentChannels { get; set; }
         public DbSet<TopUpTransaction> TopUpTransactions { get; set; }
         public DbSet<WalletUserMapping> WalletUserMappings { get; set; }
         
@@ -36,7 +36,7 @@ namespace KiloTaxi.EntityFramework
             modelBuilder.Entity<Review>().ToTable("Review");
             modelBuilder.Entity<Order>().ToTable("Order");
             modelBuilder.Entity<Wallet>().ToTable("Wallet");
-            modelBuilder.Entity<PaymentChannel>().ToTable("PaymentChannel");
+            // modelBuilder.Entity<PaymentChannel>().ToTable("PaymentChannel");
             modelBuilder.Entity<TopUpTransaction>().ToTable("TopUpTransaction");
             modelBuilder.Entity<WalletUserMapping>().ToTable("WalletUserMapping");
 

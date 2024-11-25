@@ -23,7 +23,7 @@ public class TopUpTransaction
     public int WalletId { get; set; }
     public virtual Wallet Wallet { get; set; }
     
-    [ForeignKey("PaymentChannel")]
-    public int PaymentChannelId { get; set; }
-    public virtual PaymentChannel PaymentChannel { get; set; }    
+    // [ForeignKey("PaymentChannel")]
+    // public int PaymentChannelId { get; set; }
+    // public virtual PaymentChannel PaymentChannel { get; set; }    
 }

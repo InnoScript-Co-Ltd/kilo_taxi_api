@@ -27,10 +27,10 @@ namespace KiloTaxi.Converter
                 Id = promotionEntity.Id,
                 PromoCode = promotionEntity.PromoCode,
                 ExpiredAt = promotionEntity.ExpiredAt,
-                FixAmount = promotionEntity.FixAmount,
-                Percentage = promotionEntity.Percentage,
+                Value = promotionEntity.Value,
                 Status = Enum.Parse<PromotionStatus>(promotionEntity.Status),
                 CustomerId = promotionEntity.CustomerId,
+                ApplicableTo = promotionEntity.ApplicableTo,
                 CustomerName = promotionEntity.Customer.Name,
             };
         }
@@ -69,8 +69,9 @@ namespace KiloTaxi.Converter
                 promotionEntity.Id = promotionDTO.Id;
                 promotionEntity.PromoCode = promotionDTO.PromoCode;
                 promotionEntity.ExpiredAt = promotionDTO.ExpiredAt;
-                promotionEntity.FixAmount = promotionDTO.FixAmount;
-                promotionEntity.Percentage = promotionDTO.Percentage;
+                promotionEntity.Value = promotionDTO.Value;
+                promotionEntity.PromotionType = promotionDTO.PromotionType;
+                promotionEntity.ApplicableTo = promotionDTO.ApplicableTo;
                 promotionEntity.Status = promotionDTO.Status.ToString();
                 promotionEntity.CustomerId = promotionDTO.CustomerId;
             }

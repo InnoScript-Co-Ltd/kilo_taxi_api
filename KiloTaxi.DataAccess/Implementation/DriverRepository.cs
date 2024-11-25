@@ -108,8 +108,12 @@ public class DriverRepository : IDriverRepository
                 .Vehicles.Where(v => v.DriverId == driverDTO.Id)
                 .Select(vehicle => VehicleConverter.ConvertEntityToModel(vehicle, _mediaHostUrl))
                 .ToList();
+            var WalletUserMappingDTO = _dbKiloTaxiContext.WalletUserMappings
+                .Where(w => w.UserId == driverDTO.Id && w.WalletType == WalletType.Driver.ToString())
+                .Select(walletUserMapping => WalletUserMappingConverter.ConvertEntityToModel(walletUserMapping))
+                .ToList();
             driverDTO.Vehicle = vehicleDTO;
-
+            driverDTO.WalletUserMapping = WalletUserMappingDTO;
             return driverDTO;
         }
         catch (Exception ex)

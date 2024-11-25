@@ -74,7 +74,7 @@ public class DriverDTO
     public KycStatus KycStatus{get;set;}
     
     public IEnumerable<VehicleDTO>? Vehicle { get; set; }
-    public IEnumerable<WalletDTO>? Wallet { get; set; }
+    public IEnumerable<WalletUserMappingDTO>? WalletUserMapping { get; set; }
     
     public IFormFile? File_NrcImageFront { get; set; }
     public IFormFile? File_NrcImageBack { get; set; }

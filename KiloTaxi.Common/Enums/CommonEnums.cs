@@ -143,8 +143,35 @@ namespace KiloTaxi.Common.Enums
 
     public enum OrderStatus
     {
-        Active,
-        Success,
-        Reject
+        Completed,
+        Cancelled,
+        InProgress,
+    }
+
+    public enum PromotionType
+    {
+        FixAmount,
+        Percentage,
+    }
+
+    public enum TransactionType
+    {
+        TopUp,
+        Order,
+        PromotionUsage,
+    }
+
+    public enum ScheduleStatus
+    {
+        Pending,
+        Cancelled,
+        Completed,  
+    }
+
+    public enum ApplicableTo
+    {
+        Customer,
+        Driver,
+        Both,
     }
 }
