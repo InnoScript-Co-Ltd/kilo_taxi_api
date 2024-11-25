@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KiloTaxi.EntityFramework.Migrations
 {
     [DbContext(typeof(DbKiloTaxiContext))]
-    [Migration("20241125115930_1_Added_Tables_Init_1")]
+    [Migration("20241125121451_1_Added_Tables_Init_1")]
     partial class _1_Added_Tables_Init_1
     {
         /// <inheritdoc />
@@ -343,9 +343,8 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("DiscountApplied")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("DiscountApplied")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("PromotionId")
                         .HasColumnType("int");

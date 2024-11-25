@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KiloTaxi.Model.DTO;
 
@@ -6,7 +7,8 @@ public class PromotionUsageDTO
 {
     public int Id { get; set; }
     
-    public string DiscountApplied { get; set; }
+    [Column(TypeName = "decimal(18, 2)")]
+    public decimal DiscountApplied { get; set; }
     
     [Required]
     public int WalletTransactionId { get; set; }

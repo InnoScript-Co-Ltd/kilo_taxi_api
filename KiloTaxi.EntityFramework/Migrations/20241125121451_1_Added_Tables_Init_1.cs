@@ -157,7 +157,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         column: x => x.DriverId,
                         principalTable: "Driver",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -340,7 +340,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DiscountApplied = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DiscountApplied = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     WalletTransactionId = table.Column<int>(type: "int", nullable: false),
                     PromotionId = table.Column<int>(type: "int", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false)

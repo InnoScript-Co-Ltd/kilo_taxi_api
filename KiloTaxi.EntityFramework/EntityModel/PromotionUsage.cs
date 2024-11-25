@@ -9,7 +9,8 @@ public class PromotionUsage
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     
-    public string DiscountApplied { get; set; }
+    [Column(TypeName = "decimal(18, 2)")]
+    public decimal DiscountApplied { get; set; }
     
     [ForeignKey("WalletTransaction")]
     public int WalletTransactionId { get; set; }

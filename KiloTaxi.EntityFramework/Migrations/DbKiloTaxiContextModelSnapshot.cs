@@ -340,9 +340,8 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("DiscountApplied")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("DiscountApplied")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("PromotionId")
                         .HasColumnType("int");
