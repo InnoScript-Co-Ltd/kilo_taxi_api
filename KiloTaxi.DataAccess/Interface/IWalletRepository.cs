@@ -7,6 +7,6 @@ public interface IWalletRepository
     WalletDTO CreateWallet(WalletDTO walletDTO);
     bool UpdateWallet(WalletDTO walletDTO);
     WalletDTO GetWalletById(int id);
-    IEnumerable<WalletDTO> GetAllWallets();
+    WalletPagingDTO GetAllWallets(PageSortParam pageSortParam);
     bool DeleteWallet(int id);
 }

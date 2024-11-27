@@ -18,14 +18,14 @@ builder.Services.AddSwaggerGen(c =>
     c.OperationFilter<SwaggerFileUploadOperationFilter>();
 });
 
-// builder
-// .Services.AddControllers()
-// .AddJsonOptions(options =>
-// {
-//     options.JsonSerializerOptions.Converters.Add(
-//         new System.Text.Json.Serialization.JsonStringEnumConverter()
-//     );
-// });
+builder
+.Services.AddControllers()
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(
+        new System.Text.Json.Serialization.JsonStringEnumConverter()
+    );
+});
 
 builder.Services.AddCors(options =>
 {

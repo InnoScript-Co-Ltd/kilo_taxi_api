@@ -22,16 +22,16 @@ public class WalletController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<WalletDTO>> GetAll()
+    public ActionResult<IEnumerable<WalletPagingDTO>> GetAll([FromQuery] PageSortParam pageSortParam)
     {
         try
         {
-            var wallets = _walletRepository.GetAllWallets();
-            if (!wallets.Any())
+            WalletPagingDTO walletPagingDTO = _walletRepository.GetAllWallets(pageSortParam);
+            if (!walletPagingDTO.Wallets.Any())
             {
                 return NoContent();
             }
-            return Ok(wallets);
+            return Ok(walletPagingDTO);
         }
         catch (Exception ex)
         {

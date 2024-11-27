@@ -13,7 +13,7 @@ public static class WalletConverter
         {
             Id = walletEntity.Id,
             WalletName = walletEntity.WalletName,
-            CreatedDate = walletEntity.CreatedDate,
+            CreateDate = walletEntity.CreatedDate,
             UpdateDate = walletEntity.UpdateDate
         };
     }
@@ -24,7 +24,7 @@ public static class WalletConverter
 
         walletEntity.Id = walletDTO.Id;
         walletEntity.WalletName = walletDTO.WalletName;
-        walletEntity.CreatedDate = walletDTO.CreatedDate;
+        walletEntity.CreatedDate = walletDTO.CreateDate;
         walletEntity.UpdateDate = walletDTO.UpdateDate;
     }
 }
