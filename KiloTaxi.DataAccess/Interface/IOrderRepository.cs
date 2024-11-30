@@ -4,7 +4,7 @@ namespace KiloTaxi.DataAccess.Interface;
 
 public interface IOrderRepository
 {
-    // OrderPagingDTO GetAllOrder(PageSortParam pageSortParam);
+    OrderPagingDTO GetAllOrders(PageSortParam pageSortParam);
 
     OrderDTO AddOrder(OrderDTO orderDTO);
     bool UpdateOrder(OrderDTO orderDTO);

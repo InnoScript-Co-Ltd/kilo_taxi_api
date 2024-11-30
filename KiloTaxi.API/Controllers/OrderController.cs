@@ -19,27 +19,29 @@ namespace KiloTaxi.API.Controllers
             _orderRepository = orderRepository;
         }
 
-        //GET: api/<AdminController>
-        // [HttpGet]
-        // public ActionResult<AdminPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
-        // {
-        //     try
-        //     {
-        //         AdminPagingDTO adminPagingDTO = _adminRepository.GetAllAdmin(pageSortParam);
-        //         if (!adminPagingDTO.Admins.Any())
-        //         {
-        //             return NoContent();
-        //         }
-        //         // Add a custom header
-        //         //Response.Headers.Add("X-Custom-Header", "foo");
-        //         return Ok(adminPagingDTO);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         _logHelper.LogError(ex);
-        //         return StatusCode(500, "An error occurred while processing your request.");
-        //     }
-        // }
+        //GET: api/<OrderController>
+        [HttpGet]
+        public ActionResult<IEnumerable<OrderPagingDTO>> Get(
+            [FromQuery] PageSortParam pageSortParam
+        )
+        {
+            try
+            {
+                OrderPagingDTO orderPagingDTO = _orderRepository.GetAllOrders(
+                    pageSortParam
+                );
+                if (!orderPagingDTO.Orders.Any())
+                {
+                    return NoContent();
+                }
+                return Ok(orderPagingDTO);
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex);
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
+        }
 
         [HttpGet("{id}")]
         public ActionResult<OrderDTO> Get(int id)
@@ -65,7 +67,7 @@ namespace KiloTaxi.API.Controllers
             }
         }
         
-        // POST api/<AdminController>
+        // POST api/<OrderController>
         [HttpPost]
         public ActionResult<OrderDTO> Post([FromBody] OrderDTO orderDTO)
         {
@@ -111,7 +113,7 @@ namespace KiloTaxi.API.Controllers
             }
         }
         
-        // // DELETE api/<AdminController>/5
+        // // DELETE api/<OrderController>/5
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
