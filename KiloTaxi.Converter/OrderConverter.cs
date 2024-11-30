@@ -31,7 +31,7 @@ namespace KiloTaxi.Converter
                 ScheduleBookingId = orderEntity.ScheduleBookingId,
                 TotalAmount = orderEntity.TotalAmount,
                 Status = Enum.Parse<OrderStatus>(orderEntity.Status),
-                CreatedDate = orderEntity.createdDate,
+                CreatedDate = orderEntity.CreatedDate,
             };
         }
 
@@ -58,7 +58,7 @@ namespace KiloTaxi.Converter
                 orderEntity.ScheduleBookingId = orderDTO.ScheduleBookingId;
                 orderEntity.TotalAmount = orderDTO.TotalAmount;
                 orderEntity.Status = orderDTO.Status.ToString();
-                orderEntity.createdDate = orderDTO.CreatedDate;
+                orderEntity.CreatedDate = orderDTO.CreatedDate;
             }
             catch (ArgumentException ex)
             {
