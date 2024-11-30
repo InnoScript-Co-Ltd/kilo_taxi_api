@@ -24,7 +24,7 @@ namespace KiloTaxi.EntityFramework.EntityModel {
         
         [Required]
         [DataType(DataType.DateTime)]
-        public DateTime createdDate { get; set; }
+        public DateTime CreatedDate { get; set; }
         
         [ForeignKey("WalletTransaction")]
         public int? WalletTransactionId { get; set; }
