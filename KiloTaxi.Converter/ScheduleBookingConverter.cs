@@ -1,4 +1,5 @@
 using System;
+using KiloTaxi.Common.Enums;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
@@ -30,7 +31,7 @@ namespace KiloTaxi.Converter
                 DropOffLocation = scheduleBookingEntity.DropOffLocation,
                 CreatedDate = scheduleBookingEntity.CreatedDate,
                 ScheduleTime = scheduleBookingEntity.ScheduleTime,
-                Status = scheduleBookingEntity.Status,
+                Status =Enum.Parse<ScheduleStatus>(scheduleBookingEntity.Status) ,
             };
         }
 
@@ -69,7 +70,7 @@ namespace KiloTaxi.Converter
                 scheduleBookingEntity.DropOffLocation = scheduleBookingDTO.DropOffLocation;
                 scheduleBookingEntity.CreatedDate = scheduleBookingDTO.CreatedDate;
                 scheduleBookingEntity.ScheduleTime = scheduleBookingDTO.ScheduleTime;
-                scheduleBookingEntity.Status = scheduleBookingDTO.Status;
+                scheduleBookingEntity.Status = scheduleBookingDTO.Status.ToString();
             }
             catch (Exception ex)
             {
