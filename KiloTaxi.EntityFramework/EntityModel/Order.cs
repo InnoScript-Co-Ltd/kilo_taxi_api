@@ -20,7 +20,7 @@ namespace KiloTaxi.EntityFramework.EntityModel {
         public Decimal TotalAmount { get; set; }
         
         [Required]
-        public OrderStatus Status { get; set; }
+        public string Status { get; set; }
         
         [Required]
         [DataType(DataType.DateTime)]

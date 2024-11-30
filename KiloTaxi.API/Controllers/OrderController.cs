@@ -20,26 +20,24 @@ namespace KiloTaxi.API.Controllers
         }
 
         //GET: api/<AdminController>
-        // [HttpGet]
-        // public ActionResult<AdminPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
-        // {
-        //     try
-        //     {
-        //         AdminPagingDTO adminPagingDTO = _adminRepository.GetAllAdmin(pageSortParam);
-        //         if (!adminPagingDTO.Admins.Any())
-        //         {
-        //             return NoContent();
-        //         }
-        //         // Add a custom header
-        //         //Response.Headers.Add("X-Custom-Header", "foo");
-        //         return Ok(adminPagingDTO);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         _logHelper.LogError(ex);
-        //         return StatusCode(500, "An error occurred while processing your request.");
-        //     }
-        // }
+        [HttpGet]
+        public ActionResult<IEnumerable<OrderPagingDTO>> GetAll([FromQuery] PageSortParam pageSortParam)
+        {
+            try
+            {
+                OrderPagingDTO orderPagingDTO = _orderRepository.GetAllOrder(pageSortParam);
+                if (!orderPagingDTO.Orders.Any())
+                {
+                    return NoContent();
+                }
+                return Ok(orderPagingDTO);
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex);
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
+        }
 
         [HttpGet("{id}")]
         public ActionResult<OrderDTO> Get(int id)
@@ -77,7 +75,7 @@ namespace KiloTaxi.API.Controllers
                 }
         
                 var createdOrder = _orderRepository.AddOrder(orderDTO);
-                return Ok(createdOrder);
+                return CreatedAtAction(nameof(Get), new { id = createdOrder.Id }, createdOrder);
             }
             catch (Exception ex)
             {
