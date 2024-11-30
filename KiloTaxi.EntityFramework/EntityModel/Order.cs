@@ -27,7 +27,7 @@ namespace KiloTaxi.EntityFramework.EntityModel {
         public DateTime createdDate { get; set; }
         
         [ForeignKey("WalletTransaction")]
-        public int WalletTransactionId { get; set; }
+        public int? WalletTransactionId { get; set; }
         public virtual WalletTransaction WalletTransaction { get; set; }
         
         [ForeignKey("Customer")]
@@ -39,7 +39,7 @@ namespace KiloTaxi.EntityFramework.EntityModel {
         public virtual Driver Driver { get; set; }
         
         [ForeignKey("ScheduleBooking")]
-        public int ScheduleBookingId { get; set; }
+        public int? ScheduleBookingId { get; set; }
         public virtual ScheduleBooking ScheduleBooking { get; set; }
         
     }

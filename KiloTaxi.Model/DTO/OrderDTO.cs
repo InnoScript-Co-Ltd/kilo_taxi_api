@@ -11,43 +11,29 @@ namespace KiloTaxi.Model.DTO
 {
     public class OrderDTO 
     {
-
         public int Id { get; set; }
 
+        [AllowNull]
+        public int? WalletTransactionId { get; set; }
+        
         [Required]
-        [DataType(DataType.DateTime)]
-        public DateTime? CheckinTime { get; set; }
-
+        public int CustomerId { get; set; }
+        
         [Required]
-        [DataType(DataType.DateTime)]
-        public DateTime? CheckoutTime { get; set; }
-
+        public int DriverId { get; set; }
+        
+        [AllowNull]
+        public int? ScheduleBookingId { get; set; }
+        
         [Required]
         [Range(0.01, 10000.00)]
-        public decimal Amount { get; set; }
-
-        [Required]
-        public string PaymentType { get; set; }
+        public decimal TotalAmount { get; set; }
 
         [Required]
         public OrderStatus Status { get; set; }
 
-
-        [Required]
-        public int CustomerId { get; set; }
-
-        [Required]
-        public int DriverId { get; set; }
-
-        [AllowNull]
-        public int WalletFromId { get; set; }
-
-        [AllowNull]
-        public int WalletToId { get; set; }
-
-        [AllowNull]
-        public int PaymentChannelId { get; set; }
-
+        [DataType(DataType.DateTime)]
+        public DateTime CreatedDate { get; set; }
 
     }
 }
