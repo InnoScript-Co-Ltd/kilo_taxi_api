@@ -26,6 +26,7 @@ namespace KiloTaxi.DataAccess.Helper
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IWalletRepository, WalletRepository>();
             services.AddScoped<IWalletUserMappingRepository, WalletUserMappingRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
 
         }
     }

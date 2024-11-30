@@ -300,10 +300,10 @@ namespace KiloTaxi.EntityFramework.Migrations
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     createdDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    WalletTransactionId = table.Column<int>(type: "int", nullable: false),
+                    WalletTransactionId = table.Column<int>(type: "int", nullable: true),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
                     DriverId = table.Column<int>(type: "int", nullable: false),
-                    ScheduleBookingId = table.Column<int>(type: "int", nullable: false)
+                    ScheduleBookingId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
