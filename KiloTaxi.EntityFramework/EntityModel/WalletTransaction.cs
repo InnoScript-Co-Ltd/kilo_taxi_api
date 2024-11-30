@@ -10,7 +10,7 @@ public class WalletTransaction
     public int Id { get; set; }
     
     [Column(TypeName = "decimal(18, 2)")]
-    public decimal Amount { get; set; }
+    public decimal? Amount { get; set; }
     
     [Column(TypeName = "decimal(18, 2)")]
     public decimal BalanceBefore { get; set; }
