@@ -24,7 +24,8 @@ namespace KiloTaxi.API.Controllers
         {
             try
             {
-                ScheduleBookingPagingDTO scheduleBookingPagingDTO = _scheduleBookingRepository.GetAllScheduleBooking(pageSortParam);
+                ScheduleBookingPagingDTO scheduleBookingPagingDTO =
+                    _scheduleBookingRepository.GetAllScheduleBooking(pageSortParam);
                 if (!scheduleBookingPagingDTO.ScheduleBookings.Any())
                 {
                     return NoContent();
@@ -65,7 +66,9 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<ScheduleBookingController>
         [HttpPost]
-        public ActionResult<ScheduleBookingDTO> Post([FromBody] ScheduleBookingDTO scheduleBookingDTO)
+        public ActionResult<ScheduleBookingDTO> Post(
+            [FromBody] ScheduleBookingDTO scheduleBookingDTO
+        )
         {
             try
             {
@@ -74,8 +77,14 @@ namespace KiloTaxi.API.Controllers
                     return BadRequest();
                 }
 
-                var createdScheduleBooking = _scheduleBookingRepository.AddScheduleBooking(scheduleBookingDTO);
-                return CreatedAtAction(nameof(Get), new { id = createdScheduleBooking.Id }, createdScheduleBooking);
+                var createdScheduleBooking = _scheduleBookingRepository.AddScheduleBooking(
+                    scheduleBookingDTO
+                );
+                return CreatedAtAction(
+                    nameof(Get),
+                    new { id = createdScheduleBooking.Id },
+                    createdScheduleBooking
+                );
             }
             catch (Exception ex)
             {

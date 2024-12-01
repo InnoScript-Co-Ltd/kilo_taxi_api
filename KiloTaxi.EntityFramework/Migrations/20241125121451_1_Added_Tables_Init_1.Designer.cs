@@ -276,7 +276,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<int>("WalletTransactionId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("createdDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");

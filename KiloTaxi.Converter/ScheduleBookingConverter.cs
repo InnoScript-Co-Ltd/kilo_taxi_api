@@ -31,11 +31,14 @@ namespace KiloTaxi.Converter
                 DropOffLocation = scheduleBookingEntity.DropOffLocation,
                 CreatedDate = scheduleBookingEntity.CreatedDate,
                 ScheduleTime = scheduleBookingEntity.ScheduleTime,
-                Status =Enum.Parse<ScheduleStatus>(scheduleBookingEntity.Status) ,
+                Status = Enum.Parse<ScheduleStatus>(scheduleBookingEntity.Status),
             };
         }
 
-        public static void ConvertModelToEntity(ScheduleBookingDTO scheduleBookingDTO, ref ScheduleBooking scheduleBookingEntity)
+        public static void ConvertModelToEntity(
+            ScheduleBookingDTO scheduleBookingDTO,
+            ref ScheduleBooking scheduleBookingEntity
+        )
         {
             try
             {

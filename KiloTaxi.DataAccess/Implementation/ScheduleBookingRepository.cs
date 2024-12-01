@@ -26,15 +26,15 @@ namespace KiloTaxi.DataAccess.Implementation
                     .ScheduleBookings.Include(r => r.Customer)
                     .Include(r => r.Driver)
                     .AsQueryable();
-        
+
                 int totalCount = query.Count();
-        
+
                 if (!string.IsNullOrEmpty(pageSortParam.SortField))
                 {
                     var param = Expression.Parameter(typeof(ScheduleBooking), "scheduleBooking");
                     var property = Expression.Property(param, pageSortParam.SortField);
                     var sortExpression = Expression.Lambda(property, param);
-        
+
                     string sortMethod =
                         pageSortParam.SortDir == SortDirection.ASC
                             ? "OrderBy"
@@ -44,21 +44,23 @@ namespace KiloTaxi.DataAccess.Implementation
                         .Where(m => m.Name == sortMethod && m.GetParameters().Length == 2)
                         .Single()
                         .MakeGenericMethod(typeof(ScheduleBooking), property.Type);
-        
+
                     query =
                         (IQueryable<ScheduleBooking>)
                             orderByMethod.Invoke(null, new object[] { query, sortExpression });
                 }
-        
+
                 if (query.Count() > pageSortParam.PageSize)
                 {
                     query = query
                         .Skip((pageSortParam.CurrentPage - 1) * pageSortParam.PageSize)
                         .Take(pageSortParam.PageSize);
                 }
-        
-                var scheduleBookings = query.Select(ScheduleBookingConverter.ConvertEntityToModel).ToList();
-        
+
+                var scheduleBookings = query
+                    .Select(ScheduleBookingConverter.ConvertEntityToModel)
+                    .ToList();
+
                 var totalPages = (int)Math.Ceiling((double)totalCount / pageSortParam.PageSize);
                 var pagingResult = new PagingResult
                 {
@@ -76,12 +78,19 @@ namespace KiloTaxi.DataAccess.Implementation
                         pageSortParam.CurrentPage * pageSortParam.PageSize
                     ),
                 };
-        
-                return new ScheduleBookingPagingDTO() { Paging = pagingResult, ScheduleBookings = scheduleBookings };
+
+                return new ScheduleBookingPagingDTO()
+                {
+                    Paging = pagingResult,
+                    ScheduleBookings = scheduleBookings,
+                };
             }
             catch (Exception ex)
             {
-                LoggerHelper.Instance.LogError(ex, "Error occurred while fetching all schedule bookings.");
+                LoggerHelper.Instance.LogError(
+                    ex,
+                    "Error occurred while fetching all schedule bookings."
+                );
                 throw;
             }
         }
@@ -91,14 +100,15 @@ namespace KiloTaxi.DataAccess.Implementation
             try
             {
                 ScheduleBooking scheduleBookingEntity = new ScheduleBooking();
-                ScheduleBookingConverter.ConvertModelToEntity(scheduleBookingDTO, ref scheduleBookingEntity);
-                
+                ScheduleBookingConverter.ConvertModelToEntity(
+                    scheduleBookingDTO,
+                    ref scheduleBookingEntity
+                );
+
                 _dbKiloTaxiContext.Add(scheduleBookingEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                LoggerHelper.Instance.LogInfo(
-                    $"Schedule Booking added successfully"
-                );
+                LoggerHelper.Instance.LogInfo($"Schedule Booking added successfully");
 
                 return scheduleBookingDTO;
             }
@@ -113,17 +123,20 @@ namespace KiloTaxi.DataAccess.Implementation
         {
             try
             {
-                var scheduleBookingEntity = _dbKiloTaxiContext.ScheduleBookings.FirstOrDefault(ScheduleBooking =>
-                    ScheduleBooking.Id == scheduleBookingDTO.Id
+                var scheduleBookingEntity = _dbKiloTaxiContext.ScheduleBookings.FirstOrDefault(
+                    ScheduleBooking => ScheduleBooking.Id == scheduleBookingDTO.Id
                 );
                 if (scheduleBookingEntity == null)
                 {
                     return false;
                 }
-        
-                ScheduleBookingConverter.ConvertModelToEntity(scheduleBookingDTO, ref scheduleBookingEntity);
+
+                ScheduleBookingConverter.ConvertModelToEntity(
+                    scheduleBookingDTO,
+                    ref scheduleBookingEntity
+                );
                 _dbKiloTaxiContext.SaveChanges();
-        
+
                 return true;
             }
             catch (Exception ex)
@@ -144,13 +157,13 @@ namespace KiloTaxi.DataAccess.Implementation
                     .ScheduleBookings.Include(r => r.Customer)
                     .Include(r => r.Driver)
                     .FirstOrDefault(ScheduleBooking => ScheduleBooking.Id == id);
-        
+
                 if (scheduleBookingEntity == null)
                 {
                     LoggerHelper.Instance.LogError($"Schedule Booking with Id: {id} not found.");
                     return null;
                 }
-        
+
                 return ScheduleBookingConverter.ConvertEntityToModel(scheduleBookingEntity);
             }
             catch (Exception ex)
@@ -167,8 +180,8 @@ namespace KiloTaxi.DataAccess.Implementation
         {
             try
             {
-                var scheduleBookingEntity = _dbKiloTaxiContext.ScheduleBookings.FirstOrDefault(ScheduleBooking =>
-                    ScheduleBooking.Id == id
+                var scheduleBookingEntity = _dbKiloTaxiContext.ScheduleBookings.FirstOrDefault(
+                    ScheduleBooking => ScheduleBooking.Id == id
                 );
                 if (scheduleBookingEntity == null)
                 {
