@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using KiloTaxi.Common.Enums;
 
-namespace KiloTaxi.EntityFramework.EntityModel;
+namespace KiloTaxi.Model.DTO;
 
-public class Sos
+public class SosDTO
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     
     [Required]    
@@ -15,13 +13,11 @@ public class Sos
     [Required]
     public string Status  { get; set; }
     
-    public int ReferenceId { get; set; }
     [Required]
-    public string WalletType { get; set; }
+    public int ReferenceId { get; set; }
     
-    [ForeignKey("Reason")]
+    [Required]
+    public WalletType WalletType { get; set; }
+    
     public int ReasonId { get; set; }
-    public virtual Reason Reason { get; set; }
-    
-    
 }

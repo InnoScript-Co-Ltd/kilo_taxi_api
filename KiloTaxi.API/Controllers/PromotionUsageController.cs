@@ -1,3 +1,4 @@
+using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
@@ -7,30 +8,30 @@ namespace KiloTaxi.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class ScheduleBookingController : ControllerBase
+    public class PromotionUsageController : ControllerBase
     {
         LoggerHelper _logHelper;
-        private readonly IScheduleBookingRepository _scheduleBookingRepository;
+        private readonly IPromotionUsageRepository _promotionUsageRepository;
 
-        public ScheduleBookingController(IScheduleBookingRepository scheduleBookingRepository)
+        public PromotionUsageController(IPromotionUsageRepository promotionUsageRepository)
         {
             _logHelper = LoggerHelper.Instance;
-            _scheduleBookingRepository = scheduleBookingRepository;
+            _promotionUsageRepository = promotionUsageRepository;
         }
 
-        // GET: api/<ScheduleBookingController>
+        // GET: api/<PromotionUsageController>
         [HttpGet]
-        public ActionResult<ScheduleBookingPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<PromotionUsagePagingDTO> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                ScheduleBookingPagingDTO scheduleBookingPagingDTO =
-                    _scheduleBookingRepository.GetAllScheduleBooking(pageSortParam);
-                if (!scheduleBookingPagingDTO.ScheduleBookings.Any())
+                PromotionUsagePagingDTO promotionUsagePagingDTO =
+                    _promotionUsageRepository.GetAllPromotionUsage(pageSortParam);
+                if (!promotionUsagePagingDTO.promotionUsages.Any())
                 {
                     return NoContent();
                 }
-                return Ok(scheduleBookingPagingDTO);
+                return Ok(promotionUsagePagingDTO);
             }
             catch (Exception ex)
             {
@@ -39,9 +40,9 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        // GET: api/<ScheduleBookingController>/5
+        // GET: api/<PromotionUsageController>/5
         [HttpGet("{id}")]
-        public ActionResult<ScheduleBookingDTO> Get(int id)
+        public ActionResult<PromotionUsageDTO> Get(int id)
         {
             try
             {
@@ -50,7 +51,7 @@ namespace KiloTaxi.API.Controllers
                     return BadRequest();
                 }
 
-                var result = _scheduleBookingRepository.getScheduleBookingById(id);
+                var result = _promotionUsageRepository.GetPromotionUsageById(id);
                 if (result == null)
                 {
                     return NotFound();
@@ -64,26 +65,24 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        // POST api/<ScheduleBookingController>
+        // POST api/<PromotionController>
         [HttpPost]
-        public ActionResult<ScheduleBookingDTO> Post(
-            [FromBody] ScheduleBookingDTO scheduleBookingDTO
-        )
+        public ActionResult<PromotionUsageDTO> Post([FromBody] PromotionUsageDTO promotionUsageDTO)
         {
             try
             {
-                if (scheduleBookingDTO == null)
+                if (promotionUsageDTO == null)
                 {
                     return BadRequest();
                 }
 
-                var createdScheduleBooking = _scheduleBookingRepository.AddScheduleBooking(
-                    scheduleBookingDTO
+                var createdPromotion = _promotionUsageRepository.AddPromotionUsage(
+                    promotionUsageDTO
                 );
                 return CreatedAtAction(
                     nameof(Get),
-                    new { id = createdScheduleBooking.Id },
-                    createdScheduleBooking
+                    new { id = createdPromotion.Id },
+                    createdPromotion
                 );
             }
             catch (Exception ex)
@@ -93,18 +92,18 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        // PUT api/<ScheduleBookingController>/5
+        // PUT api/<PromotionController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] ScheduleBookingDTO scheduleBookingDTO)
+        public ActionResult Put(int id, [FromBody] PromotionUsageDTO promotionUsageDTO)
         {
             try
             {
-                if (scheduleBookingDTO == null || id != scheduleBookingDTO.Id)
+                if (promotionUsageDTO == null || id != promotionUsageDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _scheduleBookingRepository.UpdateScheduleBooking(scheduleBookingDTO);
+                var result = _promotionUsageRepository.UpdatePromotionUsage(promotionUsageDTO);
                 if (!result)
                 {
                     return NotFound();
@@ -118,19 +117,19 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        // DELETE api/<ScheduleBookingController>/5
+        // DELETE api/<PromotionController>/5
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
             try
             {
-                var scheduleBooking = _scheduleBookingRepository.getScheduleBookingById(id);
-                if (scheduleBooking == null)
+                var promotion = _promotionUsageRepository.GetPromotionUsageById(id);
+                if (promotion == null)
                 {
                     return NotFound();
                 }
 
-                var result = _scheduleBookingRepository.DeleteScheduleBooking(id);
+                var result = _promotionUsageRepository.DeletePromotionUsage(id);
                 if (!result)
                 {
                     return NotFound();

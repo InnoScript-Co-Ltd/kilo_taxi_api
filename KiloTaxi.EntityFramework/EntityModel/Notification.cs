@@ -3,27 +3,29 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KiloTaxi.EntityFramework.EntityModel;
 
-public class ScheduleBooking
+public class Notification
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     
     [Required]
-    public string PickUpLocation { get; set; }
+    public string Message { get; set; }
+    
+    public string? ImageUrl { get; set; }
     
     [Required]
-    public string DropOffLocation { get; set; }
+    public string Title { get; set; }
     
     [Required]
-    [DataType(DataType.DateTime)]
-    public DateTime ScheduleTime { get; set; }
+    public string Status {get; set;}
     
     [Required]
-    public string Status { get; set; }
+    public string NotificationType { get; set; }
     
-    [DataType(DataType.DateTime)]
-    public DateTime CreatedDate { get; set; }
+    [ForeignKey("Admin")]
+    public int AdminId { get; set; }
+    public virtual Admin Admin { get; set; }
     
     [ForeignKey("Customer")]
     public int CustomerId { get; set; }
@@ -32,4 +34,5 @@ public class ScheduleBooking
     [ForeignKey("Driver")]
     public int DriverId { get; set; }
     public virtual Driver Driver { get; set; }
+    
 }

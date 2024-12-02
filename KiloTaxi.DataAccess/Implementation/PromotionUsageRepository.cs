@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using KiloTaxi.Common.Enums;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
@@ -10,29 +9,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
 {
-    public class OrderRepository : IOrderRepository
+    public class PromotionUsageRepository : IPromotionUsageRepository
     {
         private readonly DbKiloTaxiContext _dbKiloTaxiContext;
 
-        public OrderRepository(DbKiloTaxiContext dbKiloTaxiContext)
+        public PromotionUsageRepository(DbKiloTaxiContext dbContext)
         {
-            _dbKiloTaxiContext = dbKiloTaxiContext;
+            _dbKiloTaxiContext = dbContext;
         }
 
-        public OrderPagingDTO GetAllOrder(PageSortParam pageSortParam)
+        public PromotionUsagePagingDTO GetAllPromotionUsage(PageSortParam pageSortParam)
         {
             try
             {
-                var query = _dbKiloTaxiContext.Orders.AsQueryable();
-                if (!string.IsNullOrEmpty(pageSortParam.SearchTerm))
-                {
-                    query = query.Where(p => p.Status.Contains(pageSortParam.SearchTerm));
-                }
+                var query = _dbKiloTaxiContext.PromotionUsages.AsQueryable();
 
                 int totalCount = query.Count();
+
                 if (!string.IsNullOrEmpty(pageSortParam.SortField))
                 {
-                    var param = Expression.Parameter(typeof(Order), "p");
+                    var param = Expression.Parameter(typeof(PromotionUsage), "promotionUsage");
                     var property = Expression.Property(param, pageSortParam.SortField);
                     var sortExpression = Expression.Lambda(property, param);
 
@@ -44,10 +40,10 @@ namespace KiloTaxi.DataAccess.Implementation
                         .GetMethods()
                         .Where(m => m.Name == sortMethod && m.GetParameters().Length == 2)
                         .Single()
-                        .MakeGenericMethod(typeof(Order), property.Type);
+                        .MakeGenericMethod(typeof(PromotionUsage), property.Type);
 
                     query =
-                        (IQueryable<Order>)
+                        (IQueryable<PromotionUsage>)
                             orderByMethod.Invoke(null, new object[] { query, sortExpression });
                 }
 
@@ -58,9 +54,10 @@ namespace KiloTaxi.DataAccess.Implementation
                         .Take(pageSortParam.PageSize);
                 }
 
-                var orders = query
-                    .Select(order => OrderConverter.ConvertEntityToModel(order))
+                var promotionUsages = query
+                    .Select(PromotionUsageConverter.ConvertEntityToModel)
                     .ToList();
+
                 var totalPages = (int)Math.Ceiling((double)totalCount / pageSortParam.PageSize);
                 var pagingResult = new PagingResult
                 {
@@ -78,55 +75,68 @@ namespace KiloTaxi.DataAccess.Implementation
                         pageSortParam.CurrentPage * pageSortParam.PageSize
                     ),
                 };
-                return new OrderPagingDTO() { Paging = pagingResult, Orders = orders };
+
+                return new PromotionUsagePagingDTO
+                {
+                    Paging = pagingResult,
+                    promotionUsages = promotionUsages,
+                };
             }
             catch (Exception ex)
             {
-                LoggerHelper.Instance.LogError(ex, "Error occurred while fetching all orders.");
+                LoggerHelper.Instance.LogError(ex, "Error occurred while fetching all promotions.");
                 throw;
             }
         }
 
-        public OrderDTO AddOrder(OrderDTO orderDTO)
+        public PromotionUsageDTO AddPromotionUsage(PromotionUsageDTO promotionUsageDTO)
         {
             try
             {
-                Order orderEntity = new Order();
-                DateTime createDate = DateTime.Now;
-                orderDTO.CreatedDate = createDate;
-                OrderConverter.ConvertModelToEntity(orderDTO, ref orderEntity);
+                PromotionUsage promotionUsageEntity = new PromotionUsage();
+                PromotionUsageConverter.ConvertModelToEntity(
+                    promotionUsageDTO,
+                    ref promotionUsageEntity
+                );
 
-                _dbKiloTaxiContext.Add(orderEntity);
+                var customer = _dbKiloTaxiContext.Customers.FirstOrDefault(c =>
+                    c.Id == promotionUsageDTO.CustomerId
+                );
+
+                _dbKiloTaxiContext.Add(promotionUsageEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                orderDTO.Id = orderEntity.Id;
+                promotionUsageDTO.Id = promotionUsageEntity.Id;
 
                 LoggerHelper.Instance.LogInfo(
-                    $"Order added successfully with Id: {orderEntity.Id}"
+                    $"Promotion added successfully with Id: {promotionUsageEntity.Id}"
                 );
 
-                return orderDTO;
+                return promotionUsageDTO;
             }
             catch (Exception ex)
             {
-                LoggerHelper.Instance.LogError(ex, "Error occurred while adding admin.");
+                LoggerHelper.Instance.LogError(ex, "Error occurred while adding promotion Usage.");
                 throw;
             }
         }
 
-        public bool UpdateOrder(OrderDTO orderDTO)
+        public bool UpdatePromotionUsage(PromotionUsageDTO promotionUsageDTO)
         {
             try
             {
-                var orderEntity = _dbKiloTaxiContext.Orders.FirstOrDefault(order =>
-                    order.Id == orderDTO.Id
+                var promotionUsageEntity = _dbKiloTaxiContext.PromotionUsages.FirstOrDefault(
+                    usage => usage.Id == promotionUsageDTO.Id
                 );
-                if (orderEntity == null)
+                if (promotionUsageDTO == null)
                 {
                     return false;
                 }
 
-                OrderConverter.ConvertModelToEntity(orderDTO, ref orderEntity);
+                PromotionUsageConverter.ConvertModelToEntity(
+                    promotionUsageDTO,
+                    ref promotionUsageEntity
+                );
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -135,49 +145,51 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating order with Id: {orderDTO.Id}"
+                    $"Error occurred while updating promotion usage with Id: {promotionUsageDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public OrderDTO GetOrderById(int id)
+        public PromotionUsageDTO GetPromotionUsageById(int id)
         {
             try
             {
-                var orderDTO = OrderConverter.ConvertEntityToModel(
-                    _dbKiloTaxiContext.Orders.FirstOrDefault(order => order.Id == id)
+                var promotionUsageDTO = PromotionUsageConverter.ConvertEntityToModel(
+                    _dbKiloTaxiContext.PromotionUsages.FirstOrDefault(usage => usage.Id == id)
                 );
 
-                if (orderDTO == null)
+                if (promotionUsageDTO == null)
                 {
-                    LoggerHelper.Instance.LogError($"Order with Id: {id} not found.");
+                    LoggerHelper.Instance.LogError($"Promotion Usage with Id: {id} not found.");
                     return null;
                 }
 
-                return orderDTO;
+                return promotionUsageDTO;
             }
             catch (Exception ex)
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while fetching order with Id: {id}"
+                    $"Error occurred while fetching promotion with Id: {id}"
                 );
                 throw;
             }
         }
 
-        public bool DeleteOrder(int id)
+        public bool DeletePromotionUsage(int id)
         {
             try
             {
-                var orderEntity = _dbKiloTaxiContext.Orders.FirstOrDefault(order => order.Id == id);
-                if (orderEntity == null)
+                var promotionUsageEntity = _dbKiloTaxiContext.PromotionUsages.FirstOrDefault(
+                    usage => usage.Id == id
+                );
+                if (promotionUsageEntity == null)
                 {
                     return false;
                 }
 
-                _dbKiloTaxiContext.Orders.Remove(orderEntity);
+                _dbKiloTaxiContext.PromotionUsages.Remove(promotionUsageEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -186,7 +198,7 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while deleting order with Id: {id}"
+                    $"Error occurred while deleting promotion with Id: {id}"
                 );
                 throw;
             }
