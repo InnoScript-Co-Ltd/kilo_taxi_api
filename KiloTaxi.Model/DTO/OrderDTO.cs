@@ -9,29 +9,12 @@ using KiloTaxi.Common.Enums;
 
 namespace KiloTaxi.Model.DTO
 {
-    public class OrderDTO 
+    public class OrderDTO
     {
-
         public int Id { get; set; }
 
-        [Required]
-        [DataType(DataType.DateTime)]
-        public DateTime? CheckinTime { get; set; }
-
-        [Required]
-        [DataType(DataType.DateTime)]
-        public DateTime? CheckoutTime { get; set; }
-
-        [Required]
-        [Range(0.01, 10000.00)]
-        public decimal Amount { get; set; }
-
-        [Required]
-        public string PaymentType { get; set; }
-
-        [Required]
-        public OrderStatus Status { get; set; }
-
+        [AllowNull]
+        public int? WalletTransactionId { get; set; }
 
         [Required]
         public int CustomerId { get; set; }
@@ -40,14 +23,16 @@ namespace KiloTaxi.Model.DTO
         public int DriverId { get; set; }
 
         [AllowNull]
-        public int WalletFromId { get; set; }
+        public int? ScheduleBookingId { get; set; }
 
-        [AllowNull]
-        public int WalletToId { get; set; }
+        [Required]
+        [Range(0.01, 10000.00)]
+        public decimal TotalAmount { get; set; }
 
-        [AllowNull]
-        public int PaymentChannelId { get; set; }
+        [Required]
+        public OrderStatus Status { get; set; }
 
-
+        [DataType(DataType.DateTime)]
+        public DateTime CreatedDate { get; set; }
     }
 }
