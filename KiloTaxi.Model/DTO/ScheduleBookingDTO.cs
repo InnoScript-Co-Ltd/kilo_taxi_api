@@ -8,10 +8,10 @@ public class ScheduleBookingDTO
     public int Id { get; set; }
     
     [Required]
-    public string PickUpLocation { get; set; }
+    public string PickUpAddress { get; set; }
     
     [Required]
-    public string DropOffLocation { get; set; }
+    public string Destination { get; set; }
     
     [Required]
     [DataType(DataType.DateTime)]
@@ -20,8 +20,8 @@ public class ScheduleBookingDTO
     [Required]
     public ScheduleStatus Status { get; set; }
     
-    [DataType(DataType.DateTime)]
-    public DateTime CreatedDate { get; set; }
+    [Required]
+    public KiloType KiloType { get; set; }
     
     [Required]
     public int CustomerId { get; set; }

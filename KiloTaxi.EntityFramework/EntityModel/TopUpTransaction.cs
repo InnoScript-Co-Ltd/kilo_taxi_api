@@ -19,11 +19,15 @@ public class TopUpTransaction
     [Required]
     public string Status { get; set; }
     
-    [ForeignKey("Wallet")]
-    public int WalletId { get; set; }
-    public virtual Wallet Wallet { get; set; }
+    public string? PhoneNumber { get; set; }
     
-    // [ForeignKey("PaymentChannel")]
-    // public int PaymentChannelId { get; set; }
-    // public virtual PaymentChannel PaymentChannel { get; set; }    
+    public string? DigitalPaymentFromPhoneNumber { get; set; }
+    
+    public string? DigitalPaymentToPhoneNumber { get; set; }
+    
+    [ForeignKey("PaymentChannel")]
+    public int PaymentChannelId { get; set; }
+    public virtual PaymentChannel PaymentChannel { get; set; }    
+    
+    
 }

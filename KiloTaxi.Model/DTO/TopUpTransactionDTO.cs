@@ -17,7 +17,11 @@ public class TopUpTransactionDTO
     [Required]
     public TopUpTransactionStatus Status { get; set; }
     
-    public int WalletId { get; set; }
+    public string? PhoneNumber { get; set; }
+    
+    public string? DigitalPaymentFromPhoneNumber { get; set; }
+    
+    public string? DigitalPaymentToPhoneNumber { get; set; }
     
     public int PaymentChannelId { get; set; }
 }

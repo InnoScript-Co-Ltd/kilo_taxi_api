@@ -10,10 +10,10 @@ public class ScheduleBooking
     public int Id { get; set; }
     
     [Required]
-    public string PickUpLocation { get; set; }
+    public string PickUpAddress{ get; set; }
     
     [Required]
-    public string DropOffLocation { get; set; }
+    public string Destination { get; set; }
     
     [Required]
     [DataType(DataType.DateTime)]
@@ -22,8 +22,8 @@ public class ScheduleBooking
     [Required]
     public string Status { get; set; }
     
-    [DataType(DataType.DateTime)]
-    public DateTime CreatedDate { get; set; }
+    [Required]
+    public string KiloType {get; set;}
     
     [ForeignKey("Customer")]
     public int CustomerId { get; set; }
