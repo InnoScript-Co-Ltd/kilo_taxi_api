@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using KiloTaxi.Common.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KiloTaxi.Model.DTO;
@@ -8,7 +9,7 @@ public class WalletTransactionDTO
     public int Id { get; set; }
     
     [Column(TypeName = "decimal(18, 2)")]
-    public decimal Amount { get; set; }
+    public decimal? Amount { get; set; }
     
     [Column(TypeName = "decimal(18, 2)")]
     public decimal BalanceBefore { get; set; }
@@ -25,7 +26,7 @@ public class WalletTransactionDTO
     public string Details { get; set; }
     
     [Required]
-    public string TransactionType { get; set; }
+    public TransactionType TransactionType { get; set; }
     
     public int WalletUserMappingId { get; set; }
 }
