@@ -21,9 +21,11 @@ namespace KiloTaxi.Converter
                 Id = topUpTransactionEntity.Id,
                 Amount = topUpTransactionEntity.Amount,
                 TransactionScreenShoot = topUpTransactionEntity.TransactionScreenShoot,
+                PhoneNumber = topUpTransactionEntity.PhoneNumber,
+                DigitalPaymentFromPhoneNumber = topUpTransactionEntity.DigitalPaymentFromPhoneNumber,
+                DigitalPaymentToPhoneNumber = topUpTransactionEntity.DigitalPaymentToPhoneNumber,
                 Status = Enum.Parse<TopUpTransactionStatus>(topUpTransactionEntity.Status),
-                WalletId = topUpTransactionEntity.WalletId,
-                // PaymentChannelId is commented out in the entity; update this if it becomes part of the entity.
+                PaymentChannelId = topUpTransactionEntity.PaymentChannelId,
             };
         }
         
@@ -40,9 +42,13 @@ namespace KiloTaxi.Converter
                 topUpTransactionEntity.Id = topUpTransactionDTO.Id;
                 topUpTransactionEntity.Amount = topUpTransactionDTO.Amount;
                 topUpTransactionEntity.TransactionScreenShoot = topUpTransactionDTO.TransactionScreenShoot;
+                topUpTransactionEntity.PhoneNumber = topUpTransactionDTO.PhoneNumber;
+                topUpTransactionEntity.DigitalPaymentFromPhoneNumber = topUpTransactionDTO.DigitalPaymentFromPhoneNumber;
+                topUpTransactionEntity.DigitalPaymentToPhoneNumber = topUpTransactionDTO.DigitalPaymentToPhoneNumber;
                 topUpTransactionEntity.Status = topUpTransactionDTO.Status.ToString();
-                topUpTransactionEntity.WalletId = topUpTransactionDTO.WalletId;
-                // PaymentChannelId is commented out in the entity; update this if it becomes part of the entity.
+                topUpTransactionEntity.PaymentChannelId = topUpTransactionDTO.PaymentChannelId;
+                
+
             }
             catch (ArgumentException ex)
             {

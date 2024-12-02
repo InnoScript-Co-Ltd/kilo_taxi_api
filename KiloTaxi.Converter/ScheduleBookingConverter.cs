@@ -29,16 +29,13 @@ namespace KiloTaxi.Converter
                 DriverId = scheduleBookingEntity.DriverId,
                 PickUpLocation = scheduleBookingEntity.PickUpLocation,
                 DropOffLocation = scheduleBookingEntity.DropOffLocation,
-                CreatedDate = scheduleBookingEntity.CreatedDate,
                 ScheduleTime = scheduleBookingEntity.ScheduleTime,
-                Status = Enum.Parse<ScheduleStatus>(scheduleBookingEntity.Status),
+                Status =Enum.Parse<ScheduleStatus>(scheduleBookingEntity.Status),
+                CreatedDate = scheduleBookingEntity.CreatedDate,
             };
         }
 
-        public static void ConvertModelToEntity(
-            ScheduleBookingDTO scheduleBookingDTO,
-            ref ScheduleBooking scheduleBookingEntity
-        )
+        public static void ConvertModelToEntity(ScheduleBookingDTO scheduleBookingDTO, ref ScheduleBooking scheduleBookingEntity)
         {
             try
             {
@@ -71,9 +68,9 @@ namespace KiloTaxi.Converter
                 scheduleBookingEntity.DriverId = scheduleBookingDTO.DriverId;
                 scheduleBookingEntity.PickUpLocation = scheduleBookingDTO.PickUpLocation;
                 scheduleBookingEntity.DropOffLocation = scheduleBookingDTO.DropOffLocation;
-                scheduleBookingEntity.CreatedDate = scheduleBookingDTO.CreatedDate;
                 scheduleBookingEntity.ScheduleTime = scheduleBookingDTO.ScheduleTime;
                 scheduleBookingEntity.Status = scheduleBookingDTO.Status.ToString();
+                scheduleBookingEntity.CreatedDate = scheduleBookingDTO.CreatedDate;
             }
             catch (Exception ex)
             {

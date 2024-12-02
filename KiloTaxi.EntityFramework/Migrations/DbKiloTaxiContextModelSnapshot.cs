@@ -254,13 +254,16 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<int>("DriverId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ScheduleBookingId")
+                    b.Property<int?>("ScheduleBookingId")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
@@ -270,11 +273,8 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("WalletTransactionId")
+                    b.Property<int?>("WalletTransactionId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("createdDate")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -287,6 +287,27 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.HasIndex("WalletTransactionId");
 
                     b.ToTable("Order", (string)null);
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.PaymentChannel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChannelName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentChannel");
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Promotion", b =>
@@ -441,6 +462,18 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18, 2)");
 
+                    b.Property<string>("DigitalPaymentFromPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DigitalPaymentToPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PaymentChannelId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -449,12 +482,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("WalletId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("WalletId");
+                    b.HasIndex("PaymentChannelId");
 
                     b.ToTable("TopUpTransaction", (string)null);
                 });
@@ -537,7 +567,7 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Amount")
+                    b.Property<decimal?>("Amount")
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<decimal>("BalanceAfter")
@@ -625,15 +655,11 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     b.HasOne("KiloTaxi.EntityFramework.EntityModel.ScheduleBooking", "ScheduleBooking")
                         .WithMany()
-                        .HasForeignKey("ScheduleBookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ScheduleBookingId");
 
                     b.HasOne("KiloTaxi.EntityFramework.EntityModel.WalletTransaction", "WalletTransaction")
                         .WithMany()
-                        .HasForeignKey("WalletTransactionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("WalletTransactionId");
 
                     b.Navigation("Customer");
 
@@ -722,13 +748,13 @@ namespace KiloTaxi.EntityFramework.Migrations
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.TopUpTransaction", b =>
                 {
-                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.Wallet", "Wallet")
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.PaymentChannel", "PaymentChannel")
                         .WithMany()
-                        .HasForeignKey("WalletId")
+                        .HasForeignKey("PaymentChannelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Wallet");
+                    b.Navigation("PaymentChannel");
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Vehicle", b =>

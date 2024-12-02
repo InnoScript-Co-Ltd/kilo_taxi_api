@@ -10,6 +10,8 @@ namespace KiloTaxi.EntityFramework.EntityModel
 {
     public class Promotion
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
