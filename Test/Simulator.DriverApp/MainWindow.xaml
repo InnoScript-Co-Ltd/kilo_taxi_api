@@ -20,6 +20,29 @@
             <Line Height="40" Stretch="Fill" Stroke="Gray" X2="1"></Line>
             <Label Content="Logs" HorizontalAlignment="Center" Background="Wheat"/>
             <Button Content="Clear Logs" Click="btnClearLogs_Click" HorizontalAlignment="Center" Width="100" />
+            <DockPanel Margin="8">
+                <Border CornerRadius="6" BorderBrush="LightGray" Background="LightGray" BorderThickness="2" DockPanel.Dock="Top">
+                    <StackPanel Orientation="Vertical">
+                        <Label Content="Address:"/>
+                        <TextBox x:Name="txtAddress" Width="200"/>
+
+                        <Label Content="Reference ID:"/>
+                        <TextBox x:Name="txtReferenceId" Width="200"/>
+
+                        <Label Content="Reason ID:"/>
+                        <TextBox x:Name="txtReasonId" Width="200"/>
+                        
+                        <Label Content="Status (Active/Disable/Deleted):"/>
+                        <TextBox x:Name="txtStatus" Width="200"/>
+                        
+                        <Label Content="Wallet Type (Driver/Customer):"/>
+                        <TextBox x:Name="txtWalletType" Width="200"/>
+
+                        <Button x:Name="btnSendSos" Content="Send Sos" Click="btnSendSos_Click"></Button>
+                    </StackPanel>
+                </Border>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Height="25" />
+            </DockPanel>
 
 
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="100" Height="310" >

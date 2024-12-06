@@ -5,5 +5,6 @@ namespace KiloTaxi.Realtime.HubInterfaces
     public interface IDriverHubHub
     {
         Task SendVehicleLocation(VehicleLocation vehicleLocation);
+        Task SendSos(SosDTO sosDto);
     }
 }

@@ -11,7 +11,7 @@ public class SosDTO
     public string Address { get; set; }
     
     [Required]
-    public string Status  { get; set; }
+    public GeneralStatus Status  { get; set; }
     
     [Required]
     public int ReferenceId { get; set; }

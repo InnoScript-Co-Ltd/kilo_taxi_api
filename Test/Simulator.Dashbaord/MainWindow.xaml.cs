@@ -32,6 +32,11 @@ namespace Simulator.Dashbaord
             var jsonSerializedModel = JsonSerializer.Serialize(vehicleLocation);
             lblLogs.Text += Environment.NewLine + $"ReceiveLocationData : {jsonSerializedModel}";
         }
+        private void ReceiveSos(SosDTO sosDto)
+        {
+            var jsonSerializedModel = JsonSerializer.Serialize(sosDto);
+            lblLogs.Text += Environment.NewLine + $"ReceiveSosData : {jsonSerializedModel}";
+        }
         #endregion
 
         #region Form Events
@@ -108,6 +113,13 @@ namespace Simulator.Dashbaord
                 this.Dispatcher.Invoke(() =>
                 {
                     ReceiveLocationData(vehicleLocation);
+                });
+            });
+            connection.On("ReceiveSos", async (SosDTO sosDto) =>
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    ReceiveSos(sosDto);
                 });
             });
 

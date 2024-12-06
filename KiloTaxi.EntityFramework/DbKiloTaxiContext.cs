@@ -31,6 +31,14 @@ namespace KiloTaxi.EntityFramework
         public DbSet<PromotionUsage> PromotionUsages { get; set; }
         
         public DbSet<ScheduleBooking> ScheduleBookings { get; set; }
+        
+        public DbSet<Sos> Sos { get; set; }
+        
+        public DbSet<Sms> Sms { get; set; }
+        
+        public DbSet<Reason> Reasons { get; set; }
+        
+        public DbSet<Notification> Notifications { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Admin>().ToTable("Admin");
@@ -41,12 +49,16 @@ namespace KiloTaxi.EntityFramework
             modelBuilder.Entity<Review>().ToTable("Review");
             modelBuilder.Entity<Order>().ToTable("Order");
             modelBuilder.Entity<Wallet>().ToTable("Wallet");
-            // modelBuilder.Entity<PaymentChannel>().ToTable("PaymentChannel");
+            modelBuilder.Entity<PaymentChannel>().ToTable("PaymentChannel");
             modelBuilder.Entity<TopUpTransaction>().ToTable("TopUpTransaction");
             modelBuilder.Entity<WalletUserMapping>().ToTable("WalletUserMapping");
             modelBuilder.Entity<WalletTransaction>().ToTable("WalletTransaction");
             modelBuilder.Entity<PromotionUsage>().ToTable("PromotionUsage");
             modelBuilder.Entity<ScheduleBooking>().ToTable("ScheduleBooking");
+            modelBuilder.Entity<Reason>().ToTable("Reason");
+            modelBuilder.Entity<Sms>().ToTable("Sms");
+            modelBuilder.Entity<Sos>().ToTable("Sos");
+            modelBuilder.Entity<Notification>().ToTable("Notification");
         }
     }
 }
