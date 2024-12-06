@@ -18,8 +18,8 @@ namespace KiloTaxi.DataAccess.Helper
             IConfiguration Configuration
         )
         {
-            services.AddScoped<IDriverRepository,DriverRepository>();
-            services.AddScoped<IVehicleRepository,VehicleRepository>();
+            services.AddScoped<IDriverRepository, DriverRepository>();
+            services.AddScoped<IVehicleRepository, VehicleRepository>();
             services.AddScoped<IAdminRepository, AdminRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IPromotionRepository, PromotionRepository>();
@@ -30,6 +30,7 @@ namespace KiloTaxi.DataAccess.Helper
             services.AddScoped<IWalletTransactionRepository, WalletTransactionRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IScheduleBookingRepository, ScheduleBookingRepository>();
+            services.AddScoped<ISmsRepository, SmsRepository>();
         }
     }
 }
