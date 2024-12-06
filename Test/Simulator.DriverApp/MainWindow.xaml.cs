@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using KiloTaxi.Common.Enums;
 
 namespace Simulator.DriverApp
 {
@@ -36,18 +37,37 @@ namespace Simulator.DriverApp
             };
             connection.InvokeAsync("SendVehicleLocation", vehicleLocation);
         }
-        #endregion
 
+        private void RequestSos(SosDTO SosDTO)
+        {
+            connection.InvokeAsync("SendSos", SosDTO);
+        }
+        #endregion
+    
         #region Form Events
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             SetUpSignaRCLient();
         }
-
+        
         private void btnClearLogs_Click(object sender, RoutedEventArgs e)
         {
             lblLogs.Text = "";
         }
+        private void btnSendSos_Click(object sender, RoutedEventArgs e)
+        {
+            var sosDto = new SosDTO
+            {
+                Address = txtAddress.Text,
+                ReferenceId = int.Parse(txtReferenceId.Text),
+                ReasonId = int.Parse(txtReasonId.Text),
+                WalletType = Enum.Parse<WalletType>(txtWalletType.Text),
+                Status = Enum.Parse<GeneralStatus>(txtStatus.Text),
+            };
+            connection.InvokeAsync("RequestSos", sosDto);
+            lblLogs.Text += Environment.NewLine + "RequestSos has been invoked";
+        }
+        
         #endregion
 
         #region Private Methods
@@ -110,6 +130,15 @@ namespace Simulator.DriverApp
                     lblLogs.Text += Environment.NewLine + $"RequestVehicleLocation : {jsonSerializedModel}";
 
                     this.RequestVehicleLocation(vehicleId);
+                });
+            });
+            connection.On("RequestSos", async (SosDTO SosDTO) =>
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    var jsonSerializedModel = JsonSerializer.Serialize(SosDTO);
+                    lblLogs.Text += Environment.NewLine + $"RequestSos : {jsonSerializedModel}";
+                    this.RequestSos(SosDTO);
                 });
             });
         }

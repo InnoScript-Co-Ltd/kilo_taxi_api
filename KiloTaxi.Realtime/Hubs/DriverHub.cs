@@ -11,6 +11,7 @@ namespace KiloTaxi.Realtime.Hubs
     {
         LoggerHelper _logHelper;
         private DriverConnectionManager _driverConnectionManager;
+        private DashBoardConnectionManager _dashBoardConnectionManager;
         private readonly IHubContext<DashboardHub,IDashboardClient> _hubDashboard;
         public DriverHub(DriverConnectionManager driverConnectionManager, IHubContext<DashboardHub,IDashboardClient> hubDashboard)
         {
@@ -56,7 +57,29 @@ namespace KiloTaxi.Realtime.Hubs
         #endregion
 
         #region SignalR Server Methods
+        public async Task RequestSos(SosDTO sosDto)
+        {
+            try
+            {
+                var dashboardConnectionId = _dashBoardConnectionManager.GetConnectionId(sosDto.ReferenceId.ToString());
 
+                if (dashboardConnectionId != null)
+                {
+                    await _hubDashboard.Clients.Client(dashboardConnectionId).ReceiveSos(sosDto);
+
+                }
+                else
+                {
+                    // Optionally, handle case where mobile client is not connected
+                    _logHelper.LogDebug("Sos not connected: " + sosDto);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex, ex?.Message);
+            }
+        }
+        
         public async Task SendVehicleLocation(VehicleLocation vehicleLocation)
         {
             try
@@ -65,6 +88,20 @@ namespace KiloTaxi.Realtime.Hubs
                 _logHelper.LogDebug($"SendVehicleLocation {vehicleLocation.VehicleId}");
 
                 await _hubDashboard.Clients.All.ReceiveLocationData(vehicleLocation);
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex, ex?.Message);
+            }
+        }
+        public async Task SendSos(SosDTO sosDto)
+        {
+            try
+            {
+                // Handle the data received from the client
+                _logHelper.LogDebug($"SendSos {sosDto}");
+
+                await _hubDashboard.Clients.All.ReceiveSos(sosDto);
             }
             catch (Exception ex)
             {
