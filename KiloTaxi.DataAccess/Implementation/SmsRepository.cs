@@ -9,30 +9,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
 {
-    public class ReviewRepository : IReviewRepository
+    public class SmsRepository : ISmsRepository
     {
         private readonly DbKiloTaxiContext _dbKiloTaxiContext;
 
-        public ReviewRepository(DbKiloTaxiContext dbContext)
+        public SmsRepository(DbKiloTaxiContext dbContext)
         {
             _dbKiloTaxiContext = dbContext;
         }
 
-        public ReviewPagingDTO GetAllReview(PageSortParam pageSortParam)
+        public SmsPagingDTO GetAllSms(PageSortParam pageSortParam)
         {
             try
             {
                 var query = _dbKiloTaxiContext
-                    .Reviews.Include(r => r.Customer)
-                    .Include(r => r.Driver)
+                    .Sms.Include(s => s.Admin)
+                    .Include(s => s.Customer)
+                    .Include(s => s.Driver)
                     .AsQueryable();
 
                 if (!string.IsNullOrEmpty(pageSortParam.SearchTerm))
                 {
-                    query = query.Where(review =>
-                        review.ReviewContent.Contains(pageSortParam.SearchTerm)
-                        || review.Customer.Name.Contains(pageSortParam.SearchTerm)
-                        || review.Driver.Name.Contains(pageSortParam.SearchTerm)
+                    query = query.Where(sms =>
+                        sms.Title.Contains(pageSortParam.SearchTerm)
+                        || sms.Name.Contains(pageSortParam.SearchTerm)
+                        || sms.Message.Contains(pageSortParam.SearchTerm)
                     );
                 }
 
@@ -40,7 +41,7 @@ namespace KiloTaxi.DataAccess.Implementation
 
                 if (!string.IsNullOrEmpty(pageSortParam.SortField))
                 {
-                    var param = Expression.Parameter(typeof(Review), "review");
+                    var param = Expression.Parameter(typeof(Sms), "sms");
                     var property = Expression.Property(param, pageSortParam.SortField);
                     var sortExpression = Expression.Lambda(property, param);
 
@@ -52,10 +53,10 @@ namespace KiloTaxi.DataAccess.Implementation
                         .GetMethods()
                         .Where(m => m.Name == sortMethod && m.GetParameters().Length == 2)
                         .Single()
-                        .MakeGenericMethod(typeof(Review), property.Type);
+                        .MakeGenericMethod(typeof(Sms), property.Type);
 
                     query =
-                        (IQueryable<Review>)
+                        (IQueryable<Sms>)
                             orderByMethod.Invoke(null, new object[] { query, sortExpression });
                 }
 
@@ -66,7 +67,7 @@ namespace KiloTaxi.DataAccess.Implementation
                         .Take(pageSortParam.PageSize);
                 }
 
-                var reviews = query.Select(ReviewConverter.ConvertEntityToModel).ToList();
+                var sms = query.Select(SmsConverter.ConvertEntityToModel).ToList();
 
                 var totalPages = (int)Math.Ceiling((double)totalCount / pageSortParam.PageSize);
                 var pagingResult = new PagingResult
@@ -86,62 +87,61 @@ namespace KiloTaxi.DataAccess.Implementation
                     ),
                 };
 
-                return new ReviewPagingDTO { Paging = pagingResult, Reviews = reviews };
+                return new SmsPagingDTO { Paging = pagingResult, Sms = sms };
             }
             catch (Exception ex)
             {
-                LoggerHelper.Instance.LogError(ex, "Error occurred while fetching all reviews.");
+                LoggerHelper.Instance.LogError(ex, "Error occurred while fetching all sms.");
                 throw;
             }
         }
 
-        public ReviewDTO AddReview(ReviewDTO reviewDTO)
+        public SmsDTO CreateSms(SmsDTO smsDTO)
         {
             try
             {
-                Review reviewEntity = new Review();
-                ReviewConverter.ConvertModelToEntity(reviewDTO, ref reviewEntity);
+                Sms smsEntity = new Sms();
+                SmsConverter.ConvertModelToEntity(smsDTO, ref smsEntity);
 
+                var admin = _dbKiloTaxiContext.Admins.FirstOrDefault(c => c.Id == smsDTO.AdminId);
                 var customer = _dbKiloTaxiContext.Customers.FirstOrDefault(c =>
-                    c.Id == reviewDTO.CustomerId
+                    c.Id == smsDTO.CustomerId
                 );
                 var driver = _dbKiloTaxiContext.Drivers.FirstOrDefault(s =>
-                    s.Id == reviewDTO.DriverId
+                    s.Id == smsDTO.DriverId
                 );
 
-                _dbKiloTaxiContext.Add(reviewEntity);
+                _dbKiloTaxiContext.Add(smsEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                reviewDTO.Id = reviewEntity.Id;
-                reviewDTO.CustomerName = customer.Name;
-                reviewDTO.DriverName = driver.Name;
+                smsDTO.Id = smsEntity.Id;
+                smsDTO.AdminName = admin.Name;
+                smsDTO.CustomerName = customer.Name;
+                smsDTO.DriverName = driver.Name;
 
-                LoggerHelper.Instance.LogInfo(
-                    $"Review added successfully with Id: {reviewEntity.Id}"
-                );
+                LoggerHelper.Instance.LogInfo($"Sms added successfully with Id: {smsEntity.Id}");
 
-                return reviewDTO;
+                return smsDTO;
             }
             catch (Exception ex)
             {
-                LoggerHelper.Instance.LogError(ex, "Error occurred while adding review.");
+                LoggerHelper.Instance.LogError(ex, "Error occurred while adding sms.");
                 throw;
             }
         }
 
-        public bool UpdateReview(ReviewDTO reviewDTO)
+        public bool UpdateSms(SmsDTO smsDTO)
         {
             try
             {
-                var reviewEntity = _dbKiloTaxiContext.Reviews.FirstOrDefault(review =>
-                    review.Id == reviewDTO.Id
-                );
-                if (reviewEntity == null)
+                var smsEntity = _dbKiloTaxiContext.Sms.FirstOrDefault(s => s.Id == smsDTO.Id);
+
+                if (smsEntity == null)
                 {
                     return false;
                 }
 
-                ReviewConverter.ConvertModelToEntity(reviewDTO, ref reviewEntity);
+                SmsConverter.ConvertModelToEntity(smsDTO, ref smsEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -150,52 +150,51 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating review with Id: {reviewDTO.Id}"
+                    $"Error occurred while updating sms with Id: {smsDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public ReviewDTO GetReviewById(int id)
+        public SmsDTO GetSmsById(int id)
         {
             try
             {
-                var reviewEntity = _dbKiloTaxiContext
-                    .Reviews.Include(r => r.Customer)
+                var smsEntity = _dbKiloTaxiContext
+                    .Sms.Include(r => r.Admin)
+                    .Include(r => r.Customer)
                     .Include(r => r.Driver)
-                    .FirstOrDefault(review => review.Id == id);
+                    .FirstOrDefault(sms => sms.Id == id);
 
-                if (reviewEntity == null)
+                if (smsEntity == null)
                 {
-                    LoggerHelper.Instance.LogError($"Review with Id: {id} not found.");
+                    LoggerHelper.Instance.LogError($"Sms with Id: {id} not found.");
                     return null;
                 }
 
-                return ReviewConverter.ConvertEntityToModel(reviewEntity);
+                return SmsConverter.ConvertEntityToModel(smsEntity);
             }
             catch (Exception ex)
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while fetching review with Id: {id}"
+                    $"Error occurred while fetching sms with Id: {id}"
                 );
                 throw;
             }
         }
 
-        public bool DeleteReview(int id)
+        public bool DeleteSms(int id)
         {
             try
             {
-                var reviewEntity = _dbKiloTaxiContext.Reviews.FirstOrDefault(review =>
-                    review.Id == id
-                );
-                if (reviewEntity == null)
+                var smsEntity = _dbKiloTaxiContext.Sms.FirstOrDefault(s => s.Id == id);
+                if (smsEntity == null)
                 {
                     return false;
                 }
 
-                _dbKiloTaxiContext.Reviews.Remove(reviewEntity);
+                _dbKiloTaxiContext.Sms.Remove(smsEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -204,7 +203,7 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while deleting review with Id: {id}"
+                    $"Error occurred while deleting sms with Id: {id}"
                 );
                 throw;
             }
