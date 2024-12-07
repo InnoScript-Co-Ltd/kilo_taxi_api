@@ -6,10 +6,10 @@ namespace KiloTaxi.Model.DTO;
 public class ReasonDTO
 {
     public int Id { get; set; }
-    
+
     [Required]
     public string Name { get; set; }
-    
+
     [Required]
-    public GeneralStatus GeneralStatus { get; set; }
+    public GeneralStatus Status { get; set; }
 }

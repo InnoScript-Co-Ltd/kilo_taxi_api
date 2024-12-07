@@ -31,6 +31,7 @@ namespace KiloTaxi.DataAccess.Helper
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IScheduleBookingRepository, ScheduleBookingRepository>();
             services.AddScoped<ISmsRepository, SmsRepository>();
+            services.AddScoped<IReasonRepository, ReasonRepository>();
         }
     }
 }
