@@ -118,7 +118,7 @@ namespace KiloTaxi.API.Controllers
                     return NotFound();
                 }
 
-                return NoContent(); // Indicates successful deletion
+                return NoContent();
             }
             catch (Exception ex)
             {
