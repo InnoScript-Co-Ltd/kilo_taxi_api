@@ -38,10 +38,11 @@ namespace Simulator.DriverApp
             connection.InvokeAsync("SendVehicleLocation", vehicleLocation);
         }
 
-        private void RequestSos(SosDTO SosDTO)
-        {
-            connection.InvokeAsync("SendSos", SosDTO);
-        }
+        // private void SendSos(SosDTO SosDTO)
+        // {
+        //     Console.WriteLine("Sending SOS");
+        //     connection.InvokeAsync("SendSos", SosDTO);
+        // }
         #endregion
     
         #region Form Events
@@ -64,8 +65,8 @@ namespace Simulator.DriverApp
                 WalletType = Enum.Parse<WalletType>(txtWalletType.Text),
                 Status = Enum.Parse<GeneralStatus>(txtStatus.Text),
             };
-            connection.InvokeAsync("RequestSos", sosDto);
-            lblLogs.Text += Environment.NewLine + "RequestSos has been invoked";
+            connection.InvokeAsync("SendSos", sosDto);
+            lblLogs.Text += Environment.NewLine + "SendSos has been invoked";
         }
         
         #endregion
@@ -132,15 +133,15 @@ namespace Simulator.DriverApp
                     this.RequestVehicleLocation(vehicleId);
                 });
             });
-            connection.On("RequestSos", async (SosDTO SosDTO) =>
-            {
-                this.Dispatcher.Invoke(() =>
-                {
-                    var jsonSerializedModel = JsonSerializer.Serialize(SosDTO);
-                    lblLogs.Text += Environment.NewLine + $"RequestSos : {jsonSerializedModel}";
-                    this.RequestSos(SosDTO);
-                });
-            });
+            // connection.On("SendSos", async (SosDTO sosDto) =>
+            // {
+            //     this.Dispatcher.Invoke(() =>
+            //     {
+            //         var jsonSerializedModel = JsonSerializer.Serialize(sosDto);
+            //         lblLogs.Text += Environment.NewLine + $"SendSos : {jsonSerializedModel}";
+            //         this.SendSos(sosDto);
+            //     });
+            // });
         }
         #endregion
     }
