@@ -28,7 +28,6 @@ namespace KiloTaxi.Realtime.Hubs
                 // Assuming the driver app sends a unique identifier (e.g., vehicleId or driverid) when connecting
                 var key = Context.GetHttpContext().Request.Query["vehicleId"].ToString();
                 _driverConnectionManager.AddConnection(key, Context.ConnectionId);
-
                 _logHelper.LogDebug("Driver Client connected");
 
                 await base.OnConnectedAsync();
@@ -57,28 +56,7 @@ namespace KiloTaxi.Realtime.Hubs
         #endregion
 
         #region SignalR Server Methods
-        public async Task RequestSos(SosDTO sosDto)
-        {
-            try
-            {
-                var dashboardConnectionId = _dashBoardConnectionManager.GetConnectionId(sosDto.ReferenceId.ToString());
-
-                if (dashboardConnectionId != null)
-                {
-                    await _hubDashboard.Clients.Client(dashboardConnectionId).ReceiveSos(sosDto);
-
-                }
-                else
-                {
-                    // Optionally, handle case where mobile client is not connected
-                    _logHelper.LogDebug("Sos not connected: " + sosDto);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logHelper.LogError(ex, ex?.Message);
-            }
-        }
+       
         
         public async Task SendVehicleLocation(VehicleLocation vehicleLocation)
         {
