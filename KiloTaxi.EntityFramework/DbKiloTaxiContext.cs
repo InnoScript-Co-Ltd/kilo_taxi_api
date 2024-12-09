@@ -40,6 +40,7 @@ namespace KiloTaxi.EntityFramework
         public DbSet<Reason> Reasons { get; set; }
         
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<PaymentChannel> PaymentChannels { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
