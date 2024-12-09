@@ -1,4 +1,3 @@
-﻿using KiloTaxi.API.Helper.FileHelpers;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
@@ -8,29 +7,29 @@ namespace KiloTaxi.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class WalletTransactionController : ControllerBase
+    public class ReasonController : ControllerBase
     {
-        private readonly LoggerHelper _logHelper;
-        private readonly IWalletTransactionRepository _walletTransactionRepository;
+        LoggerHelper _logHelper;
+        private readonly IReasonRepository _reasonRepository;
 
-        public WalletTransactionController(IWalletTransactionRepository walletTransactionRepository)
+        public ReasonController(IReasonRepository reasonRepository)
         {
             _logHelper = LoggerHelper.Instance;
-            _walletTransactionRepository = walletTransactionRepository;
+            _reasonRepository = reasonRepository;
         }
 
-        // GET: api/v1/WalletTransaction
+        // GET: api/<ReasonController>
         [HttpGet]
-        public ActionResult<List<WalletTransactionDTO>> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ReasonPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                var transactions = _walletTransactionRepository.GetAllWalletTransactions(pageSortParam);
-                if (!transactions.Any())
+                ReasonPagingDTO reasonPagingDTO = _reasonRepository.GetAllReason(pageSortParam);
+                if (!reasonPagingDTO.Reasons.Any())
                 {
                     return NoContent();
                 }
-                return Ok(transactions);
+                return Ok(reasonPagingDTO);
             }
             catch (Exception ex)
             {
@@ -39,18 +38,23 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        // GET: api/v1/WalletTransaction/{id}
+        // GET: api/<ReasonController>/5
         [HttpGet("{id}")]
-        public ActionResult<WalletTransactionDTO> Get(int id)
+        public ActionResult<ReasonDTO> Get(int id)
         {
             try
             {
-                var transaction = _walletTransactionRepository.GetWalletTransactionById(id);
-                if (transaction == null)
+                if (id == 0)
+                {
+                    return BadRequest();
+                }
+
+                var result = _reasonRepository.GetReasonById(id);
+                if (result == null)
                 {
                     return NotFound();
                 }
-                return Ok(transaction);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -59,19 +63,19 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        // POST: api/v1/WalletTransaction
+        // POST api/<ReasonController>
         [HttpPost]
-        public ActionResult<WalletTransactionDTO> Post(WalletTransactionDTO walletTransactionDTO)
+        public ActionResult<ReasonDTO> Post([FromBody] ReasonDTO reasonDTO)
         {
             try
             {
-                if (!ModelState.IsValid)
+                if (reasonDTO == null)
                 {
-                    return BadRequest(ModelState);
+                    return BadRequest();
                 }
 
-                var createdTransaction = _walletTransactionRepository.CreateWalletTransaction(walletTransactionDTO);
-                return CreatedAtAction(nameof(Get), new { id = createdTransaction.Id }, createdTransaction);
+                var createdReason = _reasonRepository.CreateReason(reasonDTO);
+                return CreatedAtAction(nameof(Get), new { id = createdReason.Id }, createdReason);
             }
             catch (Exception ex)
             {
@@ -80,24 +84,23 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        // PUT: api/v1/WalletTransaction/{id}
+        // PUT api/<ReasonController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, WalletTransactionDTO walletTransactionDTO)
+        public ActionResult Put(int id, [FromBody] ReasonDTO reasonDTO)
         {
             try
             {
-                if (id != walletTransactionDTO.Id)
+                if (reasonDTO == null || id != reasonDTO.Id)
                 {
-                    return BadRequest("Transaction ID mismatch");
+                    return BadRequest();
                 }
 
-                var success = _walletTransactionRepository.UpdateWalletTransaction(walletTransactionDTO);
-                if (!success)
+                var result = _reasonRepository.UpdateReason(reasonDTO);
+                if (!result)
                 {
                     return NotFound();
                 }
-
-                return NoContent(); // Indicates successful update
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -106,14 +109,20 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        // DELETE: api/v1/WalletTransaction/{id}
+        // DELETE api/<ReasonController>/5
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
             try
             {
-                var success = _walletTransactionRepository.DeleteWalletTransaction(id);
-                if (!success)
+                var reason = _reasonRepository.GetReasonById(id);
+                if (reason == null)
+                {
+                    return NotFound();
+                }
+
+                var result = _reasonRepository.DeleteReason(id);
+                if (!result)
                 {
                     return NotFound();
                 }
