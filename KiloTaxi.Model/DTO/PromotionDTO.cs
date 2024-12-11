@@ -22,10 +22,10 @@ namespace KiloTaxi.Model.DTO
         public decimal? Value { get; set; }
         
         [Required]
-        public string PromotionType { get; set; }
+        public PromotionType PromotionType { get; set; }
         
         [Required]
-        public string ApplicableTo { get; set; }
+        public ApplicableTo ApplicableTo { get; set; }
         
         [Required]
         public PromotionStatus Status { get; set; }

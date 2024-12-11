@@ -20,4 +20,5 @@ public class SosDTO
     public WalletType WalletType { get; set; }
     
     public int ReasonId { get; set; }
+    public string? ReasonName { get; set; }
 }

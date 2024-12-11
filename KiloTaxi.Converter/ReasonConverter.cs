@@ -27,6 +27,7 @@ namespace KiloTaxi.Converter
                 Id = reasonEntity.Id,
                 Name = reasonEntity.Name,
                 Status = Enum.Parse<GeneralStatus>(reasonEntity.Status),
+                
             };
         }
 

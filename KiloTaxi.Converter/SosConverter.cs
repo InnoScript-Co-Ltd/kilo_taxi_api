@@ -23,6 +23,7 @@ public static class SosConverter
                 ReferenceId = sosEntity.ReferenceId,
                 WalletType = Enum.Parse<WalletType>(sosEntity.WalletType),
                 ReasonId = sosEntity.ReasonId,
+                ReasonName=sosEntity.Reason.Name,
             };
         }
         

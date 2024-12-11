@@ -5,6 +5,7 @@ using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation;
 
@@ -21,7 +22,9 @@ public class SosRepository : ISosRepository
     {
         try
         {
-            var query = _dbKiloTaxiContext.Sos.AsQueryable();
+            var query = _dbKiloTaxiContext.Sos
+                .Include(s=>s.Reason)
+                .AsQueryable();
             if (!string.IsNullOrEmpty(pageSortParam.SearchTerm))
             {
                 query = query.Where(p =>

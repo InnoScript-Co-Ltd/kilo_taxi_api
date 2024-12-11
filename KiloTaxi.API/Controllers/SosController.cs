@@ -13,9 +13,9 @@ public class SosController : ControllerBase
     LoggerHelper _logHelper;
     private readonly ISosRepository _sosRepository;
 
-    public SosController(ISosRepository sosRepository, LoggerHelper logHelper)
+    public SosController(ISosRepository sosRepository)
     {
-        _logHelper = logHelper;
+        _logHelper = LoggerHelper.Instance;
         _sosRepository = sosRepository;
     }
     [HttpGet]

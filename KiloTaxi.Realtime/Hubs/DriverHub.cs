@@ -1,4 +1,5 @@
-﻿using KiloTaxi.Logging;
+﻿using KiloTaxi.DataAccess.Interface;
+using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using KiloTaxi.Realtime.HubInterfaces;
 using KiloTaxi.Realtime.Services;
@@ -13,11 +14,14 @@ namespace KiloTaxi.Realtime.Hubs
         private DriverConnectionManager _driverConnectionManager;
         private DashBoardConnectionManager _dashBoardConnectionManager;
         private readonly IHubContext<DashboardHub,IDashboardClient> _hubDashboard;
-        public DriverHub(DriverConnectionManager driverConnectionManager, IHubContext<DashboardHub,IDashboardClient> hubDashboard)
+        private readonly HttpClient _httpClient;
+
+        public DriverHub(DriverConnectionManager driverConnectionManager, IHubContext<DashboardHub,IDashboardClient> hubDashboard,IHttpClientFactory httpClientFactory)
         {
             _logHelper = LoggerHelper.Instance;
             _driverConnectionManager = driverConnectionManager;
             _hubDashboard = hubDashboard;
+            _httpClient = httpClientFactory.CreateClient();
         }
 
         #region SignalR Events
@@ -76,6 +80,13 @@ namespace KiloTaxi.Realtime.Hubs
         {
             try
             {
+                var response = await _httpClient.PostAsJsonAsync("https://localhost:7181/api/v1/Sos", sosDto);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logHelper.LogError($"Failed to create SOS: {response.StatusCode} {response.ReasonPhrase}");
+                }
+
                 // Handle the data received from the client
                 _logHelper.LogDebug($"SendSos {sosDto}");
 
