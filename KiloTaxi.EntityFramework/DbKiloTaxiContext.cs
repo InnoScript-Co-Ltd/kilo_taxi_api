@@ -42,14 +42,15 @@ namespace KiloTaxi.EntityFramework
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<PaymentChannel> PaymentChannels { get; set; }
 
-
+        public DbSet<AuditLog> AuditLogs { get; set; }
+        
+        public DbSet<TransactionLog> TransactionLogs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Admin>().ToTable("Admin");
             modelBuilder.Entity<Driver>().ToTable("Driver");
             modelBuilder.Entity<Vehicle>().ToTable("Vehicle");
             modelBuilder.Entity<Customer>().ToTable("Customer");
-            ;
             modelBuilder.Entity<Promotion>().ToTable("Promotion");
             modelBuilder.Entity<Review>().ToTable("Review");
             modelBuilder.Entity<Order>().ToTable("Order");
@@ -64,6 +65,8 @@ namespace KiloTaxi.EntityFramework
             modelBuilder.Entity<Sms>().ToTable("Sms");
             modelBuilder.Entity<Sos>().ToTable("Sos");
             modelBuilder.Entity<Notification>().ToTable("Notification");
+            modelBuilder.Entity<AuditLog>().ToTable("AuditLog");
+            modelBuilder.Entity<TransactionLog>().ToTable("TransactionLog");
         }
     }
 }
