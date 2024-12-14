@@ -32,19 +32,20 @@ namespace KiloTaxi.EntityFramework
         public DbSet<PromotionUsage> PromotionUsages { get; set; }
 
         public DbSet<ScheduleBooking> ScheduleBookings { get; set; }
-        
+
         public DbSet<Sos> Sos { get; set; }
-        
+
         public DbSet<Sms> Sms { get; set; }
-        
+
         public DbSet<Reason> Reasons { get; set; }
-        
+
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<PaymentChannel> PaymentChannels { get; set; }
 
         public DbSet<AuditLog> AuditLogs { get; set; }
-        
+
         public DbSet<TransactionLog> TransactionLogs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Admin>().ToTable("Admin");

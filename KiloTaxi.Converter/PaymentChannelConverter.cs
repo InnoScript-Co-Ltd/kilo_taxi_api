@@ -1,6 +1,6 @@
-﻿using KiloTaxi.EntityFramework.EntityModel;
+﻿using System;
+using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Model.DTO;
-using System;
 
 namespace KiloTaxi.Converter
 {
@@ -15,11 +15,14 @@ namespace KiloTaxi.Converter
             {
                 Id = paymentChannel.Id,
                 ChannelName = paymentChannel.ChannelName,
-                Description = paymentChannel.Description
+                Description = paymentChannel.Description,
             };
         }
 
-        public static void ConvertModelToEntity(PaymentChannelDTO paymentChannelDTO, ref PaymentChannel paymentChannelEntity)
+        public static void ConvertModelToEntity(
+            PaymentChannelDTO paymentChannelDTO,
+            ref PaymentChannel paymentChannelEntity
+        )
         {
             if (paymentChannelDTO == null)
                 throw new ArgumentNullException(nameof(paymentChannelDTO));
