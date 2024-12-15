@@ -35,6 +35,7 @@ namespace KiloTaxi.DataAccess.Helper
             services.AddScoped<IReasonRepository, ReasonRepository>();
             services.AddScoped<IPaymentChannelRepository, PaymentChannelRepository>();
             services.AddScoped<ITransactionLogRepository, TransactionLogRepository>();
+            services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         }
     }
 }
