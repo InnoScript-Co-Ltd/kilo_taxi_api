@@ -21,7 +21,7 @@ public static class SosConverter
                 Address = sosEntity.Address,
                 Status = Enum.Parse<GeneralStatus>(sosEntity.Status),
                 ReferenceId = sosEntity.ReferenceId,
-                WalletType = Enum.Parse<WalletType>(sosEntity.WalletType),
+                UserType = Enum.Parse<UserType>(sosEntity.UserType),
                 ReasonId = sosEntity.ReasonId,
                 ReasonName=sosEntity.Reason.Name,
             };
@@ -41,7 +41,7 @@ public static class SosConverter
                 sosEntity.Address = sosDTO.Address;
                 sosEntity.Status = sosDTO.Status.ToString();
                 sosEntity.ReferenceId = sosDTO.ReferenceId;
-                sosEntity.WalletType = sosDTO.WalletType.ToString();
+                sosEntity.UserType = sosDTO.UserType.ToString();
                 sosEntity.ReasonId = sosDTO.ReasonId;
                 
                 

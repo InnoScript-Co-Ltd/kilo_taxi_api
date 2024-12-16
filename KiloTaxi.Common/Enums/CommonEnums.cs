@@ -78,7 +78,7 @@ namespace KiloTaxi.Common.Enums
         Fail,
     }
 
-    public enum WalletType
+    public enum UserType
     {
         Customer,
         Driver,
@@ -143,6 +143,7 @@ namespace KiloTaxi.Common.Enums
 
     public enum OrderStatus
     {
+        Pending,
         Completed,
         Cancelled,
         InProgress,

@@ -16,7 +16,7 @@ namespace KiloTaxi.EntityFramework.EntityModel
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         [Required]
-        public string WalletType { get; set; }
+        public string UserType { get; set; }
         [Required]
         public string Status { get; set; }
 

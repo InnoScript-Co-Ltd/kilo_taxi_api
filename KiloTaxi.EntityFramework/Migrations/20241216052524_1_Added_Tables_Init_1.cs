@@ -383,7 +383,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReferenceId = table.Column<int>(type: "int", nullable: false),
-                    WalletType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReasonId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -441,7 +441,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                     Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    WalletType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WalletId = table.Column<int>(type: "int", nullable: false)
                 },

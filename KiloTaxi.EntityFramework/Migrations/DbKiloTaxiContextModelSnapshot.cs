@@ -668,7 +668,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("WalletType")
+                    b.Property<string>("UserType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -911,12 +911,12 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("WalletId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("WalletType")
+                    b.Property<string>("UserType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WalletId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

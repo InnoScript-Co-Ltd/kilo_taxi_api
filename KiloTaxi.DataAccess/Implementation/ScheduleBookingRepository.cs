@@ -153,10 +153,11 @@ namespace KiloTaxi.DataAccess.Implementation
         {
             try
             {
+                // Fetch the ScheduleBooking entity including related entities
                 var scheduleBookingEntity = _dbKiloTaxiContext
                     .ScheduleBookings.Include(r => r.Customer)
                     .Include(r => r.Driver)
-                    .FirstOrDefault(ScheduleBooking => ScheduleBooking.Id == id);
+                    .FirstOrDefault(scheduleBooking => scheduleBooking.Id == id);
 
                 if (scheduleBookingEntity == null)
                 {
@@ -164,7 +165,21 @@ namespace KiloTaxi.DataAccess.Implementation
                     return null;
                 }
 
-                return ScheduleBookingConverter.ConvertEntityToModel(scheduleBookingEntity);
+                // Convert ScheduleBooking entity to DTO
+                var scheduleBookingDTO = ScheduleBookingConverter.ConvertEntityToModel(
+                    scheduleBookingEntity
+                );
+
+                // Fetch and populate Orders associated with the ScheduleBooking
+                var orderDTOs = _dbKiloTaxiContext
+                    .Orders.Where(o => o.ScheduleBookingId == scheduleBookingDTO.Id)
+                    .Select(order => OrderConverter.ConvertEntityToModel(order))
+                    .ToList();
+
+                // Assign associated Orders to the ScheduleBookingDTO
+                scheduleBookingDTO.Orders = orderDTOs;
+
+                return scheduleBookingDTO;
             }
             catch (Exception ex)
             {

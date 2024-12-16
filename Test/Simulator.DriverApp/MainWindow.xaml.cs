@@ -62,7 +62,7 @@ namespace Simulator.DriverApp
                 Address = txtAddress.Text,
                 ReferenceId = int.Parse(txtReferenceId.Text),
                 ReasonId = int.Parse(txtReasonId.Text),
-                WalletType = Enum.Parse<WalletType>(txtWalletType.Text),
+                UserType = Enum.Parse<UserType>(txtWalletType.Text),
                 Status = Enum.Parse<GeneralStatus>(txtStatus.Text),
             };
             connection.InvokeAsync("SendSos", sosDto);

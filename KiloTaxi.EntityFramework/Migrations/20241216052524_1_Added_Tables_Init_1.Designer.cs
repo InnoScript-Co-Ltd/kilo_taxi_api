@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KiloTaxi.EntityFramework.Migrations
 {
     [DbContext(typeof(DbKiloTaxiContext))]
-    [Migration("20241216045104_1_Added_Tables_Init_1")]
+    [Migration("20241216052524_1_Added_Tables_Init_1")]
     partial class _1_Added_Tables_Init_1
     {
         /// <inheritdoc />
@@ -671,7 +671,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("WalletType")
+                    b.Property<string>("UserType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -914,12 +914,12 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("WalletId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("WalletType")
+                    b.Property<string>("UserType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WalletId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

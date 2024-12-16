@@ -30,7 +30,7 @@ public class SosRepository : ISosRepository
                 query = query.Where(p =>
                     p.Address.Contains(pageSortParam.SearchTerm)
                     || p.Status.Contains(pageSortParam.SearchTerm)
-                    || p.WalletType.Contains(pageSortParam.SearchTerm)
+                    || p.UserType.Contains(pageSortParam.SearchTerm)
                     );
             }
 
