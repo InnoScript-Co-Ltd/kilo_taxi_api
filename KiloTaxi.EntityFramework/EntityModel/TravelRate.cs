@@ -11,7 +11,8 @@ public class TravelRate
     
     public string Unit { get; set; }
     
-    public string Rate { get; set; }
+    [Column(TypeName = "decimal(18, 2)")]
+    public decimal Rate { get; set; }
     
     [ForeignKey("VehicleType")]
     public int VehicleTypeId { get; set; }
