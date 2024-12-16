@@ -113,6 +113,23 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.ToTable("AuditLog", (string)null);
                 });
 
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.City", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("City", (string)null);
+                });
+
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -750,6 +767,37 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.ToTable("TransactionLog", (string)null);
                 });
 
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.TravelRate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Rate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VehicleTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("VehicleTypeId");
+
+                    b.ToTable("TravelRate", (string)null);
+                });
+
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Vehicle", b =>
                 {
                     b.Property<int>("Id")
@@ -1095,6 +1143,25 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired();
 
                     b.Navigation("PaymentChannel");
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.TravelRate", b =>
+                {
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.VehicleType", "VehicleType")
+                        .WithMany()
+                        .HasForeignKey("VehicleTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("City");
+
+                    b.Navigation("VehicleType");
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Vehicle", b =>

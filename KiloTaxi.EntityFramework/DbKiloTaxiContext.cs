@@ -45,6 +45,10 @@ namespace KiloTaxi.EntityFramework
         public DbSet<AuditLog> AuditLogs { get; set; }
 
         public DbSet<TransactionLog> TransactionLogs { get; set; }
+        
+        public DbSet<TravelRate> TravelRates { get; set; }
+        
+        public DbSet<City> Cities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,6 +72,8 @@ namespace KiloTaxi.EntityFramework
             modelBuilder.Entity<Notification>().ToTable("Notification");
             modelBuilder.Entity<AuditLog>().ToTable("AuditLog");
             modelBuilder.Entity<TransactionLog>().ToTable("TransactionLog");
+            modelBuilder.Entity<TravelRate>().ToTable("TravelRate");
+            modelBuilder.Entity<City>().ToTable("City");
         }
     }
 }
