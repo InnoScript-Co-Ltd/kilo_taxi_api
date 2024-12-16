@@ -19,15 +19,16 @@ public static class VehicleConverter
         {
             Id = vehicleEntity.Id,
             VehicleNo = vehicleEntity.VehicleNo,
-            VehicleType = vehicleEntity.VehicleType,
             Model = vehicleEntity.Model,
             FuelType = vehicleEntity.FuelType,
+            DriverMode = Enum.Parse<DriverMode>(vehicleEntity.DriverMode),
             BusinessLicenseImage = mediaHostUrl + vehicleEntity.BusinessLicenseImage,
             VehicleLicenseFront = mediaHostUrl + vehicleEntity.VehicleLicenseFront,
             VehicleLicenseBack = mediaHostUrl + vehicleEntity.VehicleLicenseBack,
             Status = Enum.Parse<VehicleStatus>(vehicleEntity.Status),
             DriverId = vehicleEntity.DriverId,
             DriverName = vehicleEntity.Driver.Name,
+            VehicleTypeId = vehicleEntity.VehicleTypeId,
         };
     }
 
@@ -42,14 +43,15 @@ public static class VehicleConverter
             }
             vehicleEntity.Id = vehicleDTO.Id;
             vehicleEntity.VehicleNo = vehicleDTO.VehicleNo;
-            vehicleEntity.VehicleType = vehicleDTO.VehicleType;
             vehicleEntity.Model = vehicleDTO.Model;
             vehicleEntity.FuelType = vehicleDTO.FuelType;
+            vehicleEntity.DriverMode = vehicleDTO.DriverMode.ToString();
             vehicleEntity.BusinessLicenseImage = vehicleDTO.BusinessLicenseImage;
             vehicleEntity.VehicleLicenseFront = vehicleDTO.VehicleLicenseFront;
             vehicleEntity.VehicleLicenseBack = vehicleDTO.VehicleLicenseBack;
             vehicleEntity.Status = vehicleDTO.Status.ToString();
             vehicleEntity.DriverId = vehicleDTO.DriverId;
+            vehicleEntity.VehicleTypeId = vehicleDTO.VehicleTypeId;
         }
         catch (ArgumentException ex)
         {

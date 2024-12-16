@@ -24,7 +24,7 @@ public class WalletTransaction
     public int ReferenceId { get; set; }
     
     [StringLength(500)]
-    public string Details { get; set; }
+    public string? Details { get; set; }
     
     [Required]
     public string TransactionType { get; set; }

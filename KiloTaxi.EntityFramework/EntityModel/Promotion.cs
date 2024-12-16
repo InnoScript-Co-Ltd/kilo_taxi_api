@@ -16,13 +16,18 @@ namespace KiloTaxi.EntityFramework.EntityModel
 
         [Required]
         public string PromoCode { get; set; }
+        
+        [DataType(DataType.DateTime)]
+        public DateTime CreatedDate { get; set; }
+        
+        public int? Quantity { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]
-        public DateTime ExpiredAt { get; set; }
+        public DateTime ExpiredDate { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal? Value { get; set; }
+        public decimal Unit { get; set; }
         
         [Required]
         public string PromotionType { get; set; }
@@ -32,9 +37,9 @@ namespace KiloTaxi.EntityFramework.EntityModel
         
         [Required]
         public string ApplicableTo { get; set; }
+        
+        public string? Description { get; set; }
 
-        [ForeignKey("Customer")]
-        public int CustomerId { get; set; }
-        public virtual Customer Customer { get; set; }
+       
     }
 }

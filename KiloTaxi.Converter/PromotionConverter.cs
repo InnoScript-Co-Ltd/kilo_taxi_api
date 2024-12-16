@@ -26,12 +26,13 @@ namespace KiloTaxi.Converter
             {
                 Id = promotionEntity.Id,
                 PromoCode = promotionEntity.PromoCode,
-                ExpiredAt = promotionEntity.ExpiredAt,
-                Value = promotionEntity.Value,
+                CreatedDate = promotionEntity.CreatedDate,
+                Quantity = promotionEntity.Quantity,
+                Description = promotionEntity.Description,
+                ExpiredDate = promotionEntity.ExpiredDate,
+                Unit = promotionEntity.Unit,
                 Status = Enum.Parse<PromotionStatus>(promotionEntity.Status),
-                CustomerId = promotionEntity.CustomerId,
                 ApplicableTo =Enum.Parse<ApplicableTo>(promotionEntity.ApplicableTo),
-                CustomerName = promotionEntity.Customer.Name,
             };
         }
 
@@ -68,12 +69,14 @@ namespace KiloTaxi.Converter
 
                 promotionEntity.Id = promotionDTO.Id;
                 promotionEntity.PromoCode = promotionDTO.PromoCode;
-                promotionEntity.ExpiredAt = promotionDTO.ExpiredAt;
-                promotionEntity.Value = promotionDTO.Value;
+                promotionEntity.CreatedDate = promotionDTO.CreatedDate;
+                promotionEntity.ExpiredDate = promotionDTO.ExpiredDate;
+                promotionEntity.Quantity = promotionDTO.Quantity;
+                promotionEntity.Description = promotionDTO.Description;
+                promotionEntity.Unit = promotionDTO.Unit;
                 promotionEntity.PromotionType = promotionDTO.PromotionType.ToString();
                 promotionEntity.ApplicableTo = promotionDTO.ApplicableTo.ToString();
                 promotionEntity.Status = promotionDTO.Status.ToString();
-                promotionEntity.CustomerId = promotionDTO.CustomerId;
             }
             catch (Exception ex)
             {

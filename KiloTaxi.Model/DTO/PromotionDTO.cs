@@ -14,12 +14,17 @@ namespace KiloTaxi.Model.DTO
 
         [Required]
         public string PromoCode { get; set; }
+        
+        [DataType(DataType.DateTime)]
+        public DateTime CreatedDate { get; set; }
+        
+        public int? Quantity {get;set;}
 
         [Required]
-        public DateTime ExpiredAt { get; set; }
+        public DateTime ExpiredDate { get; set; }
 
         [Range(0.01, 10000.00)]
-        public decimal? Value { get; set; }
+        public decimal Unit { get; set; }
         
         [Required]
         public PromotionType PromotionType { get; set; }
@@ -29,8 +34,9 @@ namespace KiloTaxi.Model.DTO
         
         [Required]
         public PromotionStatus Status { get; set; }
+        
+        public string? Description { get; set; }
 
-        public int CustomerId { get; set; }
-        public string? CustomerName { get; set; }
+
     }
 }

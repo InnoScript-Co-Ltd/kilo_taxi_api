@@ -43,7 +43,7 @@ namespace KiloTaxi.Common.Enums
     public enum PaymentType
     {
         Cash,
-        Wallet,
+        BankTransfer,
         OnlinePayment
     }
 
@@ -173,5 +173,12 @@ namespace KiloTaxi.Common.Enums
         Customer,
         Driver,
         Both,
+    }
+
+    public enum DriverMode
+    {
+        Available,
+        Offline,
+        Engaged
     }
 }

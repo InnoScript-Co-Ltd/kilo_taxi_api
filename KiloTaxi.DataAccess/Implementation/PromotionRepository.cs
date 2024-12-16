@@ -22,14 +22,12 @@ namespace KiloTaxi.DataAccess.Implementation
         {
             try
             {
-                var query = _dbKiloTaxiContext.Promotions.Include(p => p.Customer).AsQueryable();
+                var query = _dbKiloTaxiContext.Promotions.AsQueryable();
 
                 if (!string.IsNullOrEmpty(pageSortParam.SearchTerm))
                 {
                     query = query.Where(promotion =>
-                        promotion.PromoCode.Contains(pageSortParam.SearchTerm)
-                        || promotion.Customer.Name.Contains(pageSortParam.SearchTerm)
-                    );
+                        promotion.PromoCode.Contains(pageSortParam.SearchTerm));
                 }
 
                 int totalCount = query.Count();
@@ -98,15 +96,11 @@ namespace KiloTaxi.DataAccess.Implementation
                 Promotion promotionEntity = new Promotion();
                 PromotionConverter.ConvertModelToEntity(promotionDTO, ref promotionEntity);
 
-                var customer = _dbKiloTaxiContext.Customers.FirstOrDefault(c =>
-                    c.Id == promotionDTO.CustomerId
-                );
-
+              
                 _dbKiloTaxiContext.Add(promotionEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 promotionDTO.Id = promotionEntity.Id;
-                promotionDTO.CustomerName = customer.Name;
 
                 LoggerHelper.Instance.LogInfo(
                     $"Promotion added successfully with Id: {promotionEntity.Id}"
@@ -153,7 +147,7 @@ namespace KiloTaxi.DataAccess.Implementation
             try
             {
                 var promotionEntity = _dbKiloTaxiContext
-                    .Promotions.Include(p => p.Customer)
+                    .Promotions
                     .FirstOrDefault(promotion => promotion.Id == id);
                 if (promotionEntity == null)
                 {
