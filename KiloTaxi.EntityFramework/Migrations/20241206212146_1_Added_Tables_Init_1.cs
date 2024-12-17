@@ -406,7 +406,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                     BalanceAfter = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TransactionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ReferenceId = table.Column<int>(type: "int", nullable: false),
-                    Details = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Details = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     TransactionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WalletUserMappingId = table.Column<int>(type: "int", nullable: false)
                 },

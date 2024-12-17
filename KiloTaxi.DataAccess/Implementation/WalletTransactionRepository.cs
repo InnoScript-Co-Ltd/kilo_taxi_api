@@ -16,12 +16,10 @@ namespace KiloTaxi.DataAccess.Implementation
     public class WalletTransactionRepository : IWalletTransactionRepository
     {
         private readonly DbKiloTaxiContext _dbKiloTaxiContext;
-        private string _mediaHostUrl;
 
-        public WalletTransactionRepository(DbKiloTaxiContext dbKiloTaxiContext, IOptions<MediaSettings> mediaSettings)
+        public WalletTransactionRepository(DbKiloTaxiContext dbKiloTaxiContext)
         {
             _dbKiloTaxiContext = dbKiloTaxiContext;
-            _mediaHostUrl = mediaSettings.Value.MediaHostUrl;
         }
 
         public WalletTransactionDTO CreateWalletTransaction(WalletTransactionDTO walletTransactionDTO)
@@ -32,7 +30,12 @@ namespace KiloTaxi.DataAccess.Implementation
                 DateTime TransactionDate = DateTime.Now;
                 walletTransactionDTO.TransactionDate = TransactionDate;
                 var walletUserMapping = _dbKiloTaxiContext.WalletUserMappings.FirstOrDefault(w => w.Id == walletTransactionDTO.WalletUserMappingId);
+                if (walletUserMapping == null)
+                {
+                    throw new InvalidOperationException("WalletUserMapping not found.");
+                }
                 walletTransactionDTO.BalanceBefore = walletUserMapping.Balance;
+
                 if (walletTransactionDTO.TransactionType == TransactionType.TopUp)
                 {
                     var topUpTransaction = _dbKiloTaxiContext.TopUpTransactions.FirstOrDefault(t => t.Id == walletTransactionDTO.ReferenceId);
@@ -56,6 +59,8 @@ namespace KiloTaxi.DataAccess.Implementation
                 WalletTransactionConverter.ConvertModelToEntity(walletTransactionDTO, ref walletTransactionEntity);
 
                 _dbKiloTaxiContext.Add(walletTransactionEntity);
+                walletUserMapping.Balance = walletTransactionDTO.BalanceAfter;
+                _dbKiloTaxiContext.WalletUserMappings.Update(walletUserMapping);
                 _dbKiloTaxiContext.SaveChanges();
 
                 walletTransactionDTO.Id = walletTransactionEntity.Id;

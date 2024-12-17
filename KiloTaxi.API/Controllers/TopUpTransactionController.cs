@@ -1,5 +1,8 @@
 ﻿using KiloTaxi.API.Helper.FileHelpers;
+using KiloTaxi.Common.Enums;
+using KiloTaxi.DataAccess.Implementation;
 using KiloTaxi.DataAccess.Interface;
+using KiloTaxi.EntityFramework;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -62,11 +65,11 @@ public class TopUpTransactionController : ControllerBase
             topUpTransactionDTO.TransactionScreenShoot = resolvedFilePath;
 
             var createdTransaction = _topUpTransactionRepository.CreateTopUpTransaction(topUpTransactionDTO);
+
             if (topUpTransactionDTO.File_TransactionScreenShoot != null && topUpTransactionDTO.File_TransactionScreenShoot.Length > 0)
             {
                 string filePath = await fileUploadHelper.SaveFileAsync(topUpTransactionDTO.File_TransactionScreenShoot, flagDomain, topUpTransactionDTO.Id.ToString(), resolvedFilePath);
             }
-
             return CreatedAtAction(nameof(Get), new { id = createdTransaction.Id }, createdTransaction);
         }
         catch (Exception ex)
@@ -76,5 +79,5 @@ public class TopUpTransactionController : ControllerBase
         }
     }
 
-    
+
 }
