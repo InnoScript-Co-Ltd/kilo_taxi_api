@@ -41,17 +41,18 @@ namespace KiloTaxi.DataAccess.Implementation
 
                 topUpTransactionDTO.Id = topUpTransactionEntity.Id;
 
-                var walletTransactionDTO = new WalletTransactionDTO
+                if (topUpTransactionEntity.Status == "Success") 
                 {
-                    Amount = topUpTransactionEntity.Amount,
-                    TransactionType = TransactionType.TopUp,
-                    ReferenceId = topUpTransactionEntity.Id,
-                    WalletUserMappingId = walletUserMapping.Id
-                };
+                    var walletTransactionDTO = new WalletTransactionDTO
+                    {
+                        Amount = topUpTransactionEntity.Amount,
+                        TransactionType = TransactionType.TopUp,
+                        ReferenceId = topUpTransactionEntity.Id,
+                        WalletUserMappingId = walletUserMapping.Id
+                    };
 
-                _walletTransactionRepository.CreateWalletTransaction(walletTransactionDTO);
-
-
+                    _walletTransactionRepository.CreateWalletTransaction(walletTransactionDTO);
+                }
                 if (!string.IsNullOrEmpty(topUpTransactionEntity.TransactionScreenShoot) &&
                 !topUpTransactionEntity.TransactionScreenShoot.Contains("default.png"))
                 {
