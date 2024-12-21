@@ -1,30 +1,46 @@
-﻿using KiloTaxi.EntityFramework.EntityModel;
-using KiloTaxi.Model.DTO;
-using System;
+﻿using System;
 using KiloTaxi.Common.Enums;
+using KiloTaxi.EntityFramework.EntityModel;
+using KiloTaxi.Logging;
+using KiloTaxi.Model.DTO;
 
 namespace KiloTaxi.Converter
 {
     public static class PaymentChannelConverter
     {
-        public static PaymentChannelDTO ConvertEntityToModel(PaymentChannel paymentChannel)
+        public static PaymentChannelDTO ConvertEntityToModel(
+            PaymentChannel paymentChannelEntity,
+            string mediaHostUrl
+        )
         {
-            if (paymentChannel == null)
-                throw new ArgumentNullException(nameof(paymentChannel));
+            if (paymentChannelEntity == null)
+            {
+                LoggerHelper.Instance.LogError(
+                    new ArgumentNullException(nameof(paymentChannelEntity)),
+                    "Payment Channel Entity is null"
+                );
+                throw new ArgumentNullException(
+                    nameof(paymentChannelEntity),
+                    "Source paymentChannelEntity cannot be null"
+                );
+            }
 
             return new PaymentChannelDTO
             {
-                Id = paymentChannel.Id,
-                ChannelName = paymentChannel.ChannelName,
-                Description = paymentChannel.Description,
-                PaymentType=Enum.Parse<PaymentType>(paymentChannel.PaymentType) ,
-                Icon    = paymentChannel.Icon,
-                Phone    = paymentChannel.Phone,
-                UserName = paymentChannel.UserName,
+                Id = paymentChannelEntity.Id,
+                ChannelName = paymentChannelEntity.ChannelName,
+                Description = paymentChannelEntity.Description,
+                PaymentType = Enum.Parse<PaymentType>(paymentChannelEntity.PaymentType),
+                Icon = mediaHostUrl + paymentChannelEntity.Icon,
+                Phone = paymentChannelEntity.Phone,
+                UserName = paymentChannelEntity.UserName,
             };
         }
 
-        public static void ConvertModelToEntity(PaymentChannelDTO paymentChannelDTO, ref PaymentChannel paymentChannelEntity)
+        public static void ConvertModelToEntity(
+            PaymentChannelDTO paymentChannelDTO,
+            ref PaymentChannel paymentChannelEntity
+        )
         {
             if (paymentChannelDTO == null)
                 throw new ArgumentNullException(nameof(paymentChannelDTO));
@@ -39,7 +55,6 @@ namespace KiloTaxi.Converter
             paymentChannelEntity.Icon = paymentChannelDTO.Icon;
             paymentChannelEntity.Phone = paymentChannelDTO.Phone;
             paymentChannelEntity.UserName = paymentChannelDTO.UserName;
-            
         }
     }
 }
