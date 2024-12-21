@@ -36,5 +36,11 @@ namespace KiloTaxi.Model.DTO
         public PromotionStatus Status { get; set; }
 
         public string? Description { get; set; }
+
+        // Input: List of customer IDs (for creation or update)
+        public List<int>? CustomerIds { get; set; }
+
+        // Output: List of customer names (for display)
+        public List<string>? CustomerNames { get; set; }
     }
 }

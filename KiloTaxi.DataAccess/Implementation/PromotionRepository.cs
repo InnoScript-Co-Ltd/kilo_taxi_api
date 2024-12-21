@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using KiloTaxi.Common.Enums;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
@@ -22,7 +23,10 @@ namespace KiloTaxi.DataAccess.Implementation
         {
             try
             {
-                var query = _dbKiloTaxiContext.Promotions.AsQueryable();
+                var query = _dbKiloTaxiContext
+                    .Promotions.Include(p => p.PromotionUsers)
+                    .ThenInclude(pu => pu.Customer) // Include related Customer data
+                    .AsQueryable();
 
                 if (!string.IsNullOrEmpty(pageSortParam.SearchTerm))
                 {
@@ -61,7 +65,10 @@ namespace KiloTaxi.DataAccess.Implementation
                         .Take(pageSortParam.PageSize);
                 }
 
-                var promotions = query.Select(PromotionConverter.ConvertEntityToModel).ToList();
+                var promotions = query
+                    .ToList() // Fetch data before converting
+                    .Select(PromotionConverter.ConvertEntityToModel)
+                    .ToList();
 
                 var totalPages = (int)Math.Ceiling((double)totalCount / pageSortParam.PageSize);
                 var pagingResult = new PagingResult
@@ -94,11 +101,44 @@ namespace KiloTaxi.DataAccess.Implementation
         {
             try
             {
+                promotionDTO.CustomerIds = promotionDTO.CustomerIds?.Distinct().ToList();
+
                 Promotion promotionEntity = new Promotion();
                 PromotionConverter.ConvertModelToEntity(promotionDTO, ref promotionEntity);
 
+                promotionEntity.PromotionUsers.Clear();
+
+                // Validate and add PromotionUsers
+                if (promotionDTO.CustomerIds != null && promotionDTO.CustomerIds.Any())
+                {
+                    var customers = _dbKiloTaxiContext
+                        .Customers.Where(c => promotionDTO.CustomerIds.Contains(c.Id))
+                        .ToList();
+
+                    if (customers.Count != promotionDTO.CustomerIds.Count)
+                    {
+                        throw new ArgumentException("One or more customer IDs are invalid.");
+                    }
+
+                    foreach (var customer in customers)
+                    {
+                        promotionEntity.PromotionUsers.Add(
+                            new PromotionUser
+                            {
+                                CustomerId = customer.Id,
+                                PromotionId = promotionEntity.Id,
+                            }
+                        );
+                    }
+                }
+
                 _dbKiloTaxiContext.Add(promotionEntity);
                 _dbKiloTaxiContext.SaveChanges();
+
+                promotionDTO.CustomerNames = _dbKiloTaxiContext
+                    .Customers.Where(c => promotionDTO.CustomerIds.Contains(c.Id))
+                    .Select(c => c.Name)
+                    .ToList();
 
                 promotionDTO.Id = promotionEntity.Id;
 
@@ -119,17 +159,44 @@ namespace KiloTaxi.DataAccess.Implementation
         {
             try
             {
-                var promotionEntity = _dbKiloTaxiContext.Promotions.FirstOrDefault(promotion =>
-                    promotion.Id == promotionDTO.Id
-                );
+                var promotionEntity = _dbKiloTaxiContext
+                    .Promotions.Include(p => p.PromotionUsers)
+                    .FirstOrDefault(promotion => promotion.Id == promotionDTO.Id);
+
                 if (promotionEntity == null)
                 {
                     return false;
                 }
 
                 PromotionConverter.ConvertModelToEntity(promotionDTO, ref promotionEntity);
-                _dbKiloTaxiContext.SaveChanges();
 
+                if (promotionDTO.CustomerIds != null)
+                {
+                    var validCustomers = _dbKiloTaxiContext
+                        .Customers.Where(c => promotionDTO.CustomerIds.Contains(c.Id))
+                        .ToList();
+
+                    if (validCustomers.Count != promotionDTO.CustomerIds.Count)
+                    {
+                        throw new ArgumentException("One or more customer IDs are invalid.");
+                    }
+
+                    promotionEntity.PromotionUsers.Clear();
+
+                    promotionEntity.PromotionUsers = validCustomers
+                        .Select(customer => new PromotionUser
+                        {
+                            CustomerId = customer.Id,
+                            PromotionId = promotionEntity.Id,
+                        })
+                        .ToList();
+                }
+                else
+                {
+                    promotionEntity.PromotionUsers.Clear();
+                }
+
+                _dbKiloTaxiContext.SaveChanges();
                 return true;
             }
             catch (Exception ex)
@@ -146,16 +213,24 @@ namespace KiloTaxi.DataAccess.Implementation
         {
             try
             {
-                var promotionEntity = _dbKiloTaxiContext.Promotions.FirstOrDefault(promotion =>
-                    promotion.Id == id
-                );
+                var promotionEntity = _dbKiloTaxiContext
+                    .Promotions.Include(p => p.PromotionUsers)
+                    .ThenInclude(pu => pu.Customer)
+                    .FirstOrDefault(promotion => promotion.Id == id);
+
                 if (promotionEntity == null)
                 {
                     LoggerHelper.Instance.LogError($"Promotion with Id: {id} not found.");
                     return null;
                 }
 
-                return PromotionConverter.ConvertEntityToModel(promotionEntity);
+                var promotionDTO = PromotionConverter.ConvertEntityToModel(promotionEntity);
+
+                promotionDTO.CustomerNames = promotionEntity
+                    .PromotionUsers.Select(pu => pu.Customer.Name)
+                    .ToList();
+
+                return promotionDTO;
             }
             catch (Exception ex)
             {
@@ -171,9 +246,9 @@ namespace KiloTaxi.DataAccess.Implementation
         {
             try
             {
-                var promotionEntity = _dbKiloTaxiContext.Promotions.FirstOrDefault(promotion =>
-                    promotion.Id == id
-                );
+                var promotionEntity = _dbKiloTaxiContext
+                    .Promotions.Include(p => p.PromotionUsers)
+                    .FirstOrDefault(promotion => promotion.Id == id);
                 if (promotionEntity == null)
                 {
                     return false;
