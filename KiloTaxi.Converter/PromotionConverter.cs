@@ -32,7 +32,7 @@ namespace KiloTaxi.Converter
                 ExpiredDate = promotionEntity.ExpiredDate,
                 Unit = promotionEntity.Unit,
                 Status = Enum.Parse<PromotionStatus>(promotionEntity.Status),
-                ApplicableTo =Enum.Parse<ApplicableTo>(promotionEntity.ApplicableTo),
+                ApplicableTo = Enum.Parse<ApplicableTo>(promotionEntity.ApplicableTo),
             };
         }
 
