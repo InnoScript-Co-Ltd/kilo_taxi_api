@@ -30,6 +30,7 @@ public static class DriverConverter
             DriverLicense = driverEntity.DriverLicense,
             DriverImageLicenseFront = mediaHostUrl + driverEntity.DriverImageLicenseFront,
             DriverImageLicenseBack = mediaHostUrl + driverEntity.DriverImageLicenseBack,
+            Password = driverEntity.Password,
             EmailVerifiedAt = driverEntity.EmailVerifiedAt,
             PhoneVerifiedAt = driverEntity.PhoneVerifiedAt,
             Address = driverEntity.Address,

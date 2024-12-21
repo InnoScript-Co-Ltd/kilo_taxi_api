@@ -28,7 +28,11 @@ namespace KiloTaxi.Converter
                 CustomerId = scheduleBookingEntity.CustomerId,
                 DriverId = scheduleBookingEntity.DriverId,
                 PickUpLocation = scheduleBookingEntity.PickUpLocation,
-                DropOffLocation = scheduleBookingEntity.DropOffLocation,
+                PickUpLat = scheduleBookingEntity.PickUpLat,
+                PickUpLong = scheduleBookingEntity.PickUpLong,
+                DestinationLocation = scheduleBookingEntity.DestinationLocation,
+                DestinationLat = scheduleBookingEntity.DestinationLat,
+                DestinationLong = scheduleBookingEntity.DestinationLong,
                 ScheduleTime = scheduleBookingEntity.ScheduleTime,
                 Status =Enum.Parse<ScheduleStatus>(scheduleBookingEntity.Status),
                 CreatedDate = scheduleBookingEntity.CreatedDate,
@@ -67,7 +71,11 @@ namespace KiloTaxi.Converter
                 scheduleBookingEntity.CustomerId = scheduleBookingDTO.CustomerId;
                 scheduleBookingEntity.DriverId = scheduleBookingDTO.DriverId;
                 scheduleBookingEntity.PickUpLocation = scheduleBookingDTO.PickUpLocation;
-                scheduleBookingEntity.DropOffLocation = scheduleBookingDTO.DropOffLocation;
+                scheduleBookingEntity.PickUpLat = scheduleBookingDTO.PickUpLat;
+                scheduleBookingEntity.PickUpLong = scheduleBookingDTO.PickUpLong;
+                scheduleBookingEntity.DestinationLocation = scheduleBookingDTO.DestinationLocation;
+                scheduleBookingEntity.DestinationLat = scheduleBookingDTO.DestinationLat;
+                scheduleBookingEntity.DestinationLong = scheduleBookingDTO.DestinationLong;
                 scheduleBookingEntity.ScheduleTime = scheduleBookingDTO.ScheduleTime;
                 scheduleBookingEntity.Status = scheduleBookingDTO.Status.ToString();
                 scheduleBookingEntity.CreatedDate = scheduleBookingDTO.CreatedDate;

@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
         builder.AllowAnyHeader();
     });
 });
-
+builder.Services.AddHttpClient();
 ConfigHelper.ConfigureService(builder);
 
 builder.Services.AddSingleton<DriverConnectionManager>();

@@ -10,26 +10,27 @@ namespace KiloTaxi.Common.Enums
     {
         Male,
         Female,
-        Undefined
+        Undefined,
     }
 
     public enum OtpStatus
     {
         Pending,
         Success,
-        Expired
+        Expired,
     }
 
     public enum OptType
     {
         AccountOpen,
         ResetPassword,
-        AccountCancellation
+        AccountCancellation,
     }
+
     public enum WalletStatus
     {
         Active,
-        Disable
+        Disable,
     }
 
     public enum PaymentMethod
@@ -37,21 +38,21 @@ namespace KiloTaxi.Common.Enums
         Wallet,
         BankAccount,
         MupCard,
-        VisaMaster
+        VisaMaster,
     }
 
     public enum PaymentType
     {
         Cash,
-        Wallet,
-        OnlinePayment
+        BankTransfer,
+        OnlinePayment,
     }
 
     public enum ScheduleOrderStatus
     {
         Active,
         Approved,
-        Cancel
+        Cancel,
     }
 
     public enum CustomerStatus
@@ -68,7 +69,7 @@ namespace KiloTaxi.Common.Enums
         Alert,
         Promotion,
         Announcement,
-        Other
+        Other,
     }
 
     public enum SmsStatus
@@ -78,24 +79,24 @@ namespace KiloTaxi.Common.Enums
         Fail,
     }
 
-    public enum WalletType
+    public enum UserType
     {
         Customer,
         Driver,
-        VipCustomer
+        VipCustomer,
     }
 
     public enum GeneralStatus
     {
         Active,
         Disable,
-        Deleted
+        Deleted,
     }
 
     public enum KiloType
     {
         Normal,
-        KiloPlus
+        KiloPlus,
     }
 
     public enum PromotionStatus
@@ -105,53 +106,59 @@ namespace KiloTaxi.Common.Enums
         Active,
         Reject,
     }
-    
+
     public enum KycStatus
     {
         Pending,
         FullKyc,
-        Reject
+        Reject,
     }
 
     public enum NotificationStatus
     {
         Delivered,
         Read,
-        Fail
+        Fail,
     }
-    
+
     public enum DriverStatus
     {
         Pending,
         Active,
         Deactivate,
-        Suspend
+        Suspend,
     }
 
     public enum VehicleStatus
     {
         Active,
-        Suspend
+        Suspend,
     }
 
     public enum TopUpTransactionStatus
     {
         Pending,
         Success,
-        Reject
+        Reject,
     }
 
     public enum OrderStatus
     {
+        Pending,
         Completed,
         Cancelled,
         InProgress,
     }
 
+    // public enum PromotionType
+    // {
+    //     FixAmount,
+    //     Percentage,
+    // }
     public enum PromotionType
     {
-        FixAmount,
-        Percentage,
+        AllCustomer,
+        SpecificCustomer,
     }
 
     public enum TransactionType
@@ -165,7 +172,7 @@ namespace KiloTaxi.Common.Enums
     {
         Pending,
         Cancelled,
-        Completed,  
+        Completed,
     }
 
     public enum ApplicableTo
@@ -173,5 +180,12 @@ namespace KiloTaxi.Common.Enums
         Customer,
         Driver,
         Both,
+    }
+
+    public enum DriverMode
+    {
+        Available,
+        Offline,
+        Engaged,
     }
 }

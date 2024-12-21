@@ -7,6 +7,7 @@ using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace KiloTaxi.DataAccess.Implementation;
@@ -107,7 +108,7 @@ public class VehicleRepository:IVehicleRepository
     {
         try
         {
-            return VehicleConverter.ConvertEntityToModel(_dbKiloTaxiContext.Vehicles.FirstOrDefault(x => x.Id == id),_mediaHostUrl);
+            return VehicleConverter.ConvertEntityToModel(_dbKiloTaxiContext.Vehicles.Include(x=>x.Driver).FirstOrDefault(x => x.Id == id),_mediaHostUrl);
         }
         catch (Exception ex)
         {
@@ -120,7 +121,9 @@ public class VehicleRepository:IVehicleRepository
     {
         try
         {
-            var query = _dbKiloTaxiContext.Vehicles.AsQueryable();
+            var query = _dbKiloTaxiContext.Vehicles
+                .Include(v => v.Driver)
+                .AsQueryable();
             if(!string.IsNullOrEmpty(pageSortParam.SearchTerm))
             {
                 query=query.Where(p=>p.VehicleNo.Contains(pageSortParam.SearchTerm) || p.Model.Contains(pageSortParam.SearchTerm));

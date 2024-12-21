@@ -28,6 +28,38 @@ namespace KiloTaxi.EntityFramework.Migrations
                 oldType: "datetime2");
 
             migrationBuilder.CreateTable(
+                name: "AuditLog",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TableName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    RecordId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Operation = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    OldValues = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NewValues = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ChangedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ChangedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuditLog", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "City",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_City", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Customer",
                 columns: table => new
                 {
@@ -99,11 +131,36 @@ namespace KiloTaxi.EntityFramework.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ChannelName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PaymentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Icon = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PaymentChannel", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Promotion",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PromoCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: true),
+                    ExpiredDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Unit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PromotionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApplicableTo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Promotion", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -121,6 +178,37 @@ namespace KiloTaxi.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TransactionLog",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransactionId = table.Column<int>(type: "int", nullable: false),
+                    LogDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OperationType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Details = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PerformedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransactionLog", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VehicleType",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VehicleType", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Wallet",
                 columns: table => new
                 {
@@ -133,31 +221,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Wallet", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Promotion",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PromoCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ExpiredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Value = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    PromotionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ApplicableTo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Promotion", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Promotion_Customer_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customer",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -233,7 +296,11 @@ namespace KiloTaxi.EntityFramework.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PickUpLocation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DropOffLocation = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PickUpLat = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PickUpLong = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DestinationLocation = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DestinationLat = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DestinationLong = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ScheduleTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -296,33 +363,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Vehicle",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    VehicleNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    VehicleType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Model = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FuelType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BusinessLicenseImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    VehicleLicenseFront = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    VehicleLicenseBack = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DriverId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Vehicle", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Vehicle_Driver_DriverId",
-                        column: x => x.DriverId,
-                        principalTable: "Driver",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TopUpTransaction",
                 columns: table => new
                 {
@@ -356,7 +396,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReferenceId = table.Column<int>(type: "int", nullable: false),
-                    WalletType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReasonId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -371,6 +411,68 @@ namespace KiloTaxi.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TravelRate",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Unit = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Rate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    VehicleTypeId = table.Column<int>(type: "int", nullable: false),
+                    CityId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TravelRate", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TravelRate_City_CityId",
+                        column: x => x.CityId,
+                        principalTable: "City",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TravelRate_VehicleType_VehicleTypeId",
+                        column: x => x.VehicleTypeId,
+                        principalTable: "VehicleType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Vehicle",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VehicleNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Model = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FuelType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DriverMode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BusinessLicenseImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleLicenseFront = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleLicenseBack = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DriverId = table.Column<int>(type: "int", nullable: false),
+                    VehicleTypeId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Vehicle", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Vehicle_Driver_DriverId",
+                        column: x => x.DriverId,
+                        principalTable: "Driver",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Vehicle_VehicleType_VehicleTypeId",
+                        column: x => x.VehicleTypeId,
+                        principalTable: "VehicleType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "WalletUserMapping",
                 columns: table => new
                 {
@@ -380,7 +482,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                     Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    WalletType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WalletId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -532,11 +634,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                 column: "WalletTransactionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Promotion_CustomerId",
-                table: "Promotion",
-                column: "CustomerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PromotionUsage_CustomerId",
                 table: "PromotionUsage",
                 column: "CustomerId");
@@ -597,9 +694,24 @@ namespace KiloTaxi.EntityFramework.Migrations
                 column: "PaymentChannelId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TravelRate_CityId",
+                table: "TravelRate",
+                column: "CityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TravelRate_VehicleTypeId",
+                table: "TravelRate",
+                column: "VehicleTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Vehicle_DriverId",
                 table: "Vehicle",
                 column: "DriverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicle_VehicleTypeId",
+                table: "Vehicle",
+                column: "VehicleTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WalletTransaction_WalletUserMappingId",
@@ -615,6 +727,9 @@ namespace KiloTaxi.EntityFramework.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AuditLog");
+
             migrationBuilder.DropTable(
                 name: "Notification");
 
@@ -637,6 +752,12 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "TopUpTransaction");
 
             migrationBuilder.DropTable(
+                name: "TransactionLog");
+
+            migrationBuilder.DropTable(
+                name: "TravelRate");
+
+            migrationBuilder.DropTable(
                 name: "Vehicle");
 
             migrationBuilder.DropTable(
@@ -655,10 +776,16 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "PaymentChannel");
 
             migrationBuilder.DropTable(
-                name: "Driver");
+                name: "City");
+
+            migrationBuilder.DropTable(
+                name: "VehicleType");
 
             migrationBuilder.DropTable(
                 name: "Customer");
+
+            migrationBuilder.DropTable(
+                name: "Driver");
 
             migrationBuilder.DropTable(
                 name: "WalletUserMapping");

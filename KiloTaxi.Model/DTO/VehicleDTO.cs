@@ -12,13 +12,12 @@ public class VehicleDTO
     public string VehicleNo { get; set; }
     
     [Required]
-    public string VehicleType { get; set; }
-    
-    [Required]
     public string Model { get; set; }
     
     [Required]
     public string FuelType { get; set; }
+    
+    public DriverMode DriverMode { get; set; }
     
     public string? BusinessLicenseImage { get; set; }
     
@@ -32,6 +31,8 @@ public class VehicleDTO
     [Required]
     public int DriverId { get; set; }
     
+    public int VehicleTypeId { get; set; }
+    public string DriverName { get; set; }
     public IFormFile? File_BusinessLicenseImage{ get; set; }
     public IFormFile? File_VehicleLicenseFront { get; set; }
     public IFormFile? File_VehicleLicenseBack{ get; set; }

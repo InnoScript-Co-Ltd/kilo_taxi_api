@@ -110,7 +110,7 @@ public class DriverRepository : IDriverRepository
                 .ToList();
             var WalletUserMappingDTO = _dbKiloTaxiContext
                 .WalletUserMappings.Where(w =>
-                    w.UserId == driverDTO.Id && w.WalletType == WalletType.Driver.ToString()
+                    w.UserId == driverDTO.Id && w.UserType == UserType.Driver.ToString()
                 )
                 .Select(walletUserMapping =>
                     WalletUserMappingConverter.ConvertEntityToModel(walletUserMapping)

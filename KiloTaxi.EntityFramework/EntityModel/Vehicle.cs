@@ -12,14 +12,15 @@ public class Vehicle
     [Required]
     public string VehicleNo { get; set; }
     
-    [Required]
-    public string VehicleType { get; set; }
+    
     
     [Required]
     public string Model { get; set; }
     
     [Required]
     public string FuelType { get; set; }
+    
+    public string DriverMode {get;set;}
     
     public string? BusinessLicenseImage { get; set; }
     
@@ -32,4 +33,8 @@ public class Vehicle
     [ForeignKey("Driver")]
     public int DriverId { get; set; }
     public virtual Driver Driver { get; set; }
+    
+    [ForeignKey("VehicleType")]
+    public int VehicleTypeId { get; set; }
+    public virtual VehicleType VehicleType { get; set; }
 }

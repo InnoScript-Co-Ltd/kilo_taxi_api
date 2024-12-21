@@ -17,7 +17,7 @@ public class Sos
     
     public int ReferenceId { get; set; }
     [Required]
-    public string WalletType { get; set; }
+    public string UserType { get; set; }
     
     [ForeignKey("Reason")]
     public int ReasonId { get; set; }

@@ -17,7 +17,8 @@ public class SosDTO
     public int ReferenceId { get; set; }
     
     [Required]
-    public WalletType WalletType { get; set; }
+    public UserType UserType { get; set; }
     
     public int ReasonId { get; set; }
+    public string? ReasonName { get; set; }
 }

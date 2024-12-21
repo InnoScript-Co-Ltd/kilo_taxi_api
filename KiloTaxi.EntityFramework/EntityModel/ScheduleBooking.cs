@@ -12,8 +12,16 @@ public class ScheduleBooking
     [Required]
     public string PickUpLocation { get; set; }
     
+    public string PickUpLat  { get; set; }
+    
+    public string PickUpLong  { get; set; }
+    
     [Required]
-    public string DropOffLocation { get; set; }
+    public string DestinationLocation { get; set; }
+    
+    public string DestinationLat  { get; set; }
+    
+    public string DestinationLong  { get; set; }
     
     [Required]
     [DataType(DataType.DateTime)]

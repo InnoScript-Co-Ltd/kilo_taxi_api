@@ -1,6 +1,7 @@
 ﻿using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Model.DTO;
 using System;
+using KiloTaxi.Common.Enums;
 
 namespace KiloTaxi.Converter
 {
@@ -15,7 +16,11 @@ namespace KiloTaxi.Converter
             {
                 Id = paymentChannel.Id,
                 ChannelName = paymentChannel.ChannelName,
-                Description = paymentChannel.Description
+                Description = paymentChannel.Description,
+                PaymentType=Enum.Parse<PaymentType>(paymentChannel.PaymentType) ,
+                Icon    = paymentChannel.Icon,
+                Phone    = paymentChannel.Phone,
+                UserName = paymentChannel.UserName,
             };
         }
 
@@ -30,6 +35,11 @@ namespace KiloTaxi.Converter
             paymentChannelEntity.Id = paymentChannelDTO.Id;
             paymentChannelEntity.ChannelName = paymentChannelDTO.ChannelName;
             paymentChannelEntity.Description = paymentChannelDTO.Description;
+            paymentChannelEntity.PaymentType = paymentChannelDTO.PaymentType.ToString();
+            paymentChannelEntity.Icon = paymentChannelDTO.Icon;
+            paymentChannelEntity.Phone = paymentChannelDTO.Phone;
+            paymentChannelEntity.UserName = paymentChannelDTO.UserName;
+            
         }
     }
 }
