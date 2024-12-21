@@ -12,12 +12,12 @@ public class PaymentChannelDTO
 
     [Required]
     public string Description { get; set; }
-    
+
     public PaymentType PaymentType { get; set; }
-    
+
     public string Icon { get; set; }
-    
-    public string Phone { get; set; }
-    
-    public string UserName { get; set; }
+
+    public string? Phone { get; set; }
+
+    public string? UserName { get; set; }
 }

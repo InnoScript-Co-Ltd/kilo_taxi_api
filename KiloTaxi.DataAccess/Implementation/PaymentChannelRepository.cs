@@ -1,11 +1,11 @@
-﻿using KiloTaxi.Converter;
+﻿using System.Linq.Expressions;
+using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace KiloTaxi.DataAccess.Implementation;
 
@@ -23,7 +23,10 @@ public class PaymentChannelRepository : IPaymentChannelRepository
         try
         {
             var paymentChannelEntity = new PaymentChannel();
-            PaymentChannelConverter.ConvertModelToEntity(paymentChannelDTO, ref paymentChannelEntity);
+            PaymentChannelConverter.ConvertModelToEntity(
+                paymentChannelDTO,
+                ref paymentChannelEntity
+            );
 
             _dbContext.PaymentChannels.Add(paymentChannelEntity);
             _dbContext.SaveChanges();
@@ -42,11 +45,16 @@ public class PaymentChannelRepository : IPaymentChannelRepository
     {
         try
         {
-            var paymentChannelEntity =
-                _dbContext.PaymentChannels.FirstOrDefault(pc => pc.Id == paymentChannelDTO.Id);
-            if (paymentChannelEntity == null) return false;
+            var paymentChannelEntity = _dbContext.PaymentChannels.FirstOrDefault(pc =>
+                pc.Id == paymentChannelDTO.Id
+            );
+            if (paymentChannelEntity == null)
+                return false;
 
-            PaymentChannelConverter.ConvertModelToEntity(paymentChannelDTO, ref paymentChannelEntity);
+            PaymentChannelConverter.ConvertModelToEntity(
+                paymentChannelDTO,
+                ref paymentChannelEntity
+            );
             _dbContext.SaveChanges();
             return true;
         }
@@ -66,7 +74,10 @@ public class PaymentChannelRepository : IPaymentChannelRepository
         }
         catch (Exception ex)
         {
-            LoggerHelper.Instance.LogError(ex, $"Error occurred while fetching payment channel with Id: {id}");
+            LoggerHelper.Instance.LogError(
+                ex,
+                $"Error occurred while fetching payment channel with Id: {id}"
+            );
             throw;
         }
     }
@@ -80,8 +91,9 @@ public class PaymentChannelRepository : IPaymentChannelRepository
             if (!string.IsNullOrEmpty(pageSortParam.SearchTerm))
             {
                 query = query.Where(p =>
-                    p.ChannelName.Contains(pageSortParam.SearchTerm) ||
-                    p.Description.Contains(pageSortParam.SearchTerm));
+                    p.ChannelName.Contains(pageSortParam.SearchTerm)
+                    || p.Description.Contains(pageSortParam.SearchTerm)
+                );
             }
 
             int totalCount = query.Count();
@@ -92,16 +104,17 @@ public class PaymentChannelRepository : IPaymentChannelRepository
                 var property = Expression.Property(param, pageSortParam.SortField);
                 var sortExpression = Expression.Lambda(property, param);
 
-                string sortMethod = pageSortParam.SortDir == SortDirection.ASC ? "OrderBy" : "OrderByDescending";
+                string sortMethod =
+                    pageSortParam.SortDir == SortDirection.ASC ? "OrderBy" : "OrderByDescending";
                 var orderByMethod = typeof(Queryable)
                     .GetMethods()
                     .Single(m => m.Name == sortMethod && m.GetParameters().Length == 2)
                     .MakeGenericMethod(typeof(PaymentChannel), property.Type);
                 query =
-                    (IQueryable<PaymentChannel>)(orderByMethod.Invoke(
-                        null,
-                        new object[] { query, sortExpression }
-                    ) ?? Enumerable.Empty<PaymentChannel>().AsQueryable());
+                    (IQueryable<PaymentChannel>)(
+                        orderByMethod.Invoke(null, new object[] { query, sortExpression })
+                        ?? Enumerable.Empty<PaymentChannel>().AsQueryable()
+                    );
             }
 
             if (query.Count() > pageSortParam.PageSize)
@@ -120,34 +133,42 @@ public class PaymentChannelRepository : IPaymentChannelRepository
             {
                 TotalCount = totalCount,
                 TotalPages = totalPages,
-                PreviousPage = pageSortParam.CurrentPage > 1 ? pageSortParam.CurrentPage - 1 : (int?)null,
-                NextPage = pageSortParam.CurrentPage < totalPages ? pageSortParam.CurrentPage + 1 : (int?)null,
+                PreviousPage =
+                    pageSortParam.CurrentPage > 1 ? pageSortParam.CurrentPage - 1 : (int?)null,
+                NextPage =
+                    pageSortParam.CurrentPage < totalPages
+                        ? pageSortParam.CurrentPage + 1
+                        : (int?)null,
                 FirstRowOnPage = ((pageSortParam.CurrentPage - 1) * pageSortParam.PageSize) + 1,
-                LastRowOnPage = Math.Min(totalCount, pageSortParam.CurrentPage * pageSortParam.PageSize),
+                LastRowOnPage = Math.Min(
+                    totalCount,
+                    pageSortParam.CurrentPage * pageSortParam.PageSize
+                ),
             };
 
             return new PaymentChannelPagingDTO
             {
                 Paging = pagingResult,
-                PaymentChannels = paymentChannels
+                PaymentChannels = paymentChannels,
             };
         }
         catch (Exception ex)
         {
-            LoggerHelper.Instance.LogError(ex, "Error occurred while fetching all payment channels.");
+            LoggerHelper.Instance.LogError(
+                ex,
+                "Error occurred while fetching all payment channels."
+            );
             throw;
         }
     }
-
-
-
 
     public bool DeletePaymentChannel(int id)
     {
         try
         {
             var paymentChannelEntity = _dbContext.PaymentChannels.FirstOrDefault(pc => pc.Id == id);
-            if (paymentChannelEntity == null) return false;
+            if (paymentChannelEntity == null)
+                return false;
 
             _dbContext.PaymentChannels.Remove(paymentChannelEntity);
             _dbContext.SaveChanges();
@@ -155,7 +176,10 @@ public class PaymentChannelRepository : IPaymentChannelRepository
         }
         catch (Exception ex)
         {
-            LoggerHelper.Instance.LogError(ex, $"Error occurred while deleting payment channel with Id: {id}");
+            LoggerHelper.Instance.LogError(
+                ex,
+                $"Error occurred while deleting payment channel with Id: {id}"
+            );
             throw;
         }
     }
