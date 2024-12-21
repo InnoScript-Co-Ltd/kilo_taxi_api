@@ -12,8 +12,7 @@ public class TopUpTransactionDTO
     [Range(0.01, 10000.000)]
     public decimal Amount { get; set; }
     
-    [Required]
-    public string TransactionScreenShoot { get; set; }
+    public string? TransactionScreenShoot { get; set; }
     
     [Required]
     public TopUpTransactionStatus Status { get; set; }
@@ -27,4 +26,5 @@ public class TopUpTransactionDTO
     public int PaymentChannelId { get; set; }
     
     public IFormFile? File_TransactionScreenShoot { get; set; }
+    public int UseId { get; set; }
 }

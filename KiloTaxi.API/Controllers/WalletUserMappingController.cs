@@ -32,6 +32,10 @@ namespace KiloTaxi.API.Controllers
 
                 return CreatedAtAction(nameof(Create), new { id = createdMapping.Id }, createdMapping);
             }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
                 _logHelper.LogError(ex);

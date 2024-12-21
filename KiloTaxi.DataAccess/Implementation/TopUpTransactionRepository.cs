@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using KiloTaxi.Common.Enums;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
@@ -11,30 +12,51 @@ namespace KiloTaxi.DataAccess.Implementation
     public class TopUpTransactionRepository : ITopUpTransactionRepository
     {
         private readonly DbKiloTaxiContext _dbKiloTaxiContext;
+        private readonly IWalletTransactionRepository _walletTransactionRepository;
 
-        public TopUpTransactionRepository(DbKiloTaxiContext dbKiloTaxiContext)
+        public TopUpTransactionRepository(DbKiloTaxiContext dbContext, IWalletTransactionRepository walletTransactionRepository)
         {
-            _dbKiloTaxiContext = dbKiloTaxiContext;
+            _dbKiloTaxiContext = dbContext;
+            _walletTransactionRepository = walletTransactionRepository;
         }
 
         public TopUpTransactionDTO CreateTopUpTransaction(TopUpTransactionDTO topUpTransactionDTO)
         {
             try
             {
-                // Convert DTO to entity
+                var walletUserMapping = _dbKiloTaxiContext.WalletUserMappings
+                                      .FirstOrDefault(w => w.UserId == topUpTransactionDTO.UseId);
+
+                if (walletUserMapping == null)
+                {
+                    throw new Exception("No wallet mapping found for the provided UserId.");
+                }
+
                 var topUpTransactionEntity = new TopUpTransaction();
-               
+
                 TopUpTransactionConverter.ConvertModelToEntity(topUpTransactionDTO, ref topUpTransactionEntity);
 
-                // Add the transaction to the database
                 _dbKiloTaxiContext.TopUpTransactions.Add(topUpTransactionEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                // Set the generated ID back to the DTO
                 topUpTransactionDTO.Id = topUpTransactionEntity.Id;
-                if (!topUpTransactionEntity.TransactionScreenShoot.Contains("default.png"))
+
+                if (topUpTransactionEntity.Status == "Success") 
                 {
-                    topUpTransactionEntity.TransactionScreenShoot = "screenShoot/" + topUpTransactionDTO.Id + topUpTransactionEntity.TransactionScreenShoot;
+                    var walletTransactionDTO = new WalletTransactionDTO
+                    {
+                        Amount = topUpTransactionEntity.Amount,
+                        TransactionType = TransactionType.TopUp,
+                        ReferenceId = topUpTransactionEntity.Id,
+                        WalletUserMappingId = walletUserMapping.Id
+                    };
+
+                    _walletTransactionRepository.CreateWalletTransaction(walletTransactionDTO);
+                }
+                if (!string.IsNullOrEmpty(topUpTransactionEntity.TransactionScreenShoot) &&
+                !topUpTransactionEntity.TransactionScreenShoot.Contains("default.png"))
+                {
+                    topUpTransactionEntity.TransactionScreenShoot = $"screenShoot/{topUpTransactionDTO.Id}{topUpTransactionEntity.TransactionScreenShoot}";
                     _dbKiloTaxiContext.SaveChanges();
                 }
 
@@ -120,4 +142,4 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
     }
- }
+}

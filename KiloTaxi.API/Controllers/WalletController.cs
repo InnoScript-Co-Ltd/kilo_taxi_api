@@ -130,10 +130,10 @@ public class WalletController : ControllerBase
             var isDeleted = _walletRepository.DeleteWallet(id);
             if (!isDeleted)
             {
-                return NotFound();
+                return StatusCode(500, "An error occurred while deleting the payment channel.");
             }
 
-            return NoContent();
+            return Ok($"Payment channel with ID {id} has been successfully deleted.");
         }
         catch (Exception ex)
         {
