@@ -246,7 +246,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         column: x => x.AdminId,
                         principalTable: "Admin",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Notification_Customer_CustomerId",
                         column: x => x.CustomerId,
@@ -258,7 +258,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         column: x => x.DriverId,
                         principalTable: "Driver",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -286,7 +286,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         column: x => x.DriverId,
                         principalTable: "Driver",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -394,8 +394,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PromotionId = table.Column<int>(type: "int", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    PaymentChannelId = table.Column<int>(type: "int", nullable: true)
+                    CustomerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -405,18 +404,13 @@ namespace KiloTaxi.EntityFramework.Migrations
                         column: x => x.CustomerId,
                         principalTable: "Customer",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PromotionUser_PaymentChannel_PaymentChannelId",
-                        column: x => x.PaymentChannelId,
-                        principalTable: "PaymentChannel",
-                        principalColumn: "Id");
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PromotionUser_Promotion_PromotionId",
                         column: x => x.PromotionId,
                         principalTable: "Promotion",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -461,13 +455,13 @@ namespace KiloTaxi.EntityFramework.Migrations
                         column: x => x.CityId,
                         principalTable: "City",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TravelRate_VehicleType_VehicleTypeId",
                         column: x => x.VehicleTypeId,
                         principalTable: "VehicleType",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -684,11 +678,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "IX_PromotionUser_CustomerId",
                 table: "PromotionUser",
                 column: "CustomerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PromotionUser_PaymentChannelId",
-                table: "PromotionUser",
-                column: "PaymentChannelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PromotionUser_PromotionId",

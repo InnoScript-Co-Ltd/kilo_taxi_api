@@ -23,6 +23,5 @@ public class PaymentChannel
     
     public string UserName { get; set; }
     
-    public ICollection<PromotionUser> PromotionUsers { get; set; }
 
 }

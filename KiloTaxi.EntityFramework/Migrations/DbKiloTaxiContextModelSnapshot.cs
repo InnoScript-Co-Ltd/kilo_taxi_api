@@ -519,17 +519,12 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PaymentChannelId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PromotionId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("PaymentChannelId");
 
                     b.HasIndex("PromotionId");
 
@@ -1093,10 +1088,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.PaymentChannel", null)
-                        .WithMany("PromotionUsers")
-                        .HasForeignKey("PaymentChannelId");
-
                     b.HasOne("KiloTaxi.EntityFramework.EntityModel.Promotion", "Promotion")
                         .WithMany("PromotionUsers")
                         .HasForeignKey("PromotionId")
@@ -1256,11 +1247,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Customer", b =>
-                {
-                    b.Navigation("PromotionUsers");
-                });
-
-            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.PaymentChannel", b =>
                 {
                     b.Navigation("PromotionUsers");
                 });

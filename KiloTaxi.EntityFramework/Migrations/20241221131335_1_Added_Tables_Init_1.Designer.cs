@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KiloTaxi.EntityFramework.Migrations
 {
     [DbContext(typeof(DbKiloTaxiContext))]
-    [Migration("20241221122448_1_Added_Tables_Init_1")]
+    [Migration("20241221131335_1_Added_Tables_Init_1")]
     partial class _1_Added_Tables_Init_1
     {
         /// <inheritdoc />
@@ -522,17 +522,12 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PaymentChannelId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PromotionId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("PaymentChannelId");
 
                     b.HasIndex("PromotionId");
 
@@ -1096,10 +1091,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.PaymentChannel", null)
-                        .WithMany("PromotionUsers")
-                        .HasForeignKey("PaymentChannelId");
-
                     b.HasOne("KiloTaxi.EntityFramework.EntityModel.Promotion", "Promotion")
                         .WithMany("PromotionUsers")
                         .HasForeignKey("PromotionId")
@@ -1259,11 +1250,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Customer", b =>
-                {
-                    b.Navigation("PromotionUsers");
-                });
-
-            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.PaymentChannel", b =>
                 {
                     b.Navigation("PromotionUsers");
                 });
