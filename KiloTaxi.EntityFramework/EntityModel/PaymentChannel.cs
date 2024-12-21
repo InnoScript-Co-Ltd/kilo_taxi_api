@@ -22,4 +22,7 @@ public class PaymentChannel
     public string Phone { get; set; }
     
     public string UserName { get; set; }
+    
+    public ICollection<PromotionUser> PromotionUsers { get; set; }
+
 }

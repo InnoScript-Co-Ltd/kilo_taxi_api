@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KiloTaxi.EntityFramework.Migrations
 {
     [DbContext(typeof(DbKiloTaxiContext))]
-    [Migration("20241216063402_1_Added_Tables_Init_1")]
+    [Migration("20241221122448_1_Added_Tables_Init_1")]
     partial class _1_Added_Tables_Init_1
     {
         /// <inheritdoc />
@@ -511,6 +511,34 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.ToTable("PromotionUsage", (string)null);
                 });
 
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.PromotionUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PaymentChannelId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PromotionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("PaymentChannelId");
+
+                    b.HasIndex("PromotionId");
+
+                    b.ToTable("PromotionUser");
+                });
+
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Reason", b =>
                 {
                     b.Property<int>("Id")
@@ -781,9 +809,8 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<int>("CityId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Rate")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Unit")
                         .IsRequired()
@@ -1061,6 +1088,29 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Navigation("WalletTransaction");
                 });
 
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.PromotionUser", b =>
+                {
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.Customer", "Customer")
+                        .WithMany("PromotionUsers")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.PaymentChannel", null)
+                        .WithMany("PromotionUsers")
+                        .HasForeignKey("PaymentChannelId");
+
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.Promotion", "Promotion")
+                        .WithMany("PromotionUsers")
+                        .HasForeignKey("PromotionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Promotion");
+                });
+
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Review", b =>
                 {
                     b.HasOne("KiloTaxi.EntityFramework.EntityModel.Customer", "Customer")
@@ -1206,6 +1256,21 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired();
 
                     b.Navigation("Wallet");
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Customer", b =>
+                {
+                    b.Navigation("PromotionUsers");
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.PaymentChannel", b =>
+                {
+                    b.Navigation("PromotionUsers");
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Promotion", b =>
+                {
+                    b.Navigation("PromotionUsers");
                 });
 #pragma warning restore 612, 618
         }

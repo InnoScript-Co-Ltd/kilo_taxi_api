@@ -39,5 +39,7 @@ namespace KiloTaxi.EntityFramework.EntityModel
         public string ApplicableTo { get; set; }
 
         public string? Description { get; set; }
+        
+        public ICollection<PromotionUser> PromotionUsers { get; set; }
     }
 }

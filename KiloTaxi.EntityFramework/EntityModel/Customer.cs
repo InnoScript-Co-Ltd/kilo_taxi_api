@@ -60,5 +60,8 @@ namespace KiloTaxi.EntityFramework.EntityModel
 
         [Required]
         public string KycStatus { get; set; }
+        
+        public ICollection<PromotionUser> PromotionUsers { get; set; }
+
     }
 }
