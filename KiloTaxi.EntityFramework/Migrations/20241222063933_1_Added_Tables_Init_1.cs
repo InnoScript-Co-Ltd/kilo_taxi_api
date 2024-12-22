@@ -134,8 +134,8 @@ namespace KiloTaxi.EntityFramework.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PaymentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Icon = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -571,13 +571,13 @@ namespace KiloTaxi.EntityFramework.Migrations
                         column: x => x.CustomerId,
                         principalTable: "Customer",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Order_Driver_DriverId",
                         column: x => x.DriverId,
                         principalTable: "Driver",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Order_ScheduleBooking_ScheduleBookingId",
                         column: x => x.ScheduleBookingId,

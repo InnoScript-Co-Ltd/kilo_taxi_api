@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KiloTaxi.EntityFramework.Migrations
 {
     [DbContext(typeof(DbKiloTaxiContext))]
-    [Migration("20241221131335_1_Added_Tables_Init_1")]
+    [Migration("20241222063933_1_Added_Tables_Init_1")]
     partial class _1_Added_Tables_Init_1
     {
         /// <inheritdoc />
@@ -424,11 +424,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -531,7 +529,7 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     b.HasIndex("PromotionId");
 
-                    b.ToTable("PromotionUser");
+                    b.ToTable("PromotionUser", (string)null);
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Reason", b =>

@@ -421,11 +421,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -528,7 +526,7 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     b.HasIndex("PromotionId");
 
-                    b.ToTable("PromotionUser");
+                    b.ToTable("PromotionUser", (string)null);
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Reason", b =>
