@@ -20,6 +20,7 @@ namespace KiloTaxi.DataAccess.Helper
         {
             services.AddScoped<IDriverRepository, DriverRepository>();
             services.AddScoped<IVehicleRepository, VehicleRepository>();
+            services.AddScoped<IVehicleTypeRepository, VehicleTypeRepository>();
             services.AddScoped<IAdminRepository, AdminRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IPromotionRepository, PromotionRepository>();
