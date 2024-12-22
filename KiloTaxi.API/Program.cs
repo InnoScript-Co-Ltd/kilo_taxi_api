@@ -1,12 +1,57 @@
+using System.Text;
 using KiloTaxi.API.Helper.Filters;
 using KiloTaxi.API.Helper.ServiceExtensions;
 using KiloTaxi.Logging;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// Configure JWT Bearer Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(options =>
+    {
+        options.Authority = builder.Configuration["Jwt:Issuer"];
+        options.Audience = builder.Configuration["Jwt:Audience"];
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],  // Ensure this matches the issuer in BC.OpenIddict
+            ValidAudience = builder.Configuration["Jwt:Audience"],  // Ensure this matches the audience in BC.OpenIddict
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])), // Ensure the secret key matches the one used in BC.OpenIddict
+            SaveSigninToken = true
+
+            //ValidIssuer = builder.Configuration["Jwt:Issuer"],  // Ensure this matches the issuer in BC.OpenIddict
+            //ValidAudience = builder.Configuration["Jwt:Audience"],  // Ensure this matches the audience in BC.OpenIddict
+            //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Ensure the secret key matches the one used in BC.OpenIddict
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("Token validated successfully.");
+                return Task.CompletedTask;
+            }
+        };
+    }
+    );
 
 builder.Services.AddControllers();
 

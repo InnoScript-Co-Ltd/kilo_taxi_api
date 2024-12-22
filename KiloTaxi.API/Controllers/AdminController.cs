@@ -2,12 +2,14 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize]
     public class AdminController : ControllerBase
     {
         LoggerHelper _logHelper;
