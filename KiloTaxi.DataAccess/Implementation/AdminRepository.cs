@@ -7,6 +7,7 @@ using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using Microsoft.EntityFrameworkCore;
+using BCrypt.Net;
 
 namespace KiloTaxi.DataAccess.Implementation
 {
@@ -97,7 +98,9 @@ namespace KiloTaxi.DataAccess.Implementation
         {
             try
             {
-                Admin adminEntity = new Admin();
+                Admin adminEntity = new Admin(); 
+                 adminDTO.Password=BCrypt.Net.BCrypt.HashPassword(adminDTO.Password);
+
                 AdminConverter.ConvertModelToEntity(adminDTO, ref adminEntity);
 
                 _dbKiloTaxiContext.Add(adminEntity);
@@ -191,6 +194,25 @@ namespace KiloTaxi.DataAccess.Implementation
                 );
                 throw;
             }
+        }
+
+        public async Task<bool> ValidateAdminCredentials(string email, string password)
+        {
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                return false; // Or throw an exception depending on your use case
+            }
+
+            Admin adminEntity =  _dbKiloTaxiContext.Admins.SingleOrDefault(admin => admin.Email == email);
+           
+            if (adminEntity != null || ! BCrypt.Net.BCrypt.Verify(password, adminEntity.Password))
+            {
+                return false;
+            }
+
+            // Convert the entity to a DTO
+            return true;
         }
     }
 }

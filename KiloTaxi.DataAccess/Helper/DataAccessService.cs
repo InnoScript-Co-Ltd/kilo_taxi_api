@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using KiloTaxi.DataAccess.Implementation;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework.EntityModel;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -38,6 +39,8 @@ namespace KiloTaxi.DataAccess.Helper
             services.AddScoped<ITransactionLogRepository, TransactionLogRepository>();
             services.AddScoped<ICityRepository, CityRepository>();
             services.AddScoped<ITravelRateRepository, TravelRateRepository>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+
         }
     }
 }

@@ -44,7 +44,7 @@ namespace KiloTaxi.DataAccess.Implementation
                 else if (walletTransactionDTO.TransactionType == TransactionType.Order)
                 {
                     var order = _dbKiloTaxiContext.Orders.FirstOrDefault(t => t.Id == walletTransactionDTO.ReferenceId);
-                    walletTransactionDTO.BalanceAfter = walletTransactionDTO.BalanceBefore + order.TotalAmount;
+                    walletTransactionDTO.BalanceAfter = walletTransactionDTO.BalanceBefore + order.EstimatedAmount;
                 }
                 else if (walletTransactionDTO.TransactionType == TransactionType.PromotionUsage){ 
                     var promotionUsage = _dbKiloTaxiContext.PromotionUsages.FirstOrDefault(p => p.Id == walletTransactionDTO.ReferenceId);

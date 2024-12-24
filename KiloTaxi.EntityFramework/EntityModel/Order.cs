@@ -17,10 +17,22 @@ namespace KiloTaxi.EntityFramework.EntityModel {
          
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public Decimal TotalAmount { get; set; }
+        public Decimal EstimatedAmount { get; set; }
         
         [Required]
         public string Status { get; set; }
+        
+        public string PickUpLocation {get; set;}
+        
+        public string PickUpLat { get; set; }
+        
+        public string PickUpLong  {get; set;}
+        
+        public string DestinationLocation {get; set;}
+        
+        public string DestinationLat{get; set;}
+        
+        public string DestinationLong {get; set;}
         
         [Required]
         [DataType(DataType.DateTime)]
@@ -34,7 +46,7 @@ namespace KiloTaxi.EntityFramework.EntityModel {
         public int CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
         
-        [ForeignKey("Driver")]
+        [ForeignKey("DriverId")]
         public int DriverId { get; set; }
         public virtual Driver Driver { get; set; }
         
@@ -42,6 +54,8 @@ namespace KiloTaxi.EntityFramework.EntityModel {
         public int? ScheduleBookingId { get; set; }
         public virtual ScheduleBooking ScheduleBooking { get; set; }
         
+        public ICollection<OrderExtraDemand> OrderExtraDemand { get; set; }
+
     }
 
 }

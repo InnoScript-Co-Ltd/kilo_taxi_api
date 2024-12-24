@@ -109,8 +109,9 @@ namespace KiloTaxi.DataAccess.Implementation
             try
             {
                 Customer customerEntity = new Customer();
-                customerEntity.Status = CustomerStatus.Pending.ToString();
-                customerEntity.KycStatus = KycStatus.Pending.ToString();
+                
+                // customerEntity.Status = CustomerStatus.Pending.ToString();
+                // customerEntity.KycStatus = KycStatus.Pending.ToString();
                 CustomerConverter.ConvertModelToEntity(customerDTO, ref customerEntity);
 
                 _dbKiloTaxiContext.Add(customerEntity);

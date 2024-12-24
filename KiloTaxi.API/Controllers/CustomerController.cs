@@ -1,6 +1,7 @@
 using KiloTaxi.API.Helper.FileHelpers;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
+using KiloTaxi.EntityFramework;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,8 @@ namespace KiloTaxi.API.Controllers
         LoggerHelper _logHelper;
         private readonly ICustomerRepository _customerRepository;
         private readonly IConfiguration _configuration;
+        private readonly DbKiloTaxiContext _dbKiloTaxiContext;
+
         private readonly List<string> _allowedExtensions = new List<string>
         {
             ".jpg",
@@ -30,12 +33,15 @@ namespace KiloTaxi.API.Controllers
 
         public CustomerController(
             ICustomerRepository customerRepository,
-            IConfiguration configuration
+            IConfiguration configuration,
+                DbKiloTaxiContext dbContext
         )
         {
             _logHelper = LoggerHelper.Instance;
             _customerRepository = customerRepository;
             _configuration = configuration;
+            _dbKiloTaxiContext = dbContext;
+
         }
 
         // GET: api/<CustomerController>
@@ -97,7 +103,13 @@ namespace KiloTaxi.API.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-
+                var existEmailCustomer=_dbKiloTaxiContext.Customers.FirstOrDefault(customer =>
+                    customer.Email == customerDTO.Email
+                );
+                if (existEmailCustomer != null)
+                {
+                    return Conflict();
+                }
                 var fileUploadHelper = new FileUploadHelper(
                     _configuration,
                     _allowedExtensions,

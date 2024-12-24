@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KiloTaxi.EntityFramework.Migrations
 {
     [DbContext(typeof(DbKiloTaxiContext))]
-    [Migration("20241222063933_1_Added_Tables_Init_1")]
-    partial class _1_Added_Tables_Init_1
+    [Migration("20241224184213_2_Added_Tables_Init_1")]
+    partial class _2_Added_Tables_Init_1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -63,6 +63,10 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     b.Property<DateTime?>("PhoneVerifiedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -177,12 +181,15 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Nrc")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NrcImageBack")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NrcImageFront")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
@@ -197,6 +204,11 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Profile")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
@@ -228,6 +240,10 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("AvabilityStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -242,7 +258,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DriverLicense")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -269,6 +284,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nrc")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NrcImageBack")
@@ -292,6 +308,10 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<string>("Profile")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("State")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -307,6 +327,36 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Driver", (string)null);
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.ExtraDemand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Unit")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExtraDemand", (string)null);
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Notification", b =>
@@ -370,8 +420,35 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<string>("DestinationLat")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DestinationLocation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DestinationLong")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("DriverId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("EstimatedAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PickUpLat")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PickUpLocation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PickUpLong")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ScheduleBookingId")
                         .HasColumnType("int");
@@ -379,9 +456,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("WalletTransactionId")
                         .HasColumnType("int");
@@ -397,6 +471,91 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.HasIndex("WalletTransactionId");
 
                     b.ToTable("Order", (string)null);
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.OrderExtend", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DestinationLat")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DestinationLocation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DestinationLong")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderExtend", (string)null);
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.OrderExtraDemand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ExtraDemandId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExtraDemandId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderExtraDemand", (string)null);
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.OrderRoute", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Lat")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Long")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderRoute", (string)null);
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.PaymentChannel", b =>
@@ -891,7 +1050,7 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleType");
+                    b.ToTable("VehicleType", (string)null);
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Wallet", b =>
@@ -1052,6 +1211,47 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Navigation("ScheduleBooking");
 
                     b.Navigation("WalletTransaction");
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.OrderExtend", b =>
+                {
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.OrderExtraDemand", b =>
+                {
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.ExtraDemand", "ExtraDemand")
+                        .WithMany("OrderExtraDemand")
+                        .HasForeignKey("ExtraDemandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.Order", "Order")
+                        .WithMany("OrderExtraDemand")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExtraDemand");
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.OrderRoute", b =>
+                {
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.PromotionUsage", b =>
@@ -1250,6 +1450,16 @@ namespace KiloTaxi.EntityFramework.Migrations
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Customer", b =>
                 {
                     b.Navigation("PromotionUsers");
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.ExtraDemand", b =>
+                {
+                    b.Navigation("OrderExtraDemand");
+                });
+
+            modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Order", b =>
+                {
+                    b.Navigation("OrderExtraDemand");
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.Promotion", b =>

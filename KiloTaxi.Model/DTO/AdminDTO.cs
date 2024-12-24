@@ -11,12 +11,10 @@ namespace KiloTaxi.Model.DTO
     public class AdminDTO
     {
         public int Id { get; set; }
-
-        [Required]
+        
         [MaxLength(100)]
         public string Name { get; set; }
 
-        [Required]
         public string Phone { get; set; }
 
         [EmailAddress]
@@ -28,16 +26,12 @@ namespace KiloTaxi.Model.DTO
         [DataType(DataType.DateTime)]
         public DateTime? PhoneVerifiedAt { get; set; }
 
-        [Required]
         public string Password { get; set; }
 
-        [Required]
         public GenderType Gender { get; set; }
 
-        [Required]
         public string Address { get; set; }
 
-        [Required]
         public CustomerStatus Status { get; set; }
     }
 }

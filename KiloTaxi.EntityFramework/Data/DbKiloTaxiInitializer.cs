@@ -18,7 +18,7 @@ namespace KiloTaxi.EntityFramework.Data
                 return;
             }
             Admin[] admins = new Admin[] {
-            new Admin{Name="Admin1",Phone="095012345",Email="test@email",Password="123",Gender=GenderType.Male.ToString(),Address="TestAddress",Status=OtpStatus.Pending.ToString() },
+            new Admin{Name="Admin1",Phone="095012345",Email="test@email",Password="123",Gender=GenderType.Male.ToString(),Address="TestAddress",Status=OtpStatus.Pending.ToString()},
             new Admin{Name="Admin2",Phone="095012346",Email="test2@email",Password="123",Gender=GenderType.Female.ToString(),Address="TestAddress",Status=OtpStatus.Pending.ToString() }
             };
             context.Admins.AddRange(admins);

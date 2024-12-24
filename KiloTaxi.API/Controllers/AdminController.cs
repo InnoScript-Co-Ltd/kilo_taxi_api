@@ -1,5 +1,6 @@
 using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
+using KiloTaxi.EntityFramework;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -14,11 +15,17 @@ namespace KiloTaxi.API.Controllers
     {
         LoggerHelper _logHelper;
         private readonly IAdminRepository _adminRepository;
+        private readonly DbKiloTaxiContext _dbKiloTaxiContext;
+        private readonly IConfiguration _configuration;
 
-        public AdminController(IAdminRepository adminRepository)
+
+        public AdminController(IAdminRepository adminRepository,DbKiloTaxiContext dbContext,IConfiguration configuration)
         {
             _logHelper = LoggerHelper.Instance;
             _adminRepository = adminRepository;
+            _dbKiloTaxiContext = dbContext;
+            _configuration = configuration;
+
         }
 
         //GET: api/<AdminController>
@@ -69,13 +76,21 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<AdminController>
         [HttpPost]
-        public ActionResult<AdminDTO> Post([FromBody] AdminDTO adminDTO)
+        [AllowAnonymous]
+        public  ActionResult<AdminDTO> Post([FromForm]AdminDTO adminDTO)
         {
             try
             {
                 if (adminDTO == null)
                 {
                     return BadRequest();
+                }
+                var existEmailAdmin=_dbKiloTaxiContext.Admins.FirstOrDefault(admin =>
+                    admin.Email == adminDTO.Email
+                );
+                if (existEmailAdmin != null)
+                {
+                    return Conflict();
                 }
 
                 var createdAdmin = _adminRepository.AddAdmin(adminDTO);

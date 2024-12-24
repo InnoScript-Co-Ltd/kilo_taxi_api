@@ -14,12 +14,11 @@ namespace KiloTaxi.EntityFramework.EntityModel
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        
 
-        [Required]
         [MaxLength(100)]
         public string Name { get; set; }
 
-        [Required]
         public string Phone { get; set; }
 
         [Required]
@@ -28,17 +27,14 @@ namespace KiloTaxi.EntityFramework.EntityModel
         public DateTime? EmailVerifiedAt { get; set; }
         
         public DateTime? PhoneVerifiedAt { get; set; }
-
-        [Required]
+        
+        public string Role { get; set; }
         public string Password { get; set; }
 
-        [Required]
         public string Gender { get; set; }
 
-        [Required]
         public string Address { get; set; }
 
-        [Required]
         public string Status { get; set; }
     }
 }

@@ -1,6 +1,10 @@
 using System.Text;
+using KiloTaxi.API.Helper.Authentication.Implementation;
+using KiloTaxi.API.Helper.Authentication.Interface;
 using KiloTaxi.API.Helper.Filters;
 using KiloTaxi.API.Helper.ServiceExtensions;
+using KiloTaxi.DataAccess.Implementation;
+using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -8,9 +12,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<AdminRepository>(); // If AdminRepository is not registered, add this too
 // Add services to the container.
 // Configure JWT Bearer Authentication
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -18,20 +25,27 @@ builder.Services.AddAuthentication(options =>
 })
     .AddJwtBearer(options =>
     {
-        options.Authority = builder.Configuration["Jwt:Issuer"];
-        options.Audience = builder.Configuration["Jwt:Audience"];
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = true;
+        // options.Authority = builder.Configuration["Jwt:Issuer"];
+        // options.Audience = builder.Configuration["Jwt:Audience"];
+        // options.RequireHttpsMetadata = false;
+        // options.SaveToken = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            // ValidateIssuer = true,
+            // ValidateAudience = true,
+            // ValidateLifetime = true,
+            // ValidateIssuerSigningKey = true,
+            // ValidIssuer = builder.Configuration["Jwt:Issuer"],  // Ensure this matches the issuer in BC.OpenIddict
+            // ValidAudience = builder.Configuration["Jwt:Audience"],  // Ensure this matches the audience in BC.OpenIddict
+            // IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])), // Ensure the secret key matches the one used in BC.OpenIddict
+            // SaveSigninToken = true
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],  // Ensure this matches the issuer in BC.OpenIddict
-            ValidAudience = builder.Configuration["Jwt:Audience"],  // Ensure this matches the audience in BC.OpenIddict
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])), // Ensure the secret key matches the one used in BC.OpenIddict
-            SaveSigninToken = true
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]))
 
             //ValidIssuer = builder.Configuration["Jwt:Issuer"],  // Ensure this matches the issuer in BC.OpenIddict
             //ValidAudience = builder.Configuration["Jwt:Audience"],  // Ensure this matches the audience in BC.OpenIddict
@@ -50,8 +64,9 @@ builder.Services.AddAuthentication(options =>
                 return Task.CompletedTask;
             }
         };
+        
     }
-    );
+    );  
 
 builder.Services.AddControllers();
 
@@ -82,6 +97,7 @@ builder.Services.AddCors(options =>
     });
 });
 
+
 ConfigHelper.ConfigureService(builder);
 
 LoggerHelper.Instance.LogInfo("Starting the API web host...");
@@ -104,6 +120,8 @@ try
 
     app.UseCors();
 
+    app.UseAuthentication();
+    
     app.UseAuthorization();
 
     app.MapControllers();

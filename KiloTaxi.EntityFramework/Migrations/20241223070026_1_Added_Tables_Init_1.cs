@@ -11,6 +11,14 @@ namespace KiloTaxi.EntityFramework.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<string>(
+                name: "Status",
+                table: "Admin",
+                type: "nvarchar(max)",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "PhoneVerifiedAt",
                 table: "Admin",
@@ -19,6 +27,40 @@ namespace KiloTaxi.EntityFramework.Migrations
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2");
 
+            migrationBuilder.AlterColumn<string>(
+                name: "Phone",
+                table: "Admin",
+                type: "nvarchar(max)",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Password",
+                table: "Admin",
+                type: "nvarchar(max)",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "Admin",
+                type: "nvarchar(100)",
+                maxLength: 100,
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(100)",
+                oldMaxLength: 100);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Gender",
+                table: "Admin",
+                type: "nvarchar(max)",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "EmailVerifiedAt",
                 table: "Admin",
@@ -26,6 +68,21 @@ namespace KiloTaxi.EntityFramework.Migrations
                 nullable: true,
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Address",
+                table: "Admin",
+                type: "nvarchar(max)",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
+
+            migrationBuilder.AddColumn<string>(
+                name: "IdpUserId",
+                table: "Admin",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
 
             migrationBuilder.CreateTable(
                 name: "AuditLog",
@@ -65,10 +122,11 @@ namespace KiloTaxi.EntityFramework.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IdpUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Profile = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MobilePrefix = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MobilePrefix = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Dob = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Nrc = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -76,14 +134,14 @@ namespace KiloTaxi.EntityFramework.Migrations
                     NrcImageBack = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EmailVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PhoneVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    State = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Township = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    KycStatus = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    State = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Township = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    KycStatus = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -96,6 +154,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    IdpUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Profile = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MobilePrefix = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -571,13 +630,13 @@ namespace KiloTaxi.EntityFramework.Migrations
                         column: x => x.CustomerId,
                         principalTable: "Customer",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Order_Driver_DriverId",
                         column: x => x.DriverId,
                         principalTable: "Driver",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Order_ScheduleBooking_ScheduleBookingId",
                         column: x => x.ScheduleBookingId,
@@ -832,6 +891,20 @@ namespace KiloTaxi.EntityFramework.Migrations
             migrationBuilder.DropTable(
                 name: "Wallet");
 
+            migrationBuilder.DropColumn(
+                name: "IdpUserId",
+                table: "Admin");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Status",
+                table: "Admin",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)",
+                oldNullable: true);
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "PhoneVerifiedAt",
                 table: "Admin",
@@ -842,6 +915,48 @@ namespace KiloTaxi.EntityFramework.Migrations
                 oldType: "datetime2",
                 oldNullable: true);
 
+            migrationBuilder.AlterColumn<string>(
+                name: "Phone",
+                table: "Admin",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)",
+                oldNullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Password",
+                table: "Admin",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)",
+                oldNullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "Admin",
+                type: "nvarchar(100)",
+                maxLength: 100,
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "nvarchar(100)",
+                oldMaxLength: 100,
+                oldNullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Gender",
+                table: "Admin",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)",
+                oldNullable: true);
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "EmailVerifiedAt",
                 table: "Admin",
@@ -850,6 +965,16 @@ namespace KiloTaxi.EntityFramework.Migrations
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
+                oldNullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Address",
+                table: "Admin",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)",
                 oldNullable: true);
         }
     }

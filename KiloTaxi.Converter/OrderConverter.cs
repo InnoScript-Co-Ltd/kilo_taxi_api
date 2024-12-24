@@ -29,7 +29,7 @@ namespace KiloTaxi.Converter
                 CustomerId = orderEntity.CustomerId,
                 DriverId = orderEntity.DriverId,
                 ScheduleBookingId = orderEntity.ScheduleBookingId,
-                TotalAmount = orderEntity.TotalAmount,
+                EstimatedAmount = orderEntity.EstimatedAmount,
                 Status = Enum.Parse<OrderStatus>(orderEntity.Status),
                 CreatedDate = orderEntity.CreatedDate,
             };
@@ -56,7 +56,7 @@ namespace KiloTaxi.Converter
                 orderEntity.CustomerId = orderDTO.CustomerId;
                 orderEntity.DriverId = orderDTO.DriverId;
                 orderEntity.ScheduleBookingId = orderDTO.ScheduleBookingId;
-                orderEntity.TotalAmount = orderDTO.TotalAmount;
+                orderEntity.EstimatedAmount = orderDTO.EstimatedAmount;
                 orderEntity.Status = orderDTO.Status.ToString();
                 orderEntity.CreatedDate = orderDTO.CreatedDate;
             }

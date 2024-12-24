@@ -12,8 +12,19 @@ namespace KiloTaxi.Model.DTO
     public class OrderDTO
     {
         public int Id { get; set; }
+        
+        public string PickUpLocation {get; set;}
+        
+        public string PickUpLat { get; set; }
+        
+        public string PickUpLong  {get; set;}
+        
+        public string DestinationLocation {get; set;}
+        
+        public string DestinationLat{get; set;}
+        
+        public string DestinationLong {get; set;}
 
-        [AllowNull]
         public int? WalletTransactionId { get; set; }
 
         [Required]
@@ -27,7 +38,7 @@ namespace KiloTaxi.Model.DTO
 
         [Required]
         [Range(0.01, 10000.00)]
-        public decimal TotalAmount { get; set; }
+        public decimal EstimatedAmount { get; set; }
 
         [Required]
         public OrderStatus Status { get; set; }

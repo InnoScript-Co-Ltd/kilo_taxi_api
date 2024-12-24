@@ -8,15 +8,12 @@ public class DriverDTO
 {
     public int Id { get; set; }
     
-    [Required]
     public string Name { get; set; }
     
     public string? Profile { get; set; }
     
-    [Required]
     public string MobilePrefix{get;set;}
     
-    [Required]
     public string Phone{get;set;}
     
     [Required]
@@ -26,7 +23,6 @@ public class DriverDTO
     [DataType(DataType.DateTime)]
     public DateTime? Dob{get;set;}
     
-    [Required]
     public string Nrc{get;set;}
     
     [StringLength(100)]
@@ -47,30 +43,23 @@ public class DriverDTO
     [DataType(DataType.DateTime)]
     public DateTime? PhoneVerifiedAt{get;set;}
     
-    [Required]
     [MinLength(3)]
     [MaxLength(25)]
     public string Password{get;set;}
     
-    [Required]
     public string Address{get;set;}
     
-    [Required]
     public string State{get;set;}
     
-    [Required]
     public string City{get;set;}
     
-    [Required]
     public string TownShip{get;set;}
     
-    [Required]
     public GenderType Gender{get;set;}
     
-    [Required]
     public DriverStatus Status{get;set;}
     
-    [Required]
+    public DriverStatus AvailableStatus{get;set;}
     public KycStatus KycStatus{get;set;}
     
     public IEnumerable<VehicleDTO>? Vehicle { get; set; }

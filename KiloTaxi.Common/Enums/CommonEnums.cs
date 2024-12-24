@@ -127,6 +127,9 @@ namespace KiloTaxi.Common.Enums
         Active,
         Deactivate,
         Suspend,
+        Busy,
+        Offline,
+        Online,
     }
 
     public enum VehicleStatus
@@ -148,6 +151,8 @@ namespace KiloTaxi.Common.Enums
         Completed,
         Cancelled,
         InProgress,
+        DriverAccepted,
+        Waiting
     }
 
     // public enum PromotionType

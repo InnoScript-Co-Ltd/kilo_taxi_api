@@ -2,20 +2,24 @@
 using KiloTaxi.API.Helper.FileHelpers;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
+using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
+[Authorize]
 public class DriverController : ControllerBase
 {
     LoggerHelper _logHelper;
     private readonly IDriverRepository _driverRepository;
     private readonly IConfiguration _configuration;
+    private readonly DbKiloTaxiContext _dbKiloTaxiContext;
     private readonly List<string> _allowedExtensions = new List<string> { ".jpg", ".jpeg", ".png" };
     private readonly List<string> _allowedMimeTypes = new List<string>
     {
@@ -25,11 +29,12 @@ public class DriverController : ControllerBase
     private const long _maxFileSize = 5 * 1024 * 1024;
     private const string flagDomain = "driver";
 
-    public DriverController(IDriverRepository driverRepository, IConfiguration configuration)
+    public DriverController(IDriverRepository driverRepository, IConfiguration configuration,DbKiloTaxiContext dbContext)
     {
         _logHelper = LoggerHelper.Instance;
         _driverRepository = driverRepository;
         _configuration = configuration;
+        _dbKiloTaxiContext = dbContext;
     }
 
     [HttpGet]
@@ -75,6 +80,7 @@ public class DriverController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<ActionResult<DriverDTO>> Post(DriverDTO driverDTO)
     {
         try
@@ -82,6 +88,13 @@ public class DriverController : ControllerBase
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            var existEmailDriver=_dbKiloTaxiContext.Drivers.FirstOrDefault(driver =>
+                driver.Email == driverDTO.Email
+            );
+            if (existEmailDriver != null)
+            {
+                return Conflict();
             }
 
             var fileUploadHelper = new FileUploadHelper(
