@@ -22,7 +22,14 @@ namespace KiloTaxi.Model.DTO
         public string MobilePrefix { get; set; }
 
         public string Phone { get; set; }
-
+        
+        public string Role {get;set;}
+        
+        public string RefreshToken { get; set; }
+        
+        [DataType(DataType.Date)]
+        public DateTime RefreshTokenExpiryTime { get; set; }
+        
         [EmailAddress]
         public string Email { get; set; }
         

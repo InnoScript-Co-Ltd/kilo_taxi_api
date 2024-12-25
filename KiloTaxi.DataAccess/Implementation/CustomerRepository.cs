@@ -282,5 +282,23 @@ namespace KiloTaxi.DataAccess.Implementation
                 throw;
             }
         }
+        public async Task<CustomerDTO> ValidateCustomerCredentials(string email, string password)
+        {
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                return null; // Or throw an exception depending on your use case
+            }
+
+            Customer customerEntity =  _dbKiloTaxiContext.Customers.SingleOrDefault(customer => customer.Email == email);
+            if (customerEntity != null || ! BCrypt.Net.BCrypt.Verify(password, customerEntity.Password))
+            {
+                return CustomerConverter.ConvertEntityToModel(customerEntity, _mediaHostUrl);
+            }
+
+            // Convert the entity to a DTO
+            return null;
+        }
+        
     }
 }

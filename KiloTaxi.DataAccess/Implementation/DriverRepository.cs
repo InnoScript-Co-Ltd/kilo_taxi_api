@@ -256,4 +256,23 @@ public class DriverRepository : IDriverRepository
             throw;
         }
     }
+    
+    public async Task<DriverDTO> ValidateDriverCredentials(string email, string password)
+    {
+
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+        {
+            return null; // Or throw an exception depending on your use case
+        }
+
+        Driver driverEntity =  _dbKiloTaxiContext.Drivers.SingleOrDefault(driver => driver.Email == email);
+           
+        if (driverEntity != null || ! BCrypt.Net.BCrypt.Verify(password, driverEntity.Password))
+        {
+            return DriverConverter.ConvertEntityToModel(driverEntity, _mediaHostUrl);
+        }
+
+        // Convert the entity to a DTO
+        return null;
+    }
 }

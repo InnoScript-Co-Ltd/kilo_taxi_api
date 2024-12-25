@@ -36,5 +36,11 @@ namespace KiloTaxi.EntityFramework.EntityModel
         public string Address { get; set; }
 
         public string Status { get; set; }
+        
+        public string RefreshToken { get; set; }
+        
+        [DataType(DataType.Date)]
+        public DateTime RefreshTokenExpiryTime { get; set; }
+        
     }
 }

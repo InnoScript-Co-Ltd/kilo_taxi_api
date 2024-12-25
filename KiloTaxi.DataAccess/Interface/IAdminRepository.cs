@@ -11,5 +11,5 @@ public interface IAdminRepository
     AdminDTO GetAdminById(int id);
     bool DeleteAdmin(int id);
     
-    Task<bool> ValidateAdminCredentials(string email, string password);
+    Task<AdminDTO> ValidateAdminCredentials(string email, string password);
 }

@@ -10,7 +10,7 @@ namespace KiloTaxi.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
         LoggerHelper _logHelper;

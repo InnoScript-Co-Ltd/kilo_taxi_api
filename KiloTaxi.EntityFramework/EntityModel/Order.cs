@@ -46,9 +46,13 @@ namespace KiloTaxi.EntityFramework.EntityModel {
         public int CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
         
-        [ForeignKey("DriverId")]
+        [ForeignKey("Driver")]
         public int DriverId { get; set; }
         public virtual Driver Driver { get; set; }
+        
+        [ForeignKey("Vehicle")]
+        public int VehicleId { get; set; }
+        public virtual Vehicle Vehicle { get; set; }
         
         [ForeignKey("ScheduleBooking")]
         public int? ScheduleBookingId { get; set; }

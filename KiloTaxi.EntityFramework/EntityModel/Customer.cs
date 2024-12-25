@@ -52,6 +52,11 @@ namespace KiloTaxi.EntityFramework.EntityModel
         public string KycStatus { get; set; }
         
         public string Role { get; set; }
+        
+        public string RefreshToken { get; set; }
+        
+        public DateTime RefreshTokenExpiryTime { get; set; }
+        
         public ICollection<PromotionUser> PromotionUsers { get; set; }
 
     }

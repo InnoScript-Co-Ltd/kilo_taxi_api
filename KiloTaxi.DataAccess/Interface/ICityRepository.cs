@@ -9,4 +9,6 @@ public interface ICityRepository
     CityPagingDTO GetAllCity(PageSortParam pageSortParam);
     bool DeleteCity(int id);
     CityDTO GetCity(int id);
+    
+
 }

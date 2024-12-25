@@ -196,23 +196,23 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public async Task<bool> ValidateAdminCredentials(string email, string password)
+        public async Task<AdminDTO> ValidateAdminCredentials(string email, string password)
         {
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                return false; // Or throw an exception depending on your use case
+                return null; // Or throw an exception depending on your use case
             }
 
             Admin adminEntity =  _dbKiloTaxiContext.Admins.SingleOrDefault(admin => admin.Email == email);
-           
+            var adminDto= AdminConverter.ConvertEntityToModel(adminEntity);
             if (adminEntity != null || ! BCrypt.Net.BCrypt.Verify(password, adminEntity.Password))
             {
-                return false;
+                return adminDto;
             }
 
             // Convert the entity to a DTO
-            return true;
+            return null;
         }
     }
 }

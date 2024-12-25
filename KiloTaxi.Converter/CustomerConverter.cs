@@ -28,22 +28,25 @@ namespace KiloTaxi.Converter
                 Name = customerEntity.Name,
                 Profile = mediaHostUrl + customerEntity.Profile,
                 MobilePrefix = customerEntity.MobilePrefix,
+                Role = customerEntity.Role,
                 Phone = customerEntity.Phone,
                 Email = customerEntity.Email,
                 Dob = customerEntity.Dob,
                 Nrc = customerEntity.Nrc,
+                RefreshToken = customerEntity.RefreshToken,
+                RefreshTokenExpiryTime = customerEntity.RefreshTokenExpiryTime,
                 NrcImageFront = mediaHostUrl + customerEntity.NrcImageFront,
                 NrcImageBack = mediaHostUrl + customerEntity.NrcImageBack,
                 EmailVerifiedAt = customerEntity.EmailVerifiedAt,
                 PhoneVerifiedAt = customerEntity.PhoneVerifiedAt,
                 Password = customerEntity.Password,
-                Gender = string.IsNullOrEmpty(customerEntity.Gender ) ? GenderType.Undefined : Enum.Parse<GenderType>(customerEntity.Gender),
+                Gender =  Enum.Parse<GenderType>(customerEntity.Gender),
                 Address = customerEntity.Address,
                 State = customerEntity.State,
                 City = customerEntity.City,
                 Township = customerEntity.Township,
-                Status =   string.IsNullOrEmpty(customerEntity.Status ) ? CustomerStatus.Pending : Enum.Parse<CustomerStatus>(customerEntity.Status),
-                KycStatus = string.IsNullOrEmpty(customerEntity.KycStatus) ? KycStatus.Pending : Enum.Parse<KycStatus>(customerEntity.KycStatus),
+                Status =    Enum.Parse<CustomerStatus>(customerEntity.Status),
+                KycStatus =Enum.Parse<KycStatus>(customerEntity.KycStatus),
             };
         }
 
@@ -82,8 +85,11 @@ namespace KiloTaxi.Converter
                 customerEntity.Name = customerDTO.Name;
                 customerEntity.Profile = customerDTO.Profile;
                 customerEntity.MobilePrefix = customerDTO.MobilePrefix;
+                customerEntity.RefreshToken = customerDTO.RefreshToken;
+                customerEntity.RefreshTokenExpiryTime = customerDTO.RefreshTokenExpiryTime;
                 customerEntity.Phone = customerDTO.Phone;
                 customerEntity.Email = customerDTO.Email;
+                customerEntity.Role = customerDTO.Role;
                 customerEntity.Dob = customerDTO.Dob;
                 customerEntity.Nrc = customerDTO.Nrc;
                 customerEntity.NrcImageFront = customerDTO.NrcImageFront;

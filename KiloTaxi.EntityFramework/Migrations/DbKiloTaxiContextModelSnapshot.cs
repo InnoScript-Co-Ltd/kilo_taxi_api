@@ -61,6 +61,13 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<DateTime?>("PhoneVerifiedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -204,6 +211,13 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -304,6 +318,13 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     b.Property<string>("Profile")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -454,6 +475,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("WalletTransactionId")
                         .HasColumnType("int");
 
@@ -464,6 +488,8 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.HasIndex("DriverId");
 
                     b.HasIndex("ScheduleBookingId");
+
+                    b.HasIndex("VehicleId");
 
                     b.HasIndex("WalletTransactionId");
 
@@ -1197,6 +1223,12 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("ScheduleBookingId");
 
+                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("KiloTaxi.EntityFramework.EntityModel.WalletTransaction", "WalletTransaction")
                         .WithMany()
                         .HasForeignKey("WalletTransactionId");
@@ -1206,6 +1238,8 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Navigation("Driver");
 
                     b.Navigation("ScheduleBooking");
+
+                    b.Navigation("Vehicle");
 
                     b.Navigation("WalletTransaction");
                 });

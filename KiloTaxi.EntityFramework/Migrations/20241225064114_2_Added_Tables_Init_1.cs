@@ -73,6 +73,13 @@ namespace KiloTaxi.EntityFramework.Migrations
                 nullable: false,
                 defaultValue: "");
 
+            migrationBuilder.AddColumn<int>(
+                name: "VehicleId",
+                table: "Order",
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
+
             migrationBuilder.AlterColumn<string>(
                 name: "Nrc",
                 table: "Driver",
@@ -97,6 +104,20 @@ namespace KiloTaxi.EntityFramework.Migrations
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "");
+
+            migrationBuilder.AddColumn<string>(
+                name: "RefreshToken",
+                table: "Driver",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "RefreshTokenExpiryTime",
+                table: "Driver",
+                type: "datetime2",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AlterColumn<string>(
                 name: "Township",
@@ -250,6 +271,20 @@ namespace KiloTaxi.EntityFramework.Migrations
                 oldType: "nvarchar(max)",
                 oldNullable: true);
 
+            migrationBuilder.AddColumn<string>(
+                name: "RefreshToken",
+                table: "Customer",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "RefreshTokenExpiryTime",
+                table: "Customer",
+                type: "datetime2",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+
             migrationBuilder.AlterColumn<string>(
                 name: "Status",
                 table: "Admin",
@@ -311,6 +346,20 @@ namespace KiloTaxi.EntityFramework.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
                 oldNullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "RefreshToken",
+                table: "Admin",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "RefreshTokenExpiryTime",
+                table: "Admin",
+                type: "datetime2",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.CreateTable(
                 name: "ExtraDemand",
@@ -401,6 +450,11 @@ namespace KiloTaxi.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Order_VehicleId",
+                table: "Order",
+                column: "VehicleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderExtend_OrderId",
                 table: "OrderExtend",
                 column: "OrderId");
@@ -419,11 +473,23 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "IX_OrderRoute_OrderId",
                 table: "OrderRoute",
                 column: "OrderId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Order_Vehicle_VehicleId",
+                table: "Order",
+                column: "VehicleId",
+                principalTable: "Vehicle",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Order_Vehicle_VehicleId",
+                table: "Order");
+
             migrationBuilder.DropTable(
                 name: "OrderExtend");
 
@@ -435,6 +501,10 @@ namespace KiloTaxi.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "ExtraDemand");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Order_VehicleId",
+                table: "Order");
 
             migrationBuilder.DropColumn(
                 name: "DestinationLat",
@@ -461,8 +531,36 @@ namespace KiloTaxi.EntityFramework.Migrations
                 table: "Order");
 
             migrationBuilder.DropColumn(
+                name: "VehicleId",
+                table: "Order");
+
+            migrationBuilder.DropColumn(
                 name: "AvabilityStatus",
                 table: "Driver");
+
+            migrationBuilder.DropColumn(
+                name: "RefreshToken",
+                table: "Driver");
+
+            migrationBuilder.DropColumn(
+                name: "RefreshTokenExpiryTime",
+                table: "Driver");
+
+            migrationBuilder.DropColumn(
+                name: "RefreshToken",
+                table: "Customer");
+
+            migrationBuilder.DropColumn(
+                name: "RefreshTokenExpiryTime",
+                table: "Customer");
+
+            migrationBuilder.DropColumn(
+                name: "RefreshToken",
+                table: "Admin");
+
+            migrationBuilder.DropColumn(
+                name: "RefreshTokenExpiryTime",
+                table: "Admin");
 
             migrationBuilder.RenameColumn(
                 name: "EstimatedAmount",

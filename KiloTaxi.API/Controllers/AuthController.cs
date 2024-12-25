@@ -1,4 +1,6 @@
-﻿using KiloTaxi.API.Helper.Authentication.Interface;
+﻿using System.Security.Claims;
+using KiloTaxi.API.Helper.Authentication.Interface;
+using KiloTaxi.EntityFramework;
 using KiloTaxi.Model.DTO;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +13,7 @@ public class AuthController : ControllerBase
     private readonly IAuthenticationService _authenticationService;
     private readonly IConfiguration _configuration;
 
+
     public AuthController(IAuthenticationService authenticationService, IConfiguration configuration)
     {
         _authenticationService = authenticationService;
@@ -18,14 +21,14 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost("adminLogin")]
-    public async Task<IActionResult> Login([FromBody] AdminDTO adminDto)
+    public async Task<IActionResult> Login([FromBody] AuthDTO authDto)
     {
-        if (adminDto == null || string.IsNullOrEmpty(adminDto.Email) || string.IsNullOrEmpty(adminDto.Password))
+        if (authDto == null || string.IsNullOrEmpty(authDto.Email) || string.IsNullOrEmpty(authDto.Password))
         {
             return BadRequest("Invalid login request.");
         }
 
-        var accessToken = await _authenticationService.AuthenticateAdminAsync(adminDto.Email, adminDto.Password);            
+        var (accessToken, refreshToken) = await _authenticationService.AuthenticateAdminAsync(authDto.Email, authDto.Password);            
       
         if (string.IsNullOrEmpty(accessToken))
         {
@@ -33,7 +36,64 @@ public class AuthController : ControllerBase
         }
 
         //return Ok(new { Token = token });
-        return Ok(accessToken);
+        return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
     }
+    
+    [HttpPost("customerLogin")]
+    public async Task<IActionResult> customerLogin([FromBody] AuthDTO authDto)
+    {
+        if (authDto == null || string.IsNullOrEmpty(authDto.Email) || string.IsNullOrEmpty(authDto.Password))
+        {
+            return BadRequest("Invalid login request.");
+        }
+
+        var (accessToken, refreshToken) = await _authenticationService.AuthenticateCustomerAsync(authDto.Email, authDto.Password);            
+      
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            return Unauthorized("Invalid credentials");
+        }
+
+        //return Ok(new { Token = token });
+        return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
+    }
+    
+    [HttpPost("driverLogin")]
+    public async Task<IActionResult> driverLogin([FromBody] AuthDTO authDto)
+    {
+        if (authDto == null || string.IsNullOrEmpty(authDto.Email) || string.IsNullOrEmpty(authDto.Password))
+        {
+            return BadRequest("Invalid login request.");
+        }
+
+        var (accessToken, refreshToken) = await _authenticationService.AuthenticateDriverAsync(authDto.Email, authDto.Password);            
+      
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            return Unauthorized("Invalid credentials");
+        }
+
+        //return Ok(new { Token = token });
+        return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
+    }
+    
+    [HttpPost("refresh-token")]
+    public IActionResult RefreshToken([FromBody] RefreshTokenDTO request)
+    {
+        var principal = _authenticationService.ValidateToken(request.AccessToken);
+
+        if (principal == null)
+        {
+            return Unauthorized("Invalid or expired access token.");
+        }
+
+        var email = principal.FindFirstValue(ClaimTypes.Name);
+        var role = principal.FindFirstValue(ClaimTypes.Role);
+        var (accessToken, refreshToken)=_authenticationService.NewRefreshToken(email, role,request);
+
+        return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
+    }
+
+    
 
 }

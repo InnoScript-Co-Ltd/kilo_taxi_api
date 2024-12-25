@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using KiloTaxi.API.Helper.Authentication.Implementation;
 using KiloTaxi.API.Helper.Authentication.Interface;
@@ -14,6 +15,8 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<AdminRepository>(); // If AdminRepository is not registered, add this too
+builder.Services.AddScoped<CustomerRepository>();
+builder.Services.AddScoped<DriverRepository>();
 // Add services to the container.
 // Configure JWT Bearer Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -45,7 +48,8 @@ builder.Services.AddAuthentication(options =>
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtSettings["Issuer"],
             ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"])),
+            RoleClaimType = ClaimTypes.Role // Map Role Claim
 
             //ValidIssuer = builder.Configuration["Jwt:Issuer"],  // Ensure this matches the issuer in BC.OpenIddict
             //ValidAudience = builder.Configuration["Jwt:Audience"],  // Ensure this matches the audience in BC.OpenIddict

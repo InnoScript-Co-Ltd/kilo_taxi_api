@@ -16,6 +16,8 @@ public class DriverDTO
     
     public string Phone{get;set;}
     
+    public string Role {get;set;}
+    
     [Required]
     [EmailAddress]
     public string Email{get;set;}
@@ -46,6 +48,11 @@ public class DriverDTO
     [MinLength(3)]
     [MaxLength(25)]
     public string Password{get;set;}
+    
+    public string RefreshToken { get; set; }
+        
+    [DataType(DataType.Date)]
+    public DateTime RefreshTokenExpiryTime { get; set; }
     
     public string Address{get;set;}
     

@@ -28,12 +28,15 @@ namespace KiloTaxi.Converter
                 Name = adminEntity.Name,
                 Phone = adminEntity.Phone,
                 Email = adminEntity.Email,
+                Role = adminEntity.Role,
+                RefreshToken = adminEntity.RefreshToken,
+                RefreshTokenExpiryTime = adminEntity.RefreshTokenExpiryTime,
                 EmailVerifiedAt = adminEntity.EmailVerifiedAt,
                 PhoneVerifiedAt = adminEntity.PhoneVerifiedAt,
                 Password = adminEntity.Password,
-                Gender =string.IsNullOrEmpty(adminEntity.Gender ) ? GenderType.Undefined : Enum.Parse<GenderType>(adminEntity.Gender),
+                Gender =Enum.Parse<GenderType>(adminEntity.Gender),
                 Address = adminEntity.Address,
-                Status = string.IsNullOrEmpty(adminEntity.Status ) ? CustomerStatus.Pending : Enum.Parse<CustomerStatus>(adminEntity.Status),
+                Status =Enum.Parse<CustomerStatus>(adminEntity.Status),
             };
         }
 
@@ -56,7 +59,10 @@ namespace KiloTaxi.Converter
                 adminEntity.Id = adminDTO.Id;
                 adminEntity.Name = adminDTO.Name;
                 adminEntity.Phone = adminDTO.Phone;
+                adminEntity.RefreshToken= adminDTO.RefreshToken;
+                adminEntity.RefreshTokenExpiryTime = adminDTO.RefreshTokenExpiryTime;
                 adminEntity.Email = adminDTO.Email;
+                adminEntity.Role = adminDTO.Role;
                 adminEntity.EmailVerifiedAt = adminDTO.EmailVerifiedAt;
                 adminEntity.PhoneVerifiedAt = adminDTO.PhoneVerifiedAt;
                 adminEntity.Password = adminDTO.Password;

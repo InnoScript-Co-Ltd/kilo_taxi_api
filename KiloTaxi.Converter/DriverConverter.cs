@@ -21,10 +21,13 @@ public static class DriverConverter
             Name = driverEntity.Name,
             Profile = mediaHostUrl +driverEntity.Profile,
             MobilePrefix = driverEntity.MobilePrefix,
+            RefreshToken = driverEntity.RefreshToken,
+            RefreshTokenExpiryTime = driverEntity.RefreshTokenExpiryTime,
             Phone = driverEntity.Phone,
             Email = driverEntity.Email,
             Dob = driverEntity.Dob,
             Nrc = driverEntity.Nrc,
+            Role = driverEntity.Role,
             NrcImageFront = mediaHostUrl + driverEntity.NrcImageFront,
             NrcImageBack = mediaHostUrl + driverEntity.NrcImageBack,
             DriverLicense = driverEntity.DriverLicense,
@@ -62,6 +65,9 @@ public static class DriverConverter
             driverEntity.Email = driverDTO.Email;
             driverEntity.Dob = driverDTO.Dob;
             driverEntity.Nrc = driverDTO.Nrc;
+            driverEntity.RefreshToken = driverDTO.RefreshToken;
+            driverEntity.RefreshTokenExpiryTime = driverDTO.RefreshTokenExpiryTime;
+            driverEntity.Role = driverDTO.Role;
             driverEntity.NrcImageFront = driverDTO.NrcImageFront;
             driverEntity.NrcImageBack = driverDTO.NrcImageBack;
             driverEntity.DriverLicense = driverDTO.DriverLicense;
@@ -75,6 +81,7 @@ public static class DriverConverter
             driverEntity.City = driverDTO.City;
             driverEntity.TownShip = driverDTO.TownShip;
             driverEntity.Gender = driverDTO.Gender.ToString();
+            driverEntity.AvabilityStatus=driverDTO.AvailableStatus.ToString();
             driverEntity.Status = driverDTO.Status.ToString();
             driverEntity.KycStatus = driverDTO.KycStatus.ToString();
 

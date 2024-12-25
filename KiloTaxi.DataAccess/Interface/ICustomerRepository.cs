@@ -10,4 +10,7 @@ public interface ICustomerRepository
     bool UpdateCustomer(CustomerDTO customerDTO);
     CustomerDTO GetCustomerById(int id);
     bool DeleteCustomer(int id);
+    
+    Task<CustomerDTO> ValidateCustomerCredentials(string email, string password);
+
 }
