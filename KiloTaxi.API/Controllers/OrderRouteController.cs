@@ -1,49 +1,37 @@
-using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
-using KiloTaxi.EntityFramework;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
-    public class AdminController : ControllerBase
+    public class OrderRouteController : ControllerBase
     {
         LoggerHelper _logHelper;
-        private readonly IAdminRepository _adminRepository;
-        private readonly DbKiloTaxiContext _dbKiloTaxiContext;
-        private readonly IConfiguration _configuration;
+        private readonly IOrderRouteRepository _orderRouteRepository;
 
-        public AdminController(
-            IAdminRepository adminRepository,
-            DbKiloTaxiContext dbContext,
-            IConfiguration configuration
-        )
+        public OrderRouteController(IOrderRouteRepository orderRouteRepository)
         {
             _logHelper = LoggerHelper.Instance;
-            _adminRepository = adminRepository;
-            _dbKiloTaxiContext = dbContext;
-            _configuration = configuration;
+            _orderRouteRepository = orderRouteRepository;
         }
 
-        //GET: api/<AdminController>
+        // GET: api/<OrderRouteController>
         [HttpGet]
-        public ActionResult<AdminPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<OrderRoutePagingDTO> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                AdminPagingDTO adminPagingDTO = _adminRepository.GetAllAdmin(pageSortParam);
-                if (!adminPagingDTO.Admins.Any())
+                OrderRoutePagingDTO orderRoutePagingDTO = _orderRouteRepository.GetAllOrderRoute(
+                    pageSortParam
+                );
+                if (!orderRoutePagingDTO.OrderRoutes.Any())
                 {
                     return NoContent();
                 }
-                // Add a custom header
-                //Response.Headers.Add("X-Custom-Header", "foo");
-                return Ok(adminPagingDTO);
+                return Ok(orderRoutePagingDTO);
             }
             catch (Exception ex)
             {
@@ -52,17 +40,18 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
+        // GET: api/<OrderRouteController>/5
         [HttpGet("{id}")]
-        public ActionResult<AdminDTO> Get(int id)
+        public ActionResult<OrderRouteDTO> Get(int id)
         {
             try
             {
-                _logHelper.LogInfo("test info log");
                 if (id == 0)
                 {
                     return BadRequest();
                 }
-                var result = _adminRepository.GetAdminById(id);
+
+                var result = _orderRouteRepository.GetOrderRouteById(id);
                 if (result == null)
                 {
                     return NotFound();
@@ -76,27 +65,23 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        // POST api/<AdminController>
+        // POST api/<OrderRouteController>
         [HttpPost]
-        [AllowAnonymous]
-        public ActionResult<AdminDTO> Post([FromForm] AdminDTO adminDTO)
+        public ActionResult<OrderRouteDTO> Post([FromBody] OrderRouteDTO orderRouteDTO)
         {
             try
             {
-                if (adminDTO == null)
+                if (orderRouteDTO == null)
                 {
                     return BadRequest();
                 }
-                var existEmailAdmin = _dbKiloTaxiContext.Admins.FirstOrDefault(admin =>
-                    admin.Email == adminDTO.Email
-                );
-                if (existEmailAdmin != null)
-                {
-                    return Conflict();
-                }
 
-                var createdAdmin = _adminRepository.AddAdmin(adminDTO);
-                return CreatedAtAction(nameof(Get), new { id = createdAdmin.Id }, createdAdmin);
+                var createdOrderRoute = _orderRouteRepository.CreateOrderRoute(orderRouteDTO);
+                return CreatedAtAction(
+                    nameof(Get),
+                    new { id = createdOrderRoute.Id },
+                    createdOrderRoute
+                );
             }
             catch (Exception ex)
             {
@@ -105,18 +90,18 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
+        // PUT api/<OrderRouteController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] AdminDTO adminDTO)
+        public ActionResult Put(int id, [FromBody] OrderRouteDTO orderRouteDTO)
         {
             try
             {
-                if (adminDTO == null || id != adminDTO.Id)
+                if (orderRouteDTO == null || id != orderRouteDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _adminRepository.UpdateAdmin(adminDTO);
-
+                var result = _orderRouteRepository.UpdateOrderRoute(orderRouteDTO);
                 if (!result)
                 {
                     return NotFound();
@@ -130,19 +115,19 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        // DELETE api/<AdminController>/5
+        // DELETE api/<OrderRouteController>/5
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
             try
             {
-                var admin = _adminRepository.GetAdminById(id);
-                if (admin == null)
+                var orderRoute = _orderRouteRepository.GetOrderRouteById(id);
+                if (orderRoute == null)
                 {
                     return NotFound();
                 }
 
-                var result = _adminRepository.DeleteAdmin(id);
+                var result = _orderRouteRepository.DeleteOrderRoute(id);
                 if (!result)
                 {
                     return NotFound();

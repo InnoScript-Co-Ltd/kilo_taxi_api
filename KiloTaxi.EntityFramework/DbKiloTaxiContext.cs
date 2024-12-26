@@ -50,16 +50,17 @@ namespace KiloTaxi.EntityFramework
         public DbSet<TravelRate> TravelRates { get; set; }
 
         public DbSet<City> Cities { get; set; }
-        
+
         public DbSet<PromotionUser> PromotionUsers { get; set; }
-        
+
         public DbSet<OrderRoute> OrderRoutes { get; set; }
-        
+
         public DbSet<OrderExtend> OrderExtends { get; set; }
-        
+
         public DbSet<ExtraDemand> ExtraDemands { get; set; }
-        
+
         public DbSet<OrderExtraDemand> OrderExtraDemands { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Admin>().ToTable("Admin");

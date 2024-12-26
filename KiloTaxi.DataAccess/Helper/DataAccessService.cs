@@ -40,7 +40,7 @@ namespace KiloTaxi.DataAccess.Helper
             services.AddScoped<ICityRepository, CityRepository>();
             services.AddScoped<ITravelRateRepository, TravelRateRepository>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-
+            services.AddScoped<IOrderRouteRepository, OrderRouteRepository>();
         }
     }
 }
