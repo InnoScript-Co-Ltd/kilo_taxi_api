@@ -43,6 +43,7 @@ namespace KiloTaxi.DataAccess.Helper
             services.AddScoped<IOrderRouteRepository, OrderRouteRepository>();
             services.AddScoped<IOrderExtendRepository, OrderExtendRepository>();
             services.AddScoped<IExtraDemandRepository, ExtraDemandRepository>();
+            services.AddScoped<IOrderExtraDemandRepository, OrderExtraDemandRepository>();
         }
     }
 }
