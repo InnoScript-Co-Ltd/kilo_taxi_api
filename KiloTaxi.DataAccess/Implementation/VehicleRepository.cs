@@ -32,6 +32,7 @@ public class VehicleRepository : IVehicleRepository
         {
             Vehicle vehicleEntity = new Vehicle();
             VehicleConverter.ConvertModelToEntity(vehicleDTO, ref vehicleEntity);
+            var driver = _dbKiloTaxiContext.Drivers.FirstOrDefault(driver => driver.Id == vehicleDTO.DriverId);
 
             _dbKiloTaxiContext.Add(vehicleEntity);
             _dbKiloTaxiContext.SaveChanges();

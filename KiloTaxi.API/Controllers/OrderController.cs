@@ -85,15 +85,20 @@ namespace KiloTaxi.API.Controllers
         }
         
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] OrderDTO orderDTO)
+        public IActionResult Put(int id, [FromBody] OrderDTO orderDTO)
         {
             try
             {
-                if (orderDTO == null || id != orderDTO.Id)
+                if (orderDTO == null)
                 {
-                    return BadRequest();
+                    return BadRequest("Request body is missing.");
                 }
-        
+
+                if ( id != orderDTO.Id)
+                {
+                    return BadRequest($"Route ID ({id}) does not match body ID ({orderDTO.Id}).");
+                }
+
                 var result = _orderRepository.UpdateOrder(orderDTO);
         
                 if (!result)

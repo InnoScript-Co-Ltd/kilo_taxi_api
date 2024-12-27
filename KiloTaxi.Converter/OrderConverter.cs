@@ -25,9 +25,16 @@ namespace KiloTaxi.Converter
             return new OrderDTO()
             {
                 Id = orderEntity.Id,
+                PickUpLocation = orderEntity.PickUpLocation,
+                PickUpLat = orderEntity.PickUpLat,
+                PickUpLong = orderEntity.PickUpLong,
+                DestinationLocation = orderEntity.DestinationLocation,
+                DestinationLat = orderEntity.DestinationLat,
+                DestinationLong = orderEntity.DestinationLong,
                 WalletTransactionId = orderEntity.WalletTransactionId,
                 CustomerId = orderEntity.CustomerId,
                 DriverId = orderEntity.DriverId,
+                VehicleId = orderEntity.VehicleId,
                 ScheduleBookingId = orderEntity.ScheduleBookingId,
                 EstimatedAmount = orderEntity.EstimatedAmount,
                 Status = Enum.Parse<OrderStatus>(orderEntity.Status),
@@ -52,9 +59,16 @@ namespace KiloTaxi.Converter
                 }
 
                 orderEntity.Id = orderDTO.Id;
+                orderEntity.PickUpLocation = orderDTO.PickUpLocation;
+                orderEntity.PickUpLat = orderDTO.PickUpLat;
+                orderEntity.PickUpLong = orderDTO.PickUpLong;
+                orderEntity.DestinationLocation = orderDTO.DestinationLocation;
+                orderEntity.DestinationLat = orderDTO.DestinationLat;
+                orderEntity.DestinationLong = orderDTO.DestinationLong;
                 orderEntity.WalletTransactionId = orderDTO.WalletTransactionId;
                 orderEntity.CustomerId = orderDTO.CustomerId;
                 orderEntity.DriverId = orderDTO.DriverId;
+                orderEntity.VehicleId = orderDTO.VehicleId;
                 orderEntity.ScheduleBookingId = orderDTO.ScheduleBookingId;
                 orderEntity.EstimatedAmount = orderDTO.EstimatedAmount;
                 orderEntity.Status = orderDTO.Status.ToString();
