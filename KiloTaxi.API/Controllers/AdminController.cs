@@ -1,3 +1,4 @@
+using KiloTaxi.API.Services;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
@@ -10,22 +11,23 @@ namespace KiloTaxi.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+   // [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
         LoggerHelper _logHelper;
         private readonly IAdminRepository _adminRepository;
         private readonly DbKiloTaxiContext _dbKiloTaxiContext;
         private readonly IConfiguration _configuration;
+        private ApiClientHub _apiClientHub;
 
 
-        public AdminController(IAdminRepository adminRepository,DbKiloTaxiContext dbContext,IConfiguration configuration)
+        public AdminController(IAdminRepository adminRepository,DbKiloTaxiContext dbContext,IConfiguration configuration,ApiClientHub apiClientHub)
         {
             _logHelper = LoggerHelper.Instance;
             _adminRepository = adminRepository;
             _dbKiloTaxiContext = dbContext;
             _configuration = configuration;
-
+            _apiClientHub = apiClientHub;
         }
 
         //GET: api/<AdminController>
@@ -34,6 +36,9 @@ namespace KiloTaxi.API.Controllers
         {
             try
             {
+                #region Temp Testing
+                _apiClientHub.SendMessageAsync("SendFrom API Admin Endpoint");
+                #endregion
                 AdminPagingDTO adminPagingDTO = _adminRepository.GetAllAdmin(pageSortParam);
                 if (!adminPagingDTO.Admins.Any())
                 {

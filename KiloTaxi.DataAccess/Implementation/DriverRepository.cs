@@ -7,6 +7,8 @@ using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.Extensions.Options;
 
 namespace KiloTaxi.DataAccess.Implementation;
@@ -96,7 +98,7 @@ public class DriverRepository : IDriverRepository
         }
     }
 
-    public DriverDTO GetDriverById(int id)
+    public DriverInfoDTO GetDriverById(int id)
     {
         try
         {
@@ -116,8 +118,8 @@ public class DriverRepository : IDriverRepository
                     WalletUserMappingConverter.ConvertEntityToModel(walletUserMapping)
                 )
                 .ToList();
-            driverDTO.Vehicle = vehicleDTO;
-            driverDTO.WalletUserMapping = WalletUserMappingDTO;
+            // driverDTO.Vehicle = vehicleDTO;
+            // driverDTO.WalletUserMapping = WalletUserMappingDTO;
             return driverDTO;
         }
         catch (Exception ex)
@@ -127,7 +129,7 @@ public class DriverRepository : IDriverRepository
         }
     }
 
-    public DriverDTO DriverRegistration(DriverDTO driverDTO)
+    public DriverInfoDTO DriverRegistration(DriverFormDTO driverDTO)
     {
         try
         {
@@ -167,8 +169,8 @@ public class DriverRepository : IDriverRepository
 
             _dbKiloTaxiContext.SaveChanges();
 
-            driverDTO = DriverConverter.ConvertEntityToModel(driverEntity, _mediaHostUrl);
-            return driverDTO;
+           var driverInfoDTO = DriverConverter.ConvertEntityToModel(driverEntity, _mediaHostUrl);
+            return driverInfoDTO;
         }
         catch (Exception ex)
         {
@@ -177,7 +179,7 @@ public class DriverRepository : IDriverRepository
         }
     }
 
-    public bool UpdateDriver(DriverDTO driverDTO)
+    public bool UpdateDriver(DriverFormDTO driverDTO)
     {
         bool result = false;
         try
@@ -257,15 +259,15 @@ public class DriverRepository : IDriverRepository
         }
     }
     
-    public async Task<DriverDTO> ValidateDriverCredentials(string email, string password)
+    public async Task<DriverInfoDTO> ValidateDriverCredentials(string EmailOrPhone, string password)
     {
 
-        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+        if (string.IsNullOrEmpty(EmailOrPhone) || string.IsNullOrEmpty(password))
         {
             return null; // Or throw an exception depending on your use case
         }
 
-        Driver driverEntity =  _dbKiloTaxiContext.Drivers.SingleOrDefault(driver => driver.Email == email);
+        Driver driverEntity =  _dbKiloTaxiContext.Drivers.SingleOrDefault(driver => driver.Phone == EmailOrPhone);
            
         if (driverEntity != null || ! BCrypt.Net.BCrypt.Verify(password, driverEntity.Password))
         {

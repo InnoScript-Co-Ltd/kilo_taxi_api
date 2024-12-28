@@ -30,12 +30,14 @@ namespace KiloTaxi.Model.DTO
         
         public string? Role { get; set; }
         
-        public string RefreshToken { get; set; }
+        public string? RefreshToken { get; set; }
         
         [DataType(DataType.Date)]
-        public DateTime RefreshTokenExpiryTime { get; set; } 
+        public DateTime? RefreshTokenExpiryTime { get; set; } 
 
         public GenderType Gender { get; set; }
+
+        public string? Otp {get;set;}
 
         public string? Address { get; set; }
 

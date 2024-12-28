@@ -29,6 +29,7 @@ namespace KiloTaxi.Converter
                 Phone = adminEntity.Phone,
                 Email = adminEntity.Email,
                 Role = adminEntity.Role,
+                Otp = adminEntity.Otp,
                 RefreshToken = adminEntity.RefreshToken,
                 RefreshTokenExpiryTime = adminEntity.RefreshTokenExpiryTime,
                 EmailVerifiedAt = adminEntity.EmailVerifiedAt,
@@ -65,6 +66,7 @@ namespace KiloTaxi.Converter
                 adminEntity.Role = adminDTO.Role;
                 adminEntity.EmailVerifiedAt = adminDTO.EmailVerifiedAt;
                 adminEntity.PhoneVerifiedAt = adminDTO.PhoneVerifiedAt;
+                adminEntity.Otp = adminDTO.Otp;
                 adminEntity.Password = adminDTO.Password;
                 adminEntity.Gender = adminDTO.Gender.ToString();
                 adminEntity.Address = adminDTO.Address;

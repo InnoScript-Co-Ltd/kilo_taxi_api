@@ -48,13 +48,14 @@ try
     app.UseHttpsRedirection();
 
     app.UseRouting();
-
+    
     app.UseAuthorization();
 
     app.UseEndpoints(endpoints =>
     {
         endpoints.MapHub<DriverHub>("/driver");
-        endpoints.MapHub<DashboardHub>("/dashboard");        
+        endpoints.MapHub<DashboardHub>("/dashboard");    
+        endpoints.MapHub<ApiHub>("/apihub");
     });
 
     app.Run();

@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.EntityFramework.EntityModel
 {
+    [Index(nameof(Phone), IsUnique = true)]
+    [Index(nameof(Email), IsUnique = true)] 
     public class Admin
     {
         [Key]
@@ -37,10 +39,11 @@ namespace KiloTaxi.EntityFramework.EntityModel
 
         public string Status { get; set; }
         
-        public string RefreshToken { get; set; }
+        public string? Otp {get;set;}
+        public string? RefreshToken { get; set; }
         
         [DataType(DataType.Date)]
-        public DateTime RefreshTokenExpiryTime { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
         
     }
 }

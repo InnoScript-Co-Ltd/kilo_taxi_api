@@ -1,17 +1,19 @@
 ﻿using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.DataAccess.Interface;
 
 public interface IDriverRepository
 {
-    DriverDTO DriverRegistration(DriverDTO driverDTO);
-    bool UpdateDriver(DriverDTO driverDTO);
-    DriverDTO GetDriverById(int id);
+    DriverInfoDTO DriverRegistration(DriverFormDTO driverFormDto);
+    bool UpdateDriver(DriverFormDTO driverDTO);
+    DriverInfoDTO GetDriverById(int id);
     
     DriverPagingDTO GetAllDrivers(PageSortParam pageSortParam);
     
     bool DeleteDriver(int id);
     
-    Task<DriverDTO> ValidateDriverCredentials(string email, string password);
+    Task<DriverInfoDTO> ValidateDriverCredentials(string email, string password);
 
 }

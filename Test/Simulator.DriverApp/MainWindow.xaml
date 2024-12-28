@@ -43,7 +43,17 @@
                 </Border>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Height="25" />
             </DockPanel>
+            <DockPanel Margin="8">
+                <Border CornerRadius="6" BorderBrush="LightGray" Background="LightGray" BorderThickness="2" DockPanel.Dock="Top">
+                    <StackPanel Orientation="Vertical">
 
+                        <CheckBox x:Name="chkDriverAvalilityStatus" HorizontalAlignment="Center" />
+                        
+                        <Button x:Name="btnSendDriverAvalilityStatus" Content="SendDriverAvalilityStatus" Click="btnSendDriverAvalilityStatus_Click"></Button>
+                    </StackPanel>
+                </Border>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Height="25" />
+            </DockPanel>
 
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="100" Height="310" >
                 <Grid>

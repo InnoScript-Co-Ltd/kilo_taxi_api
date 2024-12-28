@@ -2,12 +2,14 @@
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter;
 
 public static class VehicleConverter
 {
-    public static VehicleDTO ConvertEntityToModel(Vehicle vehicleEntity, string mediaHostUrl)
+    public static VehicleInfoDTO ConvertEntityToModel(Vehicle vehicleEntity, string mediaHostUrl)
     {
         if (vehicleEntity == null)
         {
@@ -15,7 +17,7 @@ public static class VehicleConverter
             throw new ArgumentNullException(nameof(vehicleEntity), "Source Vehicle entity cannot be null");
         }
 
-        return new VehicleDTO()
+        return new VehicleInfoDTO()
         {
             Id = vehicleEntity.Id,
             VehicleNo = vehicleEntity.VehicleNo,
@@ -26,13 +28,11 @@ public static class VehicleConverter
             VehicleLicenseFront = mediaHostUrl + vehicleEntity.VehicleLicenseFront,
             VehicleLicenseBack = mediaHostUrl + vehicleEntity.VehicleLicenseBack,
             Status = Enum.Parse<VehicleStatus>(vehicleEntity.Status),
-            DriverId = vehicleEntity.DriverId,
-            DriverName = vehicleEntity.Driver.Name,
             VehicleTypeId = vehicleEntity.VehicleTypeId,
         };
     }
 
-    public static void ConvertModelToEntity(VehicleDTO vehicleDTO, ref Vehicle vehicleEntity)
+    public static void ConvertModelToEntity(DriverFormDTO vehicleDTO, ref Vehicle vehicleEntity)
     {
         try
         {

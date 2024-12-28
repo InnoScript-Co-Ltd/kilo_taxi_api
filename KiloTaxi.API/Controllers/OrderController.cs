@@ -1,3 +1,4 @@
+using KiloTaxi.API.Services;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
@@ -12,11 +13,14 @@ namespace KiloTaxi.API.Controllers
     {
         LoggerHelper _logHelper;
         private readonly IOrderRepository _orderRepository;
+        private ApiClientHub _apiClientHub;
 
-        public OrderController(IOrderRepository orderRepository)
+
+        public OrderController(IOrderRepository orderRepository,ApiClientHub apiClientHub)
         {
             _logHelper = LoggerHelper.Instance;
             _orderRepository = orderRepository;
+            _apiClientHub = apiClientHub;
         }
 
         //GET: api/<AdminController>
@@ -69,6 +73,8 @@ namespace KiloTaxi.API.Controllers
         {
             try
             {
+                _apiClientHub.SendMessageAsync($"Get all orders");
+
                 if (orderDTO == null)
                 {
                     return BadRequest();

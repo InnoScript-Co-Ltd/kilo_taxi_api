@@ -3,6 +3,7 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers;
@@ -67,57 +68,57 @@ public class VehicleController:ControllerBase
             return StatusCode(500,"An error occurred while processing your request.");
         }
     }
-    [HttpPost]
-    public async Task<ActionResult<VehicleDTO>> Post(VehicleDTO vehicleDTO)
-    {
-        try
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var fileUploadHelper=new FileUploadHelper(_configuration,_allowedExtensions,_allowedMimeTypes,_maxFileSize);
-            var filesToProcess = new List<(IFormFile? File, string FilePathProperty)>
-            {
-                (vehicleDTO.File_BusinessLicenseImage, nameof(vehicleDTO.BusinessLicenseImage)),
-                (vehicleDTO.File_VehicleLicenseFront, nameof(vehicleDTO.VehicleLicenseFront)),
-                (vehicleDTO.File_VehicleLicenseBack, nameof(vehicleDTO.VehicleLicenseBack)),
-            };
-            foreach (var (file, filePathProperty) in filesToProcess)
-            {
-                if (!fileUploadHelper.ValidateFile(file, true, flagDomain, out var resolvedFilePath, out var errorMessage))
-                {
-                    return BadRequest(errorMessage);
-                }
-
-                var fileName = "_" + filePathProperty + resolvedFilePath;
-                typeof(VehicleDTO).GetProperty(filePathProperty)?.SetValue(vehicleDTO,fileName);
-
-            }
-            var registerVehicle=_vehicleRepository.VehicleRegistration(vehicleDTO);
-            foreach (var (file, filePathProperty) in filesToProcess)
-            { 
-                if (file != null && file.Length > 0)
-                {
-                    if (!fileUploadHelper.ValidateFile(file, true, flagDomain, out var resolvedFilePath, out var errorMessage))
-                    {
-                        return BadRequest(errorMessage);
-                    }
-                    await fileUploadHelper.SaveFileAsync(file, flagDomain,vehicleDTO.Id.ToString()+"_"+filePathProperty, resolvedFilePath);
-
-                }
-            }
-            return CreatedAtAction(nameof(Get), new { id = registerVehicle.Id }, registerVehicle);
-        }
-        catch (Exception ex)
-        {
-            _logHelper.LogError(ex);
-            return StatusCode(500,"An error occurred while processing your request.");
-        }
-    }
+    // [HttpPost]
+    // public async Task<ActionResult<VehicleDTO>> Post(VehicleDTO vehicleDTO)
+    // {
+    //     try
+    //     {
+    //         if (!ModelState.IsValid)
+    //         {
+    //             return BadRequest(ModelState);
+    //         }
+    //
+    //         var fileUploadHelper=new FileUploadHelper(_configuration,_allowedExtensions,_allowedMimeTypes,_maxFileSize);
+    //         var filesToProcess = new List<(IFormFile? File, string FilePathProperty)>
+    //         {
+    //             (vehicleDTO.File_BusinessLicenseImage, nameof(vehicleDTO.BusinessLicenseImage)),
+    //             (vehicleDTO.File_VehicleLicenseFront, nameof(vehicleDTO.VehicleLicenseFront)),
+    //             (vehicleDTO.File_VehicleLicenseBack, nameof(vehicleDTO.VehicleLicenseBack)),
+    //         };
+    //         foreach (var (file, filePathProperty) in filesToProcess)
+    //         {
+    //             if (!fileUploadHelper.ValidateFile(file, true, flagDomain, out var resolvedFilePath, out var errorMessage))
+    //             {
+    //                 return BadRequest(errorMessage);
+    //             }
+    //
+    //             var fileName = "_" + filePathProperty + resolvedFilePath;
+    //             typeof(VehicleDTO).GetProperty(filePathProperty)?.SetValue(vehicleDTO,fileName);
+    //
+    //         }
+    //         var registerVehicle=_vehicleRepository.VehicleRegistration(vehicleDTO);
+    //         foreach (var (file, filePathProperty) in filesToProcess)
+    //         { 
+    //             if (file != null && file.Length > 0)
+    //             {
+    //                 if (!fileUploadHelper.ValidateFile(file, true, flagDomain, out var resolvedFilePath, out var errorMessage))
+    //                 {
+    //                     return BadRequest(errorMessage);
+    //                 }
+    //                 await fileUploadHelper.SaveFileAsync(file, flagDomain,vehicleDTO.Id.ToString()+"_"+filePathProperty, resolvedFilePath);
+    //
+    //             }
+    //         }
+    //         return CreatedAtAction(nameof(Get), new { id = registerVehicle.Id }, registerVehicle);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logHelper.LogError(ex);
+    //         return StatusCode(500,"An error occurred while processing your request.");
+    //     }
+    // }
         [HttpPut("{id}")]
-    public async Task<IActionResult> Put([FromRoute] int id, VehicleDTO vehicleDTO)
+    public async Task<IActionResult> Put([FromRoute] int id, DriverFormDTO vehicleDTO)
     {
         try
         {

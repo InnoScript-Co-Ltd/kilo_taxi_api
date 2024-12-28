@@ -15,13 +15,16 @@ namespace KiloTaxi.Realtime.Hubs
         private DashBoardConnectionManager _dashBoardConnectionManager;
         private readonly IHubContext<DashboardHub,IDashboardClient> _hubDashboard;
         private readonly HttpClient _httpClient;
+        private readonly IHubContext<ApiHub, IApiClient> _hubApi;
 
-        public DriverHub(DriverConnectionManager driverConnectionManager, IHubContext<DashboardHub,IDashboardClient> hubDashboard,IHttpClientFactory httpClientFactory)
+        public DriverHub(DriverConnectionManager driverConnectionManager, IHubContext<DashboardHub,IDashboardClient> hubDashboard,IHttpClientFactory httpClientFactory,IHubContext<ApiHub, IApiClient> hubApi)
         {
             _logHelper = LoggerHelper.Instance;
             _driverConnectionManager = driverConnectionManager;
             _hubDashboard = hubDashboard;
             _httpClient = httpClientFactory.CreateClient();
+            _hubApi = hubApi;
+
         }
 
         #region SignalR Events
@@ -97,7 +100,13 @@ namespace KiloTaxi.Realtime.Hubs
                 _logHelper.LogError(ex, ex?.Message);
             }
         }
+        public async Task SendDriverAvalilityStatus(bool status)
+        {
+            var conId = Context.ConnectionId;
+            var value = _driverConnectionManager.GetVehiclId(conId);
 
+            _hubApi.Clients.All.ReceiveTestMethod(status.ToString());
+        }
 
         #endregion
 

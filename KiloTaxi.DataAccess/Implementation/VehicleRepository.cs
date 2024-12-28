@@ -7,6 +7,8 @@ using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -26,12 +28,13 @@ public class VehicleRepository : IVehicleRepository
         _mediaHostUrl = mediaSettings.Value.MediaHostUrl;
     }
 
-    public VehicleDTO VehicleRegistration(VehicleDTO vehicleDTO)
+    public VehicleInfoDTO VehicleRegistration(DriverFormDTO vehicleDTO)
     {
         try
         {
             Vehicle vehicleEntity = new Vehicle();
             VehicleConverter.ConvertModelToEntity(vehicleDTO, ref vehicleEntity);
+            var driver = _dbKiloTaxiContext.Drivers.FirstOrDefault(driver => driver.Id == vehicleDTO.DriverId);
 
             _dbKiloTaxiContext.Add(vehicleEntity);
             _dbKiloTaxiContext.SaveChanges();
@@ -57,8 +60,8 @@ public class VehicleRepository : IVehicleRepository
             }
             _dbKiloTaxiContext.SaveChanges();
 
-            vehicleDTO = VehicleConverter.ConvertEntityToModel(vehicleEntity, _mediaHostUrl);
-            return vehicleDTO;
+            var vehicleInfoDTO = VehicleConverter.ConvertEntityToModel(vehicleEntity, _mediaHostUrl);
+            return vehicleInfoDTO;
         }
         catch (Exception ex)
         {
@@ -67,7 +70,7 @@ public class VehicleRepository : IVehicleRepository
         }
     }
 
-    public bool UpdateVehicle(VehicleDTO vehicleDTO)
+    public bool UpdateVehicle(DriverFormDTO vehicleDTO)
     {
         bool result = false;
         try
@@ -124,7 +127,7 @@ public class VehicleRepository : IVehicleRepository
         }
     }
 
-    public VehicleDTO GetVehicleById(int id)
+    public VehicleInfoDTO GetVehicleById(int id)
     {
         try
         {

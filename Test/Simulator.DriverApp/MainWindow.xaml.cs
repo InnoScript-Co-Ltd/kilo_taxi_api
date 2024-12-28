@@ -37,7 +37,12 @@ namespace Simulator.DriverApp
             };
             connection.InvokeAsync("SendVehicleLocation", vehicleLocation);
         }
-
+        private void ReceiveTestMethod(string data)
+        {
+            var jsonSerializedModel = JsonSerializer.Serialize(data);
+            Console.WriteLine(jsonSerializedModel);
+            lblLogs.Text += Environment.NewLine + $"ReceiveTestMethod : {jsonSerializedModel}";
+        }
         // private void SendSos(SosDTO SosDTO)
         // {
         //     Console.WriteLine("Sending SOS");
@@ -67,6 +72,10 @@ namespace Simulator.DriverApp
             };
             connection.InvokeAsync("SendSos", sosDto);
             lblLogs.Text += Environment.NewLine + "SendSos has been invoked";
+        }
+        private void btnSendDriverAvalilityStatus_Click(object sender, RoutedEventArgs e)
+        {
+            connection.InvokeAsync("SendDriverAvalilityStatus", chkDriverAvalilityStatus.IsChecked);
         }
         
         #endregion
@@ -131,6 +140,16 @@ namespace Simulator.DriverApp
                     lblLogs.Text += Environment.NewLine + $"RequestVehicleLocation : {jsonSerializedModel}";
 
                     this.RequestVehicleLocation(vehicleId);
+                });
+            });
+            connection.On("ReceiveTestMethod", async (string data) =>
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    var jsonSerializedModel = JsonSerializer.Serialize(data);
+                    lblLogs.Text += Environment.NewLine + $"ReceiveTestMethod : {jsonSerializedModel}";
+
+                    this.ReceiveTestMethod(data);
                 });
             });
             // connection.On("SendSos", async (SosDTO sosDto) =>

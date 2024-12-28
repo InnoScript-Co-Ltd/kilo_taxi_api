@@ -36,4 +36,6 @@ public class VehicleDTO
     public IFormFile? File_BusinessLicenseImage { get; set; }
     public IFormFile? File_VehicleLicenseFront { get; set; }
     public IFormFile? File_VehicleLicenseBack { get; set; }
+    
+    
 }

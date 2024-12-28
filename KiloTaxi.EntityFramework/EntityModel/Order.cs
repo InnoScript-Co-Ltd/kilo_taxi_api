@@ -17,7 +17,10 @@ namespace KiloTaxi.EntityFramework.EntityModel {
          
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public Decimal EstimatedAmount { get; set; }
+        public Decimal? EstimatedAmount { get; set; }
+        
+        [Column(TypeName = "decimal(18,2)")]
+        public Decimal TotalAmount { get; set; }
         
         [Required]
         public string Status { get; set; }

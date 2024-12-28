@@ -23,6 +23,11 @@
             _connections.TryGetValue(key, out var connectionId);
             return connectionId;
         }
-
+        
+        public string? GetVehiclId(string connectionId)
+        {
+            var item = _connections.FirstOrDefault(x => x.Value == connectionId);
+            return item.Key;
+        }
     }
 }
