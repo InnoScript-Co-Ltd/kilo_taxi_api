@@ -22,10 +22,7 @@ public class Driver
     
     public string Phone{get;set;}
     
-    [Required]
-    [EmailAddress]
-    
-    public string Email{get;set;}
+    public string? Email{get;set;}
     
     public DateTime? Dob{get;set;}
     
@@ -44,8 +41,6 @@ public class Driver
     
     public DateTime? PhoneVerifiedAt{get;set;}
     
-    [MinLength(3)]
-    [MaxLength(25)]
     public string? Password{get;set;}
     
     public string Address{get;set;}

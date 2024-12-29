@@ -15,7 +15,6 @@ namespace KiloTaxi.API.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-[Authorize]
 public class DriverController : ControllerBase
 {
     LoggerHelper _logHelper;
@@ -30,14 +29,16 @@ public class DriverController : ControllerBase
         "image/png",
     };
     private const long _maxFileSize = 5 * 1024 * 1024;
-    private const string flagDomain = "driver";
+    private const string flagDomainDriver = "driver";
+    private const string flagDomainVehicle = "vehicle";
 
-    public DriverController(IDriverRepository driverRepository, IConfiguration configuration,DbKiloTaxiContext dbContext)
+    public DriverController(IDriverRepository driverRepository, IConfiguration configuration,DbKiloTaxiContext dbContext, IVehicleRepository vehicleRepository)
     {
         _logHelper = LoggerHelper.Instance;
         _driverRepository = driverRepository;
         _configuration = configuration;
         _dbKiloTaxiContext = dbContext;
+        _vehicleRepository = vehicleRepository;
         
     }
 
@@ -205,7 +206,7 @@ public class DriverController : ControllerBase
                     !fileUploadHelper.ValidateFile(
                         file,
                         true,
-                        flagDomain,
+                        flagDomainDriver,
                         out var resolvedFilePath,
                         out var errorMessage
                     )
@@ -215,7 +216,7 @@ public class DriverController : ControllerBase
                 }
 
                 var fileName = "_" + filePathProperty + resolvedFilePath;
-                typeof(DriverDTO).GetProperty(filePathProperty)?.SetValue(driverFormDto, fileName);
+                typeof(DriverFormDTO).GetProperty(filePathProperty)?.SetValue(driverFormDto, fileName);
             }
             var registerDriver = _driverRepository.DriverRegistration(driverFormDto);
 
@@ -227,7 +228,7 @@ public class DriverController : ControllerBase
                         !fileUploadHelper.ValidateFile(
                             file,
                             true,
-                            flagDomain,
+                            flagDomainDriver,
                             out var resolvedFilePath,
                             out var errorMessage
                         )
@@ -237,7 +238,7 @@ public class DriverController : ControllerBase
                     }
                     await fileUploadHelper.SaveFileAsync(
                         file,
-                        flagDomain,
+                        flagDomainDriver,
                         registerDriver.Id.ToString() + "_" + filePathProperty,
                         resolvedFilePath
                     );
@@ -251,7 +252,7 @@ public class DriverController : ControllerBase
             };
             foreach (var (file, filePathProperty) in filesToProcessVehicle)
             {
-                if (!fileUploadHelper.ValidateFile(file, true, flagDomain, out var resolvedFilePath, out var errorMessage))
+                if (!fileUploadHelper.ValidateFile(file, true, flagDomainVehicle, out var resolvedFilePath, out var errorMessage))
                 {
                     return BadRequest(errorMessage);
                 }
@@ -260,16 +261,19 @@ public class DriverController : ControllerBase
                 typeof(DriverFormDTO).GetProperty(filePathProperty)?.SetValue(driverFormDto,fileName);
 
             }
+            driverFormDto.DriverId = registerDriver.Id;
+            driverFormDto.VehicleTypeId = 1;
             var registerVehicle=_vehicleRepository.VehicleRegistration(driverFormDto);
+            registerDriver.VehicleInfo = new List<VehicleInfoDTO> { registerVehicle };
             foreach (var (file, filePathProperty) in filesToProcess)
             { 
                 if (file != null && file.Length > 0)
                 {
-                    if (!fileUploadHelper.ValidateFile(file, true, flagDomain, out var resolvedFilePath, out var errorMessage))
+                    if (!fileUploadHelper.ValidateFile(file, true, flagDomainVehicle, out var resolvedFilePath, out var errorMessage))
                     {
                         return BadRequest(errorMessage);
                     }
-                    await fileUploadHelper.SaveFileAsync(file, flagDomain,registerVehicle.Id.ToString()+"_"+filePathProperty, resolvedFilePath);
+                    await fileUploadHelper.SaveFileAsync(file, flagDomainVehicle,registerVehicle.Id.ToString()+"_"+filePathProperty, resolvedFilePath);
 
                 }
             }
@@ -311,8 +315,8 @@ public class DriverController : ControllerBase
             var filesToProcess = new List<(IFormFile file, string filePathProperty)>
             {
                 (driverFormDto.File_Profile, nameof(driverFormDto.Profile)),
-                (driverFormDto.File_NrcImageFront, nameof(driverFormDto.NrcImageFront)),
-                (driverFormDto.File_NrcImageBack, nameof(driverFormDto.NrcImageBack)),
+                // (driverFormDto.File_NrcImageFront, nameof(driverFormDto.NrcImageFront)),
+                // (driverFormDto.File_NrcImageBack, nameof(driverFormDto.NrcImageBack)),
                 (driverFormDto.File_DriverImageLicenseFront, nameof(driverFormDto.DriverImageLicenseFront)),
                 (driverFormDto.File_DriverImageLicenseBack, nameof(driverFormDto.DriverImageLicenseBack)),
             };
@@ -326,7 +330,7 @@ public class DriverController : ControllerBase
                         !fileUploadHelper.ValidateFile(
                             file,
                             true,
-                            flagDomain,
+                            flagDomainDriver,
                             out var resolvedFilePath,
                             out var errorMessage
                         )
@@ -353,7 +357,7 @@ public class DriverController : ControllerBase
                 {
                     var fileExtension = Path.GetExtension(file.FileName);
                     var fileName = driverFormDto.Id.ToString() + "_" + filePathProperty;
-                    await fileUploadHelper.SaveFileAsync(file, flagDomain, fileName, fileExtension);
+                    await fileUploadHelper.SaveFileAsync(file, flagDomainDriver, fileName, fileExtension);
                 }
             }
 
@@ -390,8 +394,8 @@ public class DriverController : ControllerBase
                 {
                     var resolvedFilePath = Path.Combine(
                             _configuration["MediaFilePath"],
-                            flagDomain,
-                            filePath.Replace($"{_configuration["MediaHostUrl"]}{flagDomain}/", "")
+                            flagDomainDriver,
+                            filePath.Replace($"{_configuration["MediaHostUrl"]}{flagDomainDriver}/", "")
                         )
                         .Replace('\\', '/');
                     if (System.IO.File.Exists(resolvedFilePath))

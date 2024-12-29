@@ -134,6 +134,7 @@ public class DriverRepository : IDriverRepository
         try
         {
             Driver driverEntity = new Driver();
+            driverDTO.Password = BCrypt.Net.BCrypt.HashPassword(driverDTO.Password);
             DriverConverter.ConvertModelToEntity(driverDTO, ref driverEntity);
 
             _dbKiloTaxiContext.Add(driverEntity);
@@ -141,12 +142,7 @@ public class DriverRepository : IDriverRepository
             driverDTO.Id = driverEntity.Id;
             var filePaths = new List<(string PropertyName, string FilePath)>
             {
-                (nameof(driverEntity.NrcImageFront), driverEntity.NrcImageFront),
-                (nameof(driverEntity.NrcImageBack), driverEntity.NrcImageBack),
-                (
-                    nameof(driverEntity.DriverImageLicenseFront),
-                    driverEntity.DriverImageLicenseFront
-                ),
+                (nameof(driverEntity.DriverImageLicenseFront), driverEntity.DriverImageLicenseFront),
                 (nameof(driverEntity.DriverImageLicenseBack), driverEntity.DriverImageLicenseBack),
                 (nameof(driverEntity.Profile), driverEntity.Profile),
             };
@@ -154,11 +150,7 @@ public class DriverRepository : IDriverRepository
             {
                 if (!filePath.Contains("default.png"))
                 {
-                    if (propertyName == nameof(driverEntity.NrcImageFront))
-                        driverEntity.NrcImageFront = $"driver/{driverDTO.Id}{filePath}";
-                    else if (propertyName == nameof(driverEntity.NrcImageBack))
-                        driverEntity.NrcImageBack = $"driver/{driverDTO.Id}{filePath}";
-                    else if (propertyName == nameof(driverEntity.DriverImageLicenseFront))
+                     if (propertyName == nameof(driverEntity.DriverImageLicenseFront))
                         driverEntity.DriverImageLicenseFront = $"driver/{driverDTO.Id}{filePath}";
                     else if (propertyName == nameof(driverEntity.DriverImageLicenseBack))
                         driverEntity.DriverImageLicenseBack = $"driver/{driverDTO.Id}{filePath}";
@@ -193,8 +185,8 @@ public class DriverRepository : IDriverRepository
             // List of image properties to update
             var imageProperties = new List<(string driverDTOProperty, string driverEntityFile)>
             {
-                (nameof(driverDTO.NrcImageFront), driverEntity.NrcImageFront),
-                (nameof(driverDTO.NrcImageBack), driverEntity.NrcImageBack),
+                // (nameof(driverDTO.NrcImageFront), driverEntity.NrcImageFront),
+                // (nameof(driverDTO.NrcImageBack), driverEntity.NrcImageBack),
                 (nameof(driverDTO.DriverImageLicenseFront), driverEntity.DriverImageLicenseFront),
                 (nameof(driverDTO.DriverImageLicenseBack), driverEntity.DriverImageLicenseBack),
                 (nameof(driverDTO.Profile), driverEntity.Profile),

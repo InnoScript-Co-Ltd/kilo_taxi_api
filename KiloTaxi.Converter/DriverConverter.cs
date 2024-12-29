@@ -28,10 +28,8 @@ public static class DriverConverter
             Dob = driverEntity.Dob,
             Nrc = driverEntity.Nrc,
             Role = driverEntity.Role,
-            NrcImageFront = mediaHostUrl + driverEntity.NrcImageFront,
             PropertyStatus =Enum.Parse<PropertyStatus>(driverEntity.PropertyStatus),
             ReferralMobileNumber= driverEntity.ReferralMobileNumber,
-            NrcImageBack = mediaHostUrl + driverEntity.NrcImageBack,
             DriverLicense = driverEntity.DriverLicense,
             DriverImageLicenseFront = mediaHostUrl + driverEntity.DriverImageLicenseFront,
             DriverImageLicenseBack = mediaHostUrl + driverEntity.DriverImageLicenseBack,
@@ -69,8 +67,7 @@ public static class DriverConverter
             driverEntity.RefreshTokenExpiryTime = driverFormDto.RefreshTokenExpiryTime;
             driverEntity.Otp = driverFormDto.Otp;
             driverEntity.Role = driverFormDto.Role;
-            driverEntity.NrcImageFront = driverFormDto.NrcImageFront;
-            driverEntity.NrcImageBack = driverFormDto.NrcImageBack;
+            
             driverEntity.DriverLicense = driverFormDto.DriverLicense;
             driverEntity.DriverImageLicenseFront = driverFormDto.DriverImageLicenseFront;
             driverEntity.DriverImageLicenseBack = driverFormDto.DriverImageLicenseBack;

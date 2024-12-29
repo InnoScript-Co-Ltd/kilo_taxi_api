@@ -23,6 +23,7 @@ public static class VehicleConverter
             VehicleNo = vehicleEntity.VehicleNo,
             Model = vehicleEntity.Model,
             FuelType = vehicleEntity.FuelType,
+            VehicleType = vehicleEntity.VehicleType,
             DriverMode = Enum.Parse<DriverMode>(vehicleEntity.DriverMode),
             BusinessLicenseImage = mediaHostUrl + vehicleEntity.BusinessLicenseImage,
             VehicleLicenseFront = mediaHostUrl + vehicleEntity.VehicleLicenseFront,
@@ -32,26 +33,27 @@ public static class VehicleConverter
         };
     }
 
-    public static void ConvertModelToEntity(DriverFormDTO vehicleDTO, ref Vehicle vehicleEntity)
+    public static void ConvertModelToEntity(DriverFormDTO driverFormDto, ref Vehicle vehicleEntity)
     {
         try
         {
-            if (vehicleDTO == null)
+            if (driverFormDto == null)
             {
-                LoggerHelper.Instance.LogError(new ArgumentNullException(nameof(vehicleDTO)), "VehicleDTO model is null");
-                throw new ArgumentNullException(nameof(vehicleDTO), "Source VehicleDTO model cannot be null");
+                LoggerHelper.Instance.LogError(new ArgumentNullException(nameof(driverFormDto)), "VehicleDTO model is null");
+                throw new ArgumentNullException(nameof(driverFormDto), "Source VehicleDTO model cannot be null");
             }
-            vehicleEntity.Id = vehicleDTO.Id;
-            vehicleEntity.VehicleNo = vehicleDTO.VehicleNo;
-            vehicleEntity.Model = vehicleDTO.Model;
-            vehicleEntity.FuelType = vehicleDTO.FuelType;
-            vehicleEntity.DriverMode = vehicleDTO.DriverMode.ToString();
-            vehicleEntity.BusinessLicenseImage = vehicleDTO.BusinessLicenseImage;
-            vehicleEntity.VehicleLicenseFront = vehicleDTO.VehicleLicenseFront;
-            vehicleEntity.VehicleLicenseBack = vehicleDTO.VehicleLicenseBack;
-            vehicleEntity.Status = vehicleDTO.Status.ToString();
-            vehicleEntity.DriverId = vehicleDTO.DriverId;
-            vehicleEntity.VehicleTypeId = vehicleDTO.VehicleTypeId;
+            vehicleEntity.Id = driverFormDto.VehicleId;
+            vehicleEntity.VehicleNo = driverFormDto.VehicleNo;
+            vehicleEntity.Model = driverFormDto.Model;
+            vehicleEntity.FuelType = driverFormDto.FuelType;
+            vehicleEntity.VehicleType = driverFormDto.VehicleType;
+            vehicleEntity.DriverMode = driverFormDto.DriverMode.ToString();
+            vehicleEntity.BusinessLicenseImage = driverFormDto.BusinessLicenseImage;
+            vehicleEntity.VehicleLicenseFront = driverFormDto.VehicleLicenseFront;
+            vehicleEntity.VehicleLicenseBack = driverFormDto.VehicleLicenseBack;
+            vehicleEntity.Status = driverFormDto.VehicleStatus.ToString();
+            vehicleEntity.DriverId = driverFormDto.DriverId;
+            vehicleEntity.VehicleTypeId = driverFormDto.VehicleTypeId;
         }
         catch (ArgumentException ex)
         {

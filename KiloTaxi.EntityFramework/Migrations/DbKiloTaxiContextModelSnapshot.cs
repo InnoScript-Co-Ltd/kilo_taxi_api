@@ -276,7 +276,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("EmailVerifiedAt")
@@ -310,8 +309,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -355,7 +353,8 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.HasIndex("Phone")
                         .IsUnique();
@@ -1063,14 +1062,16 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("VehicleType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("VehicleTypeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DriverId");
-
-                    b.HasIndex("VehicleTypeId");
 
                     b.ToTable("Vehicle", (string)null);
                 });
@@ -1465,13 +1466,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KiloTaxi.EntityFramework.EntityModel.VehicleType", "VehicleType")
-                        .WithMany()
-                        .HasForeignKey("VehicleTypeId");
-
                     b.Navigation("Driver");
-
-                    b.Navigation("VehicleType");
                 });
 
             modelBuilder.Entity("KiloTaxi.EntityFramework.EntityModel.WalletTransaction", b =>

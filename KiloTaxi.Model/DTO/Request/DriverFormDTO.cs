@@ -21,9 +21,9 @@ public class DriverFormDTO
     
     public string? Otp{get; set;}
     
-    public string? NrcImageFront{get; set;}
-    
-    public string? NrcImageBack{get; set;}
+    // public string? NrcImageFront{get; set;}
+    //
+    // public string? NrcImageBack{get; set;}
     
     public DateTime? EmailVerifiedAt{get; set;}
     
@@ -46,8 +46,8 @@ public class DriverFormDTO
     
     public string? DriverImageLicenseBack{get;set;}
     
-    public IFormFile? File_NrcImageFront { get; set; }
-    public IFormFile? File_NrcImageBack { get; set; }
+    // public IFormFile? File_NrcImageFront { get; set; }
+    // public IFormFile? File_NrcImageBack { get; set; }
     public IFormFile? File_DriverImageLicenseFront { get; set; }
     
     public IFormFile? File_DriverImageLicenseBack{ get; set; }
@@ -87,6 +87,8 @@ public class DriverFormDTO
     public string? VehicleLicenseFront { get; set; }
 
     public string? VehicleLicenseBack { get; set; }
+    
+    public VehicleStatus VehicleStatus{get;set;}
     
     public DriverMode DriverMode { get; set; }
     

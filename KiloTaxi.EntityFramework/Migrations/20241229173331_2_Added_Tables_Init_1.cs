@@ -15,6 +15,10 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "FK_Vehicle_VehicleType_VehicleTypeId",
                 table: "Vehicle");
 
+            migrationBuilder.DropIndex(
+                name: "IX_Vehicle_VehicleTypeId",
+                table: "Vehicle");
+
             migrationBuilder.RenameColumn(
                 name: "IdpUserId",
                 table: "Driver",
@@ -37,6 +41,13 @@ namespace KiloTaxi.EntityFramework.Migrations
                 nullable: true,
                 oldClrType: typeof(int),
                 oldType: "int");
+
+            migrationBuilder.AddColumn<string>(
+                name: "VehicleType",
+                table: "Vehicle",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
 
             migrationBuilder.AddColumn<string>(
                 name: "DestinationLat",
@@ -113,8 +124,7 @@ namespace KiloTaxi.EntityFramework.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Password",
                 table: "Driver",
-                type: "nvarchar(25)",
-                maxLength: 25,
+                type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(25)",
@@ -150,7 +160,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "Email",
                 table: "Driver",
                 type: "nvarchar(450)",
-                nullable: false,
+                nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
@@ -426,7 +436,8 @@ namespace KiloTaxi.EntityFramework.Migrations
                 name: "IX_Driver_Email",
                 table: "Driver",
                 column: "Email",
-                unique: true);
+                unique: true,
+                filter: "[Email] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Driver_Phone",
@@ -486,13 +497,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                 principalTable: "Vehicle",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Vehicle_VehicleType_VehicleTypeId",
-                table: "Vehicle",
-                column: "VehicleTypeId",
-                principalTable: "VehicleType",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
@@ -501,10 +505,6 @@ namespace KiloTaxi.EntityFramework.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_Order_Vehicle_VehicleId",
                 table: "Order");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Vehicle_VehicleType_VehicleTypeId",
-                table: "Vehicle");
 
             migrationBuilder.DropTable(
                 name: "OrderExtend");
@@ -545,6 +545,10 @@ namespace KiloTaxi.EntityFramework.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_Admin_Phone",
                 table: "Admin");
+
+            migrationBuilder.DropColumn(
+                name: "VehicleType",
+                table: "Vehicle");
 
             migrationBuilder.DropColumn(
                 name: "DestinationLat",
@@ -677,8 +681,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                 nullable: false,
                 defaultValue: "",
                 oldClrType: typeof(string),
-                oldType: "nvarchar(25)",
-                oldMaxLength: 25,
+                oldType: "nvarchar(max)",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
@@ -714,8 +717,10 @@ namespace KiloTaxi.EntityFramework.Migrations
                 table: "Driver",
                 type: "nvarchar(max)",
                 nullable: false,
+                defaultValue: "",
                 oldClrType: typeof(string),
-                oldType: "nvarchar(450)");
+                oldType: "nvarchar(450)",
+                oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Phone",
@@ -802,6 +807,11 @@ namespace KiloTaxi.EntityFramework.Migrations
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicle_VehicleTypeId",
+                table: "Vehicle",
+                column: "VehicleTypeId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Vehicle_VehicleType_VehicleTypeId",

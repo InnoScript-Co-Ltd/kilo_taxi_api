@@ -41,66 +41,58 @@ public class AuthenticationService : IAuthenticationService
     }
     
 
-    public async Task<(string,string,string)> AuthenticateAdminAsync(string EmailOrPhone, string password)
+    public async Task<(string,string)> AuthenticateAdminAsync(string EmailOrPhone, string password)
     {
         var ValidUser = await _adminRepository.ValidateAdminCredentials(EmailOrPhone, password);
 
         if (ValidUser == null)
         {
-            return (null, null,null);
+            return (null, null);
         }
 
         var accessToken = GenerateJwtToken(ValidUser.Email, ValidUser.Role);
         var refreshToken = GenerateRefreshToken();
-        string otp = _customerRepository.GenerateOTP();
         ValidUser.RefreshToken = refreshToken;
         ValidUser.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-        ValidUser.Otp = otp;
         _adminRepository.UpdateAdmin(ValidUser);
-        return (accessToken, refreshToken,otp);    
+        return (accessToken, refreshToken);    
     }
-    public async Task<(string,string,string)> AuthenticateCustomerAsync(string EmailOrPhone, string password)
+    public async Task<(string,string)> AuthenticateCustomerAsync(string EmailOrPhone, string password)
     {
         var ValidUser = await _customerRepository.ValidateCustomerCredentials(EmailOrPhone,password);
 
         if (ValidUser ==null)
         {
-            return (null,null,null);
+            return (null,null);
         }            
         var accessToken = GenerateJwtToken(ValidUser.Phone, ValidUser.Role);
         var refreshToken = GenerateRefreshToken();
-        string otp = _customerRepository.GenerateOTP();
         _customerRepository.UpdateCustomer(new CustomerFormDTO()
         {
             RefreshToken = refreshToken,
             RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
-            Otp = otp
         });
-        return (accessToken, refreshToken,otp);    
+        return (accessToken, refreshToken);    
 
     }
     
-    public async Task<(string,string,string)> AuthenticateDriverAsync(string EmailOrPhone, string password)
+    public async Task<(string,string)> AuthenticateDriverAsync(string EmailOrPhone, string password)
     {
         var ValidUser = await _driverRepository.ValidateDriverCredentials(EmailOrPhone, password);
 
         if (ValidUser ==null)
         {
-            return (null,null,null);
+            return (null,null);
         }            
         var accessToken = GenerateJwtToken(ValidUser.Phone, ValidUser.Role);
         var refreshToken = GenerateRefreshToken();
-        string otp = _customerRepository.GenerateOTP();
-        // ValidUser.RefreshToken = refreshToken;
-        // ValidUser.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-        // ValidUser.Otp = otp;
+     
         _driverRepository.UpdateDriver(new DriverFormDTO()
         {
             RefreshToken = refreshToken,
             RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
-            Otp = otp
         });
-        return (accessToken, refreshToken,otp);       
+        return (accessToken, refreshToken);       
     }
 
     public bool VarifiedOpt(string token,string otp)
@@ -198,6 +190,7 @@ public class AuthenticationService : IAuthenticationService
                 ValidAudience = jwtSettings["Audience"],
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
+                
             }, out _);
 
             return principal;

@@ -1,4 +1,6 @@
-﻿namespace KiloTaxi.Model.DTO.Response;
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace KiloTaxi.Model.DTO.Response;
 
 public class OtpInfo
 {
@@ -12,6 +14,10 @@ public class OtpInfo
     
     public string Phone { get; set; }
     public string Email { get; set; }
+
+    public string Password { get; set; }
+    
+    public string Role { get; set; }
     
     public string UserName { get; set; }
     public string UserStatus{get;set;}

@@ -11,6 +11,7 @@ using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -110,55 +111,80 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public CustomerInfoDTO AddCustomer(CustomerFormDTO customerDTO)
+        // public CustomerInfoDTO AddCustomer(CustomerFormDTO customerDTO)
+        // {
+        //     try
+        //     {
+        //         Customer customerEntity = new Customer();
+        //         customerEntity.Status = CustomerStatus.Pending.ToString();
+        //         customerEntity.KycStatus = KycStatus.Pending.ToString();
+        //         CustomerConverter.ConvertModelToEntity(customerDTO, ref customerEntity);
+        //
+        //         _dbKiloTaxiContext.Add(customerEntity);
+        //         _dbKiloTaxiContext.SaveChanges();
+        //
+        //         customerDTO.Id = customerEntity.Id;
+        //
+        //         var filePaths = new List<(string PropertyName, string FilePath)>
+        //         {
+        //             (nameof(customerEntity.NrcImageFront), customerEntity.NrcImageFront),
+        //             (nameof(customerEntity.NrcImageBack), customerEntity.NrcImageBack),
+        //             (nameof(customerEntity.Profile), customerEntity.Profile),
+        //         };
+        //         foreach (var (propertyName, filePath) in filePaths)
+        //         {
+        //             if (!filePath.Contains("default.png"))
+        //             {
+        //                 switch (propertyName)
+        //                 {
+        //                     case nameof(customerEntity.NrcImageFront):
+        //                         customerEntity.NrcImageFront =
+        //                             $"customer/{customerDTO.Id}{filePath}";
+        //                         break;
+        //
+        //                     case nameof(customerEntity.NrcImageBack):
+        //                         customerEntity.NrcImageBack =
+        //                             $"customer/{customerDTO.Id}{filePath}";
+        //                         break;
+        //
+        //                     case nameof(customerEntity.Profile):
+        //                         customerEntity.Profile = $"customer/{customerDTO.Id}{filePath}";
+        //                         break;
+        //
+        //                     default:
+        //                         break;
+        //                 }
+        //             }
+        //         }
+        //
+        //         _dbKiloTaxiContext.SaveChanges();
+        //
+        //        var customerInfoDto = CustomerConverter.ConvertEntityToModel(customerEntity, _mediaHostUrl);
+        //
+        //         LoggerHelper.Instance.LogInfo(
+        //             $"Customer added successfully with Id: {customerEntity.Id}"
+        //         );
+        //
+        //         return customerInfoDto;
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         LoggerHelper.Instance.LogError(ex, "Error occurred while adding customer.");
+        //         throw;
+        //     }
+        // }
+         public CustomerInfoDTO AddCustomer(CustomerFormDTO customerDTO)
         {
             try
             {
                 Customer customerEntity = new Customer();
-                customerDTO.Password =BCrypt.Net.BCrypt.HashPassword(customerDTO.Password);
-                customerEntity.Status = CustomerStatus.Pending.ToString();
-                customerEntity.KycStatus = KycStatus.Pending.ToString();
+                customerDTO.Status = CustomerStatus.Pending;
+                customerDTO.KycStatus = KycStatus.Pending;
+                customerDTO.Gender=GenderType.Undefined;
                 CustomerConverter.ConvertModelToEntity(customerDTO, ref customerEntity);
 
                 _dbKiloTaxiContext.Add(customerEntity);
                 _dbKiloTaxiContext.SaveChanges();
-
-                customerDTO.Id = customerEntity.Id;
-
-                var filePaths = new List<(string PropertyName, string FilePath)>
-                {
-                    (nameof(customerEntity.NrcImageFront), customerEntity.NrcImageFront),
-                    (nameof(customerEntity.NrcImageBack), customerEntity.NrcImageBack),
-                    (nameof(customerEntity.Profile), customerEntity.Profile),
-                };
-                foreach (var (propertyName, filePath) in filePaths)
-                {
-                    if (!filePath.Contains("default.png"))
-                    {
-                        switch (propertyName)
-                        {
-                            case nameof(customerEntity.NrcImageFront):
-                                customerEntity.NrcImageFront =
-                                    $"customer/{customerDTO.Id}{filePath}";
-                                break;
-
-                            case nameof(customerEntity.NrcImageBack):
-                                customerEntity.NrcImageBack =
-                                    $"customer/{customerDTO.Id}{filePath}";
-                                break;
-
-                            case nameof(customerEntity.Profile):
-                                customerEntity.Profile = $"customer/{customerDTO.Id}{filePath}";
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }
-                }
-
-                _dbKiloTaxiContext.SaveChanges();
-
                var customerInfoDto = CustomerConverter.ConvertEntityToModel(customerEntity, _mediaHostUrl);
 
                 LoggerHelper.Instance.LogInfo(
@@ -319,8 +345,27 @@ namespace KiloTaxi.DataAccess.Implementation
                 otpInfo.UserStatus = existedCustomer.Status;
                 responseDto.Payload = otpInfo;
                 return responseDto;
+            }else if (existedCustomer != null && existedCustomer.Status == CustomerStatus.Pending.ToString())
+            {
+                ResponseDTO<OtpInfo> responseDto = new ResponseDTO<OtpInfo>();
+                responseDto.StatusCode=209;        
+                responseDto.Message="User Already exist with this phone number "+existedCustomer.Phone +" but Account status is Pending";
+                otpInfo.UserStatus = existedCustomer.Status;
+                otpInfo.Email = customerFormDto.Email;
+                otpInfo.Password = BCrypt.Net.BCrypt.HashPassword(customerFormDto.Password);
+                otpInfo.Role = customerFormDto.Role;
+                otpInfo.Phone = customerFormDto.Phone;
+                otpInfo.Otp = GenerateOTP();
+                otpInfo.OtpExpired = DateTime.UtcNow.AddMinutes(3);
+                otpInfo.UserName = customerFormDto.Name;
+                otpInfo.RetryCount = 0;
+                responseDto.Payload = otpInfo;
+                responseDto.TimeStamp =DateTime.Now;
+                return responseDto;
             }
             otpInfo.Email = customerFormDto.Email;
+            otpInfo.Password = BCrypt.Net.BCrypt.HashPassword(customerFormDto.Password);
+            otpInfo.Role = customerFormDto.Role;
             otpInfo.Phone = customerFormDto.Phone;
             otpInfo.Otp = GenerateOTP();
             otpInfo.OtpExpired = DateTime.UtcNow.AddMinutes(3);

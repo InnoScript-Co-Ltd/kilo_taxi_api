@@ -6,6 +6,5 @@ public class OtpFormDTO
     
     public string Otp {get;set;}
     
-    public string Name {get;set;}
 
 }

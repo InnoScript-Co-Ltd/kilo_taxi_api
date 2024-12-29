@@ -2,11 +2,13 @@
 using System.Data;
 using System.Windows;
 
-namespace Simulator.CustomerApp;
-
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
-public partial class App : Application
+namespace Simulator.CustomerApp
 {
+    /// <summary>
+    /// Interaction logic for App.xaml
+    /// </summary>
+    public partial class App : Application
+    {
+    }
+
 }

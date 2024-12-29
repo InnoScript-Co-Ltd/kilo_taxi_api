@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,15 +11,110 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Simulator.CustomerApp;
-
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
-public partial class MainWindow : Window
+namespace Simulator.CustomerApp
 {
-    public MainWindow()
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
     {
-        InitializeComponent();
+       HubConnection connection;
+        Settings appSettings = new Settings();
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        #region Signar Clients Events
+      
+        private void ReceiveTestMethod(string data)
+        {
+            var jsonSerializedModel = JsonSerializer.Serialize(data);
+            Console.WriteLine(jsonSerializedModel);
+            lblLogs.Text += Environment.NewLine + $"ReceiveTestMethod : {jsonSerializedModel}";
+        }
+      
+        #endregion
+    
+        #region Form Events
+        private void btnConnect_Click(object sender, RoutedEventArgs e)
+        {
+            SetUpSignaRCLient();
+        }
+        
+        private void btnClearLogs_Click(object sender, RoutedEventArgs e)
+        {
+            lblLogs.Text = "";
+        }
+     
+       
+        #endregion
+
+        #region Private Methods
+        private async Task SetUpSignaRCLient()
+        {
+            connection = new HubConnectionBuilder()
+            .WithUrl(appSettings.CustomerHubUrl)
+            .WithAutomaticReconnect()
+            .Build();
+
+            connection.Reconnecting += error =>
+            {
+                lblLogs.Text += Environment.NewLine + "Reconnecting due to error: " + error.Message;                
+                // Optionally inform the user
+                return Task.CompletedTask;
+            };
+
+            connection.Reconnected += connectionId =>
+            {
+                lblLogs.Text += Environment.NewLine + "Reconnected with new connection ID: " + connectionId;
+                // Re-establish user-specific setup if necessary
+                return Task.CompletedTask;
+            };
+
+            SubscribeSignalrEvents();
+
+            await connection.StartAsync().ContinueWith(task =>
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    if (task.IsCompletedSuccessfully && connection.State == HubConnectionState.Connected)
+                    {
+
+                        btnConnect.IsEnabled = false;
+                        btnConnect.Content = "Connected";
+                        lblLogs.Text += Environment.NewLine + "SignalR client successfully connected.";
+
+
+                    }
+                    else if (task.IsFaulted)
+                    {
+                        lblLogs.Text += Environment.NewLine + "Failed to connect to SignalR: " + task.Exception?.GetBaseException().Message;
+                    }
+                    else
+                    {
+                        lblLogs.Text += Environment.NewLine + "SignalR client is not connected.";
+                    }
+                });
+            });
+
+        }
+
+        private void SubscribeSignalrEvents()
+        {
+            
+            connection.On("ReceiveTestMethod", async (string data) =>
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    var jsonSerializedModel = JsonSerializer.Serialize(data);
+                    lblLogs.Text += Environment.NewLine + $"ReceiveTestMethod : {jsonSerializedModel}";
+
+                    this.ReceiveTestMethod(data);
+                });
+            });
+          
+        }
+        #endregion
     }
 }

@@ -12,7 +12,7 @@ public class DriverDTO
     
     public string? Profile { get; set; }
     
-    public string MobilePrefix{get;set;}
+    public string? MobilePrefix{get;set;}
     
     public string Phone{get;set;}
     
@@ -20,7 +20,7 @@ public class DriverDTO
     
     [Required]
     [EmailAddress]
-    public string Email{get;set;}
+    public string? Email{get;set;}
     
     [DataType(DataType.DateTime)]
     public DateTime? Dob{get;set;}
@@ -59,7 +59,7 @@ public class DriverDTO
     
     public string Address{get;set;}
     
-    public string State{get;set;}
+    public string? State{get;set;}
     
     public string City{get;set;}
     

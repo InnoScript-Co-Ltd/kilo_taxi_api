@@ -52,8 +52,8 @@ public class DriverInfoDTO
     public DriverStatus AvailableStatus{get;set;}
     
     public KycStatus KycStatus{get;set;}
-    
-    public IEnumerable<VehicleInfoDTO> VehicleInfo{get;set;}
-    
+
+    public IEnumerable<VehicleInfoDTO> VehicleInfo { get; set; }
+
 
 }
