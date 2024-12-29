@@ -4,6 +4,8 @@ using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
@@ -95,7 +97,7 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<CustomerController>
         [HttpPost]
-        public async Task<ActionResult<CustomerDTO>> Post(CustomerDTO customerDTO)
+        public async Task<ActionResult<CustomerInfoDTO>> Post(CustomerFormDTO customerDTO)
         {
             try
             {
@@ -118,8 +120,8 @@ namespace KiloTaxi.API.Controllers
                 );
                 var filesToProcess = new List<(IFormFile? File, string FilePathProperty)>
                 {
-                    (customerDTO.File_NrcImageFront, nameof(customerDTO.NrcImageFront)),
-                    (customerDTO.File_NrcImageBack, nameof(customerDTO.NrcImageBack)),
+                    // (customerDTO.File_NrcImageFront, nameof(customerDTO.NrcImageFront)),
+                    // (customerDTO.File_NrcImageBack, nameof(customerDTO.NrcImageBack)),
                     (customerDTO.File_Profile, nameof(customerDTO.Profile)),
                 };
 
@@ -180,7 +182,7 @@ namespace KiloTaxi.API.Controllers
 
         // PUT api/<CustomerController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put([FromRoute] int id, CustomerDTO customerDTO)
+        public async Task<IActionResult> Put([FromRoute] int id, CustomerFormDTO customerDTO)
         {
             try
             {
@@ -198,8 +200,8 @@ namespace KiloTaxi.API.Controllers
                 var filesToProcess = new List<(IFormFile file, string filePathProperty)>
                 {
                     (customerDTO.File_Profile, nameof(customerDTO.Profile)),
-                    (customerDTO.File_NrcImageFront, nameof(customerDTO.NrcImageFront)),
-                    (customerDTO.File_NrcImageBack, nameof(customerDTO.NrcImageBack)),
+                    // (customerDTO.File_NrcImageFront, nameof(customerDTO.NrcImageFront)),
+                    // (customerDTO.File_NrcImageBack, nameof(customerDTO.NrcImageBack)),
                 };
 
                 // Validate and update file paths
@@ -271,8 +273,8 @@ namespace KiloTaxi.API.Controllers
                 }
                 var filePaths = new List<string?>
                 {
-                    deleteEntity.NrcImageFront,
-                    deleteEntity.NrcImageBack,
+                    // deleteEntity.NrcImageFront,
+                    // deleteEntity.NrcImageBack,
                     deleteEntity.Profile,
                 };
                 foreach (var filePath in filePaths)

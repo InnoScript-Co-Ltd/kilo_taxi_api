@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.EntityFramework.EntityModel;
 
+[Index(nameof(Phone), IsUnique = true)]
+[Index(nameof(Email), IsUnique = true)] 
 public class Driver
 {
     [Key]
@@ -16,13 +18,11 @@ public class Driver
     
     public string? Profile { get; set; }
     
-    public string MobilePrefix{get;set;}
+    public string? MobilePrefix{get;set;}
     
     public string Phone{get;set;}
     
-    [Required]
-    [EmailAddress]
-    public string Email{get;set;}
+    public string? Email{get;set;}
     
     public DateTime? Dob{get;set;}
     
@@ -31,7 +31,7 @@ public class Driver
     public string? NrcImageFront{get;set;}
     
     public string? NrcImageBack{get;set;}
-    public string? DriverLicense{get;set;}
+    public string DriverLicense{get;set;}
     
     public string? DriverImageLicenseFront{get;set;}
     
@@ -41,28 +41,33 @@ public class Driver
     
     public DateTime? PhoneVerifiedAt{get;set;}
     
-    [MinLength(3)]
-    [MaxLength(25)]
-    public string Password{get;set;}
+    public string? Password{get;set;}
     
     public string Address{get;set;}
     
-    public string State{get;set;}
+    public string? State{get;set;}
     
     public string City{get;set;}
     
     public string AvabilityStatus {get;set;}
     
-    public string TownShip{get;set;}
+    public string PropertyStatus{get;set;}
     
-    public string Gender{get;set;}
+    public string ReferralMobileNumber{get;set;}
     
     public string Status{get;set;}
     
-    public string Role{get;set;}
     public string KycStatus{get;set;}
+
+    public string TownShip{get;set;}
     
-    public string RefreshToken { get; set; }
+    public string? Gender{get;set;}
     
-    public DateTime RefreshTokenExpiryTime { get; set; }
+    public string Role{get;set;}
+    
+    public string? RefreshToken { get; set; }
+    
+    public string? Otp {get;set;}
+
+    public DateTime? RefreshTokenExpiryTime { get; set; }
 }

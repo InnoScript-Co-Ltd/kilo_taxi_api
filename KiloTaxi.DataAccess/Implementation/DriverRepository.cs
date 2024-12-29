@@ -7,6 +7,8 @@ using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.Extensions.Options;
 
 namespace KiloTaxi.DataAccess.Implementation;
@@ -96,7 +98,7 @@ public class DriverRepository : IDriverRepository
         }
     }
 
-    public DriverDTO GetDriverById(int id)
+    public DriverInfoDTO GetDriverById(int id)
     {
         try
         {
@@ -116,8 +118,8 @@ public class DriverRepository : IDriverRepository
                     WalletUserMappingConverter.ConvertEntityToModel(walletUserMapping)
                 )
                 .ToList();
-            driverDTO.Vehicle = vehicleDTO;
-            driverDTO.WalletUserMapping = WalletUserMappingDTO;
+            // driverDTO.Vehicle = vehicleDTO;
+            // driverDTO.WalletUserMapping = WalletUserMappingDTO;
             return driverDTO;
         }
         catch (Exception ex)
@@ -127,11 +129,12 @@ public class DriverRepository : IDriverRepository
         }
     }
 
-    public DriverDTO DriverRegistration(DriverDTO driverDTO)
+    public DriverInfoDTO DriverRegistration(DriverFormDTO driverDTO)
     {
         try
         {
             Driver driverEntity = new Driver();
+            driverDTO.Password = BCrypt.Net.BCrypt.HashPassword(driverDTO.Password);
             DriverConverter.ConvertModelToEntity(driverDTO, ref driverEntity);
 
             _dbKiloTaxiContext.Add(driverEntity);
@@ -139,12 +142,7 @@ public class DriverRepository : IDriverRepository
             driverDTO.Id = driverEntity.Id;
             var filePaths = new List<(string PropertyName, string FilePath)>
             {
-                (nameof(driverEntity.NrcImageFront), driverEntity.NrcImageFront),
-                (nameof(driverEntity.NrcImageBack), driverEntity.NrcImageBack),
-                (
-                    nameof(driverEntity.DriverImageLicenseFront),
-                    driverEntity.DriverImageLicenseFront
-                ),
+                (nameof(driverEntity.DriverImageLicenseFront), driverEntity.DriverImageLicenseFront),
                 (nameof(driverEntity.DriverImageLicenseBack), driverEntity.DriverImageLicenseBack),
                 (nameof(driverEntity.Profile), driverEntity.Profile),
             };
@@ -152,11 +150,7 @@ public class DriverRepository : IDriverRepository
             {
                 if (!filePath.Contains("default.png"))
                 {
-                    if (propertyName == nameof(driverEntity.NrcImageFront))
-                        driverEntity.NrcImageFront = $"driver/{driverDTO.Id}{filePath}";
-                    else if (propertyName == nameof(driverEntity.NrcImageBack))
-                        driverEntity.NrcImageBack = $"driver/{driverDTO.Id}{filePath}";
-                    else if (propertyName == nameof(driverEntity.DriverImageLicenseFront))
+                     if (propertyName == nameof(driverEntity.DriverImageLicenseFront))
                         driverEntity.DriverImageLicenseFront = $"driver/{driverDTO.Id}{filePath}";
                     else if (propertyName == nameof(driverEntity.DriverImageLicenseBack))
                         driverEntity.DriverImageLicenseBack = $"driver/{driverDTO.Id}{filePath}";
@@ -167,8 +161,8 @@ public class DriverRepository : IDriverRepository
 
             _dbKiloTaxiContext.SaveChanges();
 
-            driverDTO = DriverConverter.ConvertEntityToModel(driverEntity, _mediaHostUrl);
-            return driverDTO;
+           var driverInfoDTO = DriverConverter.ConvertEntityToModel(driverEntity, _mediaHostUrl);
+            return driverInfoDTO;
         }
         catch (Exception ex)
         {
@@ -177,7 +171,7 @@ public class DriverRepository : IDriverRepository
         }
     }
 
-    public bool UpdateDriver(DriverDTO driverDTO)
+    public bool UpdateDriver(DriverFormDTO driverDTO)
     {
         bool result = false;
         try
@@ -191,8 +185,8 @@ public class DriverRepository : IDriverRepository
             // List of image properties to update
             var imageProperties = new List<(string driverDTOProperty, string driverEntityFile)>
             {
-                (nameof(driverDTO.NrcImageFront), driverEntity.NrcImageFront),
-                (nameof(driverDTO.NrcImageBack), driverEntity.NrcImageBack),
+                // (nameof(driverDTO.NrcImageFront), driverEntity.NrcImageFront),
+                // (nameof(driverDTO.NrcImageBack), driverEntity.NrcImageBack),
                 (nameof(driverDTO.DriverImageLicenseFront), driverEntity.DriverImageLicenseFront),
                 (nameof(driverDTO.DriverImageLicenseBack), driverEntity.DriverImageLicenseBack),
                 (nameof(driverDTO.Profile), driverEntity.Profile),
@@ -257,15 +251,15 @@ public class DriverRepository : IDriverRepository
         }
     }
     
-    public async Task<DriverDTO> ValidateDriverCredentials(string email, string password)
+    public async Task<DriverInfoDTO> ValidateDriverCredentials(string EmailOrPhone, string password)
     {
 
-        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+        if (string.IsNullOrEmpty(EmailOrPhone) || string.IsNullOrEmpty(password))
         {
             return null; // Or throw an exception depending on your use case
         }
 
-        Driver driverEntity =  _dbKiloTaxiContext.Drivers.SingleOrDefault(driver => driver.Email == email);
+        Driver driverEntity =  _dbKiloTaxiContext.Drivers.SingleOrDefault(driver => driver.Phone == EmailOrPhone);
            
         if (driverEntity != null || ! BCrypt.Net.BCrypt.Verify(password, driverEntity.Password))
         {

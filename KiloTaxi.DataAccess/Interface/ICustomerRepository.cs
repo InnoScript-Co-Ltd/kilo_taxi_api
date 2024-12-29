@@ -1,4 +1,7 @@
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
+using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.DataAccess.Interface;
 
@@ -6,11 +9,13 @@ public interface ICustomerRepository
 {
     CustomerPagingDTO GetAllCustomer(PageSortParam pageSortParam);
 
-    CustomerDTO AddCustomer(CustomerDTO customerDTO);
-    bool UpdateCustomer(CustomerDTO customerDTO);
-    CustomerDTO GetCustomerById(int id);
+    CustomerInfoDTO AddCustomer(CustomerFormDTO customerFormDTO);
+    bool UpdateCustomer(CustomerFormDTO customerFormDTO);
+    CustomerInfoDTO GetCustomerById(int id);
     bool DeleteCustomer(int id);
     
-    Task<CustomerDTO> ValidateCustomerCredentials(string email, string password);
+    Task<CustomerInfoDTO> ValidateCustomerCredentials(string emailOrPhone,string password);
+    
+    ResponseDTO<OtpInfo> FindCustomerAndGenerateOtp(CustomerFormDTO pageSortParam);
 
 }

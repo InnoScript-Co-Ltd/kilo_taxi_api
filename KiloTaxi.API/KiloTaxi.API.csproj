@@ -26,4 +26,22 @@
     <ProjectReference Include="..\KiloTaxi.Model\KiloTaxi.Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Services.cs" />
+    <Compile Remove="GlobalExceptionHandler.cs" />
+    <Compile Remove="GlobalExceptionHandler\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="GlobalExceptionHandler\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="GlobalExceptionHandler\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="GlobalExceptionHandler\**" />
+  </ItemGroup>
+
 </Project>

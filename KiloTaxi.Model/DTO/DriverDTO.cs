@@ -12,7 +12,7 @@ public class DriverDTO
     
     public string? Profile { get; set; }
     
-    public string MobilePrefix{get;set;}
+    public string? MobilePrefix{get;set;}
     
     public string Phone{get;set;}
     
@@ -20,7 +20,7 @@ public class DriverDTO
     
     [Required]
     [EmailAddress]
-    public string Email{get;set;}
+    public string? Email{get;set;}
     
     [DataType(DataType.DateTime)]
     public DateTime? Dob{get;set;}
@@ -49,14 +49,17 @@ public class DriverDTO
     [MaxLength(25)]
     public string Password{get;set;}
     
-    public string RefreshToken { get; set; }
+    public string? RefreshToken { get; set; }
         
     [DataType(DataType.Date)]
-    public DateTime RefreshTokenExpiryTime { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
+    
+    public string? Otp {get;set;}
+
     
     public string Address{get;set;}
     
-    public string State{get;set;}
+    public string? State{get;set;}
     
     public string City{get;set;}
     

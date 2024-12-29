@@ -1,3 +1,4 @@
+using KiloTaxi.API.Services;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
@@ -10,24 +11,23 @@ namespace KiloTaxi.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+   [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
         LoggerHelper _logHelper;
         private readonly IAdminRepository _adminRepository;
         private readonly DbKiloTaxiContext _dbKiloTaxiContext;
         private readonly IConfiguration _configuration;
+        private ApiClientHub _apiClientHub;
 
-        public AdminController(
-            IAdminRepository adminRepository,
-            DbKiloTaxiContext dbContext,
-            IConfiguration configuration
-        )
+
+        public AdminController(IAdminRepository adminRepository,DbKiloTaxiContext dbContext,IConfiguration configuration,ApiClientHub apiClientHub)
         {
             _logHelper = LoggerHelper.Instance;
             _adminRepository = adminRepository;
             _dbKiloTaxiContext = dbContext;
             _configuration = configuration;
+            _apiClientHub = apiClientHub;
         }
 
         //GET: api/<AdminController>
@@ -36,6 +36,7 @@ namespace KiloTaxi.API.Controllers
         {
             try
             {
+               
                 AdminPagingDTO adminPagingDTO = _adminRepository.GetAllAdmin(pageSortParam);
                 if (!adminPagingDTO.Admins.Any())
                 {
@@ -79,7 +80,7 @@ namespace KiloTaxi.API.Controllers
         // POST api/<AdminController>
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult<AdminDTO> Post([FromForm] AdminDTO adminDTO)
+        public  ActionResult<AdminDTO> Post([FromForm]AdminDTO adminDTO)
         {
             try
             {
@@ -87,7 +88,7 @@ namespace KiloTaxi.API.Controllers
                 {
                     return BadRequest();
                 }
-                var existEmailAdmin = _dbKiloTaxiContext.Admins.FirstOrDefault(admin =>
+                var existEmailAdmin=_dbKiloTaxiContext.Admins.FirstOrDefault(admin =>
                     admin.Email == adminDTO.Email
                 );
                 if (existEmailAdmin != null)

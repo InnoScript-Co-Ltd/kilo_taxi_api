@@ -1,9 +1,11 @@
 using System.Security.Claims;
 using System.Text;
+using KiloTaxi.API;
 using KiloTaxi.API.Helper.Authentication.Implementation;
 using KiloTaxi.API.Helper.Authentication.Interface;
 using KiloTaxi.API.Helper.Filters;
 using KiloTaxi.API.Helper.ServiceExtensions;
+using KiloTaxi.API.Services;
 using KiloTaxi.DataAccess.Implementation;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
@@ -49,7 +51,8 @@ builder.Services.AddAuthentication(options =>
             ValidIssuer = jwtSettings["Issuer"],
             ValidAudience = jwtSettings["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"])),
-            RoleClaimType = ClaimTypes.Role // Map Role Claim
+            RoleClaimType = ClaimTypes.Role, // Map Role Claim
+            ClockSkew = TimeSpan.Zero
 
             //ValidIssuer = builder.Configuration["Jwt:Issuer"],  // Ensure this matches the issuer in BC.OpenIddict
             //ValidAudience = builder.Configuration["Jwt:Audience"],  // Ensure this matches the audience in BC.OpenIddict
@@ -71,6 +74,19 @@ builder.Services.AddAuthentication(options =>
         
     }
     );  
+builder.Services.AddDistributedMemoryCache();  // Add in-memory cache
+builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(30); // Set the session timeout duration
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+    });
+// Start the SignalR connection on app startup
+builder.Services.AddSingleton(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    return new ApiClientHub(configuration);
+});
 
 builder.Services.AddControllers();
 
@@ -90,6 +106,7 @@ builder
         new System.Text.Json.Serialization.JsonStringEnumConverter()
     );
 });
+
 
 builder.Services.AddCors(options =>
 {
@@ -123,7 +140,9 @@ try
     app.UseHttpsRedirection();
 
     app.UseCors();
-
+    
+    app.UseSession();
+        
     app.UseAuthentication();
     
     app.UseAuthorization();
@@ -131,7 +150,10 @@ try
     app.MapControllers();
 
     ConfigHelper.MigrateDatabase(app);
-
+    
+    var signalRApiClient = app.Services.GetRequiredService<ApiClientHub>();
+    await signalRApiClient.StartConnectionAsync();
+    
     app.Run();
 }
 catch (Exception ex)

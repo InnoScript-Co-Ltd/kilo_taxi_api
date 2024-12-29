@@ -25,6 +25,8 @@ public class Vehicle
     public string? VehicleLicenseFront { get; set; }
 
     public string? VehicleLicenseBack { get; set; }
+    
+    public string VehicleType { get; set; }
 
     [Required]
     public string Status { get; set; }
@@ -34,6 +36,5 @@ public class Vehicle
     public virtual Driver Driver { get; set; }
 
     [ForeignKey("VehicleType")]
-    public int VehicleTypeId { get; set; }
-    public virtual VehicleType VehicleType { get; set; }
+    public int? VehicleTypeId { get; set; }
 }

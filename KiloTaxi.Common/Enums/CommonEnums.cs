@@ -187,6 +187,12 @@ namespace KiloTaxi.Common.Enums
         Both,
     }
 
+    public enum PropertyStatus
+    {
+        CarOwner,
+        Rent
+    }
+
     public enum DriverMode
     {
         Available,

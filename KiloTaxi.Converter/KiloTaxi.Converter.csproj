@@ -12,4 +12,8 @@
     <ProjectReference Include="..\KiloTaxi.Model\KiloTaxi.Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="DriverInfo.cs" />
+  </ItemGroup>
+
 </Project>

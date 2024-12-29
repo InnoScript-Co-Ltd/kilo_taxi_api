@@ -3,12 +3,14 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class CustomerConverter
     {
-        public static CustomerDTO ConvertEntityToModel(Customer customerEntity, string mediaHostUrl)
+        public static CustomerInfoDTO ConvertEntityToModel(Customer customerEntity, string mediaHostUrl)
         {
             if (customerEntity == null)
             {
@@ -22,7 +24,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new CustomerDTO()
+            return new CustomerInfoDTO()
             {
                 Id = customerEntity.Id,
                 Name = customerEntity.Name,
@@ -31,18 +33,8 @@ namespace KiloTaxi.Converter
                 Role = customerEntity.Role,
                 Phone = customerEntity.Phone,
                 Email = customerEntity.Email,
-                Dob = customerEntity.Dob,
-                Nrc = customerEntity.Nrc,
-                RefreshToken = customerEntity.RefreshToken,
-                RefreshTokenExpiryTime = customerEntity.RefreshTokenExpiryTime,
-                NrcImageFront = mediaHostUrl + customerEntity.NrcImageFront,
-                NrcImageBack = mediaHostUrl + customerEntity.NrcImageBack,
-                EmailVerifiedAt = customerEntity.EmailVerifiedAt,
-                PhoneVerifiedAt = customerEntity.PhoneVerifiedAt,
-                Password = customerEntity.Password,
                 Gender =  Enum.Parse<GenderType>(customerEntity.Gender),
                 Address = customerEntity.Address,
-                State = customerEntity.State,
                 City = customerEntity.City,
                 Township = customerEntity.Township,
                 Status =    Enum.Parse<CustomerStatus>(customerEntity.Status),
@@ -51,21 +43,21 @@ namespace KiloTaxi.Converter
         }
 
         public static void ConvertModelToEntity(
-            CustomerDTO customerDTO,
+            CustomerFormDTO customerFormDto,
             ref Customer customerEntity
         )
         {
             try
             {
-                if (customerDTO == null)
+                if (customerFormDto == null)
                 {
                     LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(customerDTO)),
-                        "CustomerDTO is null"
+                        new ArgumentNullException(nameof(customerFormDto)),
+                        "CustomerFormDTO is null"
                     );
                     throw new ArgumentNullException(
-                        nameof(customerDTO),
-                        "Source customerDTO cannot be null"
+                        nameof(customerFormDto),
+                        "Source customerFormDto cannot be null"
                     );
                 }
 
@@ -81,29 +73,26 @@ namespace KiloTaxi.Converter
                     );
                 }
 
-                customerEntity.Id = customerDTO.Id;
-                customerEntity.Name = customerDTO.Name;
-                customerEntity.Profile = customerDTO.Profile;
-                customerEntity.MobilePrefix = customerDTO.MobilePrefix;
-                customerEntity.RefreshToken = customerDTO.RefreshToken;
-                customerEntity.RefreshTokenExpiryTime = customerDTO.RefreshTokenExpiryTime;
-                customerEntity.Phone = customerDTO.Phone;
-                customerEntity.Email = customerDTO.Email;
-                customerEntity.Role = customerDTO.Role;
-                customerEntity.Dob = customerDTO.Dob;
-                customerEntity.Nrc = customerDTO.Nrc;
-                customerEntity.NrcImageFront = customerDTO.NrcImageFront;
-                customerEntity.NrcImageBack = customerDTO.NrcImageBack;
-                customerEntity.EmailVerifiedAt = customerDTO.EmailVerifiedAt;
-                customerEntity.PhoneVerifiedAt = customerDTO.PhoneVerifiedAt;
-                customerEntity.Password = customerDTO.Password;
-                customerEntity.Gender = customerDTO.Gender.ToString();
-                customerEntity.Address = customerDTO.Address;
-                customerEntity.State = customerDTO.State;
-                customerEntity.City = customerDTO.City;
-                customerEntity.Township = customerDTO.Township;
-                customerEntity.Status = customerDTO.Status.ToString();
-                customerEntity.KycStatus = customerDTO.KycStatus.ToString();
+                customerEntity.Id = customerFormDto.Id;
+                customerEntity.Name = customerFormDto.Name;
+                customerEntity.Profile = customerFormDto.Profile;
+                customerEntity.MobilePrefix = customerFormDto.MobilePrefix;
+                customerEntity.RefreshToken = customerFormDto.RefreshToken;
+                customerEntity.RefreshTokenExpiryTime = customerFormDto.RefreshTokenExpiryTime;
+                customerEntity.Otp = customerFormDto.Otp;
+                customerEntity.Phone = customerFormDto.Phone;
+                customerEntity.Email = customerFormDto.Email;
+                customerEntity.Role = customerFormDto.Role;
+                customerEntity.EmailVerifiedAt = customerFormDto.EmailVerifiedAt;
+                customerEntity.PhoneVerifiedAt = customerFormDto.PhoneVerifiedAt;
+                customerEntity.Password = customerFormDto.Password;
+                customerEntity.Gender = customerFormDto.Gender.ToString();
+                customerEntity.Address = customerFormDto.Address;
+                customerEntity.State = customerFormDto.State;
+                customerEntity.City = customerFormDto.City;
+                customerEntity.Township = customerFormDto.Township;
+                customerEntity.Status = customerFormDto.Status.ToString();
+                customerEntity.KycStatus = customerFormDto.KycStatus.ToString();
             }
             catch (Exception ex)
             {
