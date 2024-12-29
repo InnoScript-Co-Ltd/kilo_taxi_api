@@ -1,50 +1,37 @@
-using KiloTaxi.API.Services;
-using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
-using KiloTaxi.EntityFramework;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-   [Authorize(Roles = "Admin")]
-    public class AdminController : ControllerBase
+    public class ExtraDemandController : ControllerBase
     {
         LoggerHelper _logHelper;
-        private readonly IAdminRepository _adminRepository;
-        private readonly DbKiloTaxiContext _dbKiloTaxiContext;
-        private readonly IConfiguration _configuration;
-        private ApiClientHub _apiClientHub;
+        private readonly IExtraDemandRepository _extraDemandRepository;
 
-
-        public AdminController(IAdminRepository adminRepository,DbKiloTaxiContext dbContext,IConfiguration configuration,ApiClientHub apiClientHub)
+        public ExtraDemandController(IExtraDemandRepository _extraDemandRepository)
         {
             _logHelper = LoggerHelper.Instance;
-            _adminRepository = adminRepository;
-            _dbKiloTaxiContext = dbContext;
-            _configuration = configuration;
-            _apiClientHub = apiClientHub;
+            _extraDemandRepository = _extraDemandRepository;
         }
 
-        //GET: api/<AdminController>
+        // GET: api/<ExtraDemandController>
         [HttpGet]
-        public ActionResult<AdminPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ExtraDemandPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-               
-                AdminPagingDTO adminPagingDTO = _adminRepository.GetAllAdmin(pageSortParam);
-                if (!adminPagingDTO.Admins.Any())
+                ExtraDemandPagingDTO extraDemandPagingDTO = _extraDemandRepository.GetAllExtraDemand(
+                    pageSortParam
+                );
+                if (!extraDemandPagingDTO.ExtraDemands.Any())
                 {
                     return NoContent();
                 }
-                // Add a custom header
-                //Response.Headers.Add("X-Custom-Header", "foo");
-                return Ok(adminPagingDTO);
+                return Ok(extraDemandPagingDTO);
             }
             catch (Exception ex)
             {
@@ -53,17 +40,18 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
+        // GET: api/<ExtraDemandController>/5
         [HttpGet("{id}")]
-        public ActionResult<AdminDTO> Get(int id)
+        public ActionResult<ExtraDemandDTO> Get(int id)
         {
             try
             {
-                _logHelper.LogInfo("test info log");
                 if (id == 0)
                 {
                     return BadRequest();
                 }
-                var result = _adminRepository.GetAdminById(id);
+
+                var result = _extraDemandRepository.GetExtraDemandById(id);
                 if (result == null)
                 {
                     return NotFound();
@@ -77,27 +65,23 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        // POST api/<AdminController>
+        // POST api/<ExtraDemandController>
         [HttpPost]
-        [AllowAnonymous]
-        public  ActionResult<AdminDTO> Post([FromForm]AdminDTO adminDTO)
+        public ActionResult<ExtraDemandDTO> Post([FromBody] ExtraDemandDTO extraDemandDTO)
         {
             try
             {
-                if (adminDTO == null)
+                if (extraDemandDTO == null)
                 {
                     return BadRequest();
                 }
-                var existEmailAdmin=_dbKiloTaxiContext.Admins.FirstOrDefault(admin =>
-                    admin.Email == adminDTO.Email
-                );
-                if (existEmailAdmin != null)
-                {
-                    return Conflict();
-                }
 
-                var createdAdmin = _adminRepository.AddAdmin(adminDTO);
-                return CreatedAtAction(nameof(Get), new { id = createdAdmin.Id }, createdAdmin);
+                var createdExtraDemand = _extraDemandRepository.CreateExtraDemand(extraDemandDTO);
+                return CreatedAtAction(
+                    nameof(Get),
+                    new { id = createdExtraDemand.Id },
+                    createdExtraDemand
+                );
             }
             catch (Exception ex)
             {
@@ -106,18 +90,18 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
+        // PUT api/<ExtraDemandController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] AdminDTO adminDTO)
+        public ActionResult Put(int id, [FromBody] ExtraDemandDTO extraDemandDTO)
         {
             try
             {
-                if (adminDTO == null || id != adminDTO.Id)
+                if (extraDemandDTO == null || id != extraDemandDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _adminRepository.UpdateAdmin(adminDTO);
-
+                var result = _extraDemandRepository.UpdateExtraDemand(extraDemandDTO);
                 if (!result)
                 {
                     return NotFound();
@@ -131,19 +115,19 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        // DELETE api/<AdminController>/5
+        // DELETE api/<ExtraDemandController>/5
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
             try
             {
-                var admin = _adminRepository.GetAdminById(id);
-                if (admin == null)
+                var extraDemand = _extraDemandRepository.GetExtraDemandById(id);
+                if (extraDemand == null)
                 {
                     return NotFound();
                 }
 
-                var result = _adminRepository.DeleteAdmin(id);
+                var result = _extraDemandRepository.DeleteExtraDemand(id);
                 if (!result)
                 {
                     return NotFound();

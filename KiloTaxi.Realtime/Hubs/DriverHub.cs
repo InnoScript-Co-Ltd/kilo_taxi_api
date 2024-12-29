@@ -101,13 +101,7 @@ namespace KiloTaxi.Realtime.Hubs
                 _logHelper.LogError(ex, ex?.Message);
             }
         }
-        public async Task SendDriverAvalilityStatus(bool status)
-        {
-            var conId = Context.ConnectionId;
-            var value = _driverConnectionManager.GetVehiclId(conId);
-
-            _hubApi.Clients.All.ReceiveTestMethod(status.ToString());
-        }
+        
 
         #endregion
 

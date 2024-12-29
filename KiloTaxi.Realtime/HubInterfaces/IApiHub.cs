@@ -2,5 +2,4 @@
 
 public interface IApiHub
 {
-    Task SendMessage(string data);
 }

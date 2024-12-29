@@ -19,22 +19,7 @@ public class ApiHub : Hub<IApiClient>, IApiHub
     }
 
     #region SignalR Events
-    public async Task SendMessage(string message)
-    {
-        try
-        {
-            _logHelper.LogDebug(message);
-            Console.WriteLine(message);
-            var driverConnectionId = _driverConnectionManager.GetConnectionId("123");
-
-            await _hubDriver.Clients.Client(driverConnectionId).ReceiveTestMethod("brocast to client: "+message);
-
-        }
-        catch (Exception ex)
-        {
-            _logHelper.LogError(ex, ex?.Message);
-        }
-    }
+    
     #endregion
 
     #region Private Methods

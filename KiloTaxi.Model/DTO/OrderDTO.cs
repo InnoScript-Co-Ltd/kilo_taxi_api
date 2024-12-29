@@ -12,18 +12,18 @@ namespace KiloTaxi.Model.DTO
     public class OrderDTO
     {
         public int Id { get; set; }
-        
-        public string PickUpLocation {get; set;}
-        
+
+        public string PickUpLocation { get; set; }
+
         public string PickUpLat { get; set; }
-        
-        public string PickUpLong  {get; set;}
-        
-        public string DestinationLocation {get; set;}
-        
-        public string DestinationLat{get; set;}
-        
-        public string DestinationLong {get; set;}
+
+        public string PickUpLong { get; set; }
+
+        public string DestinationLocation { get; set; }
+
+        public string DestinationLat { get; set; }
+
+        public string DestinationLong { get; set; }
 
         public int? WalletTransactionId { get; set; }
 

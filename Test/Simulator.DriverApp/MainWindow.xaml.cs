@@ -142,16 +142,6 @@ namespace Simulator.DriverApp
                     this.RequestVehicleLocation(vehicleId);
                 });
             });
-            connection.On("ReceiveTestMethod", async (string data) =>
-            {
-                this.Dispatcher.Invoke(() =>
-                {
-                    var jsonSerializedModel = JsonSerializer.Serialize(data);
-                    lblLogs.Text += Environment.NewLine + $"ReceiveTestMethod : {jsonSerializedModel}";
-
-                    this.ReceiveTestMethod(data);
-                });
-            });
             // connection.On("SendSos", async (SosDTO sosDto) =>
             // {
             //     this.Dispatcher.Invoke(() =>
