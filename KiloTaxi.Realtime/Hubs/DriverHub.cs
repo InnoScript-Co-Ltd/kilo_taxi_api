@@ -32,8 +32,8 @@ namespace KiloTaxi.Realtime.Hubs
         {
             try
             {                
-                // Assuming the driver app sends a unique identifier (e.g., vehicleId or driverid) when connecting
-                var key = Context.GetHttpContext().Request.Query["vehicleId"].ToString();
+                // Assuming the driver app sends a unique identifier (e.g., vehicleId or driverId) when connecting
+                var key = Context.GetHttpContext().Request.Query["driverId"].ToString();
                 _driverConnectionManager.AddConnection(key, Context.ConnectionId);
                 Console.WriteLine($"Connected to"+key);
                 _logHelper.LogDebug("Driver Client connected");

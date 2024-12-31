@@ -33,7 +33,9 @@ namespace KiloTaxi.Model.DTO
         [Required]
         public int DriverId { get; set; }
 
-        [AllowNull]
+        [Required]
+        public int VehicleId { get; set; }
+
         public int? ScheduleBookingId { get; set; }
 
         [Required]
@@ -48,5 +50,6 @@ namespace KiloTaxi.Model.DTO
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedDate { get; set; }
+
     }
 }
