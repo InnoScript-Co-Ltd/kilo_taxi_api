@@ -43,13 +43,20 @@ namespace Simulator.DriverApp
             Console.WriteLine(jsonSerializedModel);
             lblLogs.Text += Environment.NewLine + $"ReceiveTestMethod : {jsonSerializedModel}";
         }
+
+        private void ReceiveOrder(OrderDTO orderDTO)
+        {
+            var jsonSerializedModel = JsonSerializer.Serialize(orderDTO);
+            Console.WriteLine(jsonSerializedModel);
+            lblLogs.Text += Environment.NewLine + $"ReceiveOrder : {jsonSerializedModel}";
+        }
         // private void SendSos(SosDTO SosDTO)
         // {
         //     Console.WriteLine("Sending SOS");
         //     connection.InvokeAsync("SendSos", SosDTO);
         // }
         #endregion
-    
+
         #region Form Events
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
@@ -140,6 +147,17 @@ namespace Simulator.DriverApp
                     lblLogs.Text += Environment.NewLine + $"RequestVehicleLocation : {jsonSerializedModel}";
 
                     this.RequestVehicleLocation(vehicleId);
+                });
+            });
+
+            connection.On("ReceiveOrder", async (OrderDTO orderDTO) =>
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    var jsonSerializedModel = JsonSerializer.Serialize(orderDTO);
+                    lblLogs.Text += Environment.NewLine + $"ReceiveOrder : {jsonSerializedModel}";
+
+                    this.ReceiveOrder(orderDTO);
                 });
             });
             // connection.On("SendSos", async (SosDTO sosDto) =>

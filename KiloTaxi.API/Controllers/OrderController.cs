@@ -74,6 +74,7 @@ namespace KiloTaxi.API.Controllers
             try
             {
                 _apiClientHub.SendMessageAsync($"Get all orders");
+                _apiClientHub.SendOrderAsync(orderDTO);
 
                 if (orderDTO == null)
                 {

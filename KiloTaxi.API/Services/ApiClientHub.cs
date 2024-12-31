@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using KiloTaxi.DataAccess.Interface;
+using KiloTaxi.Model.DTO;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace KiloTaxi.API.Services;
 
@@ -6,6 +8,7 @@ public class ApiClientHub : IDisposable
 {
     private readonly HubConnection _hubConnection;
     private readonly IConfiguration _configuration;
+    private readonly IDriverRepository _driverRepository;
 
     public ApiClientHub(IConfiguration configuration)
     {
@@ -55,6 +58,15 @@ public class ApiClientHub : IDisposable
         if (_hubConnection.State == HubConnectionState.Connected)
         {
             await _hubConnection.InvokeAsync("SendMessage", message);
+        }
+    }
+
+    public async Task SendOrderAsync(OrderDTO orderDTO)
+    {
+        var onlineDriverDTOList = _driverRepository.SearchNearbyOnlineDriver();
+        if (_hubConnection.State == HubConnectionState.Connected)
+        {
+            await _hubConnection.InvokeAsync("SendOrder", orderDTO, onlineDriverDTOList);
         }
     }
 
