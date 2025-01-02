@@ -50,9 +50,17 @@
                         <CheckBox x:Name="chkDriverAvalilityStatus" HorizontalAlignment="Center" />
                         
                         <Button x:Name="btnSendDriverAvalilityStatus" Content="SendDriverAvalilityStatus" Click="btnSendDriverAvalilityStatus_Click"></Button>
+                 
+
                     </StackPanel>
                 </Border>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Height="25" />
+            </DockPanel>
+            <DockPanel Margin="8">
+                <StackPanel>
+                    <Button x:Name="btnAcceptOrder" Content="AcceptOrder" Click="btnAcceptOrder_Click"></Button>
+
+                </StackPanel>
             </DockPanel>
 
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="100" Height="310" >
@@ -62,9 +70,9 @@
                     </Grid.RowDefinitions>
                     <TextBlock x:Name="lblLogs" Grid.Row="3" TextWrapping="WrapWithOverflow"/>
                 </Grid>
-
             </ScrollViewer>
         </StackPanel>
+
 
 
 

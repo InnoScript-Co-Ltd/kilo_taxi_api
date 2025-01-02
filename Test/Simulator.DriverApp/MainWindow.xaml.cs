@@ -22,6 +22,8 @@ namespace Simulator.DriverApp
     {
         HubConnection connection;
         Settings appSettings = new Settings();
+        private OrderDTO currentOrderDto;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -46,6 +48,7 @@ namespace Simulator.DriverApp
 
         private void ReceiveOrder(OrderDTO orderDTO)
         {
+            currentOrderDto = orderDTO;
             var jsonSerializedModel = JsonSerializer.Serialize(orderDTO);
             Console.WriteLine(jsonSerializedModel);
             lblLogs.Text += Environment.NewLine + $"ReceiveOrder : {jsonSerializedModel}";
@@ -84,7 +87,26 @@ namespace Simulator.DriverApp
         {
             connection.InvokeAsync("SendDriverAvalilityStatus", chkDriverAvalilityStatus.IsChecked);
         }
-        
+
+        private void btnAcceptOrder_Click(object sender, RoutedEventArgs e)
+        {
+            if (currentOrderDto != null)
+            {
+                // Log the OrderDTO data
+                var jsonSerializedModel = JsonSerializer.Serialize(currentOrderDto);
+             
+                // Invoke the SignalR hub method
+                connection.InvokeAsync("AcceptOrder", currentOrderDto);
+                
+            }
+            else
+            {
+                // Handle case when no OrderDTO is available
+                lblLogs.Text += Environment.NewLine + "No order available to accept.";
+            }
+        }
+
+
         #endregion
 
         #region Private Methods
@@ -155,7 +177,7 @@ namespace Simulator.DriverApp
                 this.Dispatcher.Invoke(() =>
                 {
                     var jsonSerializedModel = JsonSerializer.Serialize(orderDTO);
-                    lblLogs.Text += Environment.NewLine + $"ReceiveOrder : {jsonSerializedModel}";
+                   // lblLogs.Text += Environment.NewLine + $"Receive : {jsonSerializedModel}";
 
                     this.ReceiveOrder(orderDTO);
                 });
