@@ -181,7 +181,6 @@ public class DriverRepository : IDriverRepository
             {
                 return result;
             }
-
             // List of image properties to update
             var imageProperties = new List<(string driverDTOProperty, string driverEntityFile)>
             {
@@ -195,19 +194,19 @@ public class DriverRepository : IDriverRepository
             // Loop through image properties and update paths if necessary
             foreach (var (driverDTOProperty, driverEntityFile) in imageProperties)
             {
-                var dtoValue = typeof(DriverDTO)
+                var dtoValue = typeof(DriverFormDTO)
                     .GetProperty(driverDTOProperty)
                     ?.GetValue(driverDTO)
                     ?.ToString();
                 if (string.IsNullOrEmpty(dtoValue))
                 {
-                    typeof(DriverDTO)
+                    typeof(DriverFormDTO)
                         .GetProperty(driverDTOProperty)
                         ?.SetValue(driverDTO, driverEntityFile);
                 }
                 else if (dtoValue != driverEntityFile)
                 {
-                    typeof(DriverDTO)
+                    typeof(DriverFormDTO)
                         .GetProperty(driverDTOProperty)
                         ?.SetValue(driverDTO, $"driver/{driverDTO.Id}{dtoValue}");
                 }
@@ -223,6 +222,24 @@ public class DriverRepository : IDriverRepository
             LoggerHelper.Instance.LogError(
                 ex,
                 $"Error occurred while updating driver with Id: {driverDTO.Id}"
+            );
+            throw;
+        }
+    }
+    
+        public void UpdateDriverStatus(DriverFormDTO driverDTO)
+    {
+        try
+        {
+            var driverEntity = _dbKiloTaxiContext.Drivers.FirstOrDefault(d => d.Id == driverDTO.Id);
+            driverEntity.AvabilityStatus = driverDTO.AvailableStatus.ToString();
+            _dbKiloTaxiContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            LoggerHelper.Instance.LogError(
+                ex,
+                $"Error occurred while updating driver status with Id: {driverDTO.Id}"
             );
             throw;
         }

@@ -33,7 +33,7 @@ namespace KiloTaxi.Realtime.Hubs
             try
             {                
                 // Assuming the driver app sends a unique identifier (e.g., vehicleId or driverid) when connecting
-                var key = Context.GetHttpContext().Request.Query["vehicleId"].ToString();
+                var key = Context.GetHttpContext().Request.Query["driverId"].ToString();
                 _driverConnectionManager.AddConnection(key, Context.ConnectionId);
                 Console.WriteLine($"Connected to"+key);
                 _logHelper.LogDebug("Driver Client connected");
@@ -95,6 +95,20 @@ namespace KiloTaxi.Realtime.Hubs
                 _logHelper.LogDebug($"SendSos {sosDto}");
 
                 await _hubDashboard.Clients.All.ReceiveSos(sosDto);
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex, ex?.Message);
+            }
+        }
+        
+        public async Task SendDriverAvalilityStatus(string AvailityStatus)
+        {
+            try
+            {
+                var key = Context.GetHttpContext().Request.Query["driverId"].ToString();
+
+                await _hubApi.Clients.All.ReceiveAvailityStatus(AvailityStatus,int.Parse(key));
             }
             catch (Exception ex)
             {

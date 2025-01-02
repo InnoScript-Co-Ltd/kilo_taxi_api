@@ -21,7 +21,7 @@ public class CustomerFormDTO
     [RegularExpression(@"^9\d{7,9}$", ErrorMessage = "Phone number must start with 9 and be between 8 to 10 digits.")]
     public string Phone { get; set; }
 
-    public string Role {get;set;}
+    public string? Role {get;set;}
 
     public string? RefreshToken { get; set; }
 
@@ -41,7 +41,8 @@ public class CustomerFormDTO
     
     public DateTime? PhoneVerifiedAt { get; set; }
     
-    public string? Password { get; set; }
+    [StringLength(26, MinimumLength = 6, ErrorMessage = "Phone number must be between 6 and 26 Characters.")]
+    public string Password { get; set; }
     
     public string? State { get; set; }
 

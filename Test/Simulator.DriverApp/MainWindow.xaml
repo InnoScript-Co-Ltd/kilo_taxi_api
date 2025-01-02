@@ -46,11 +46,19 @@
             <DockPanel Margin="8">
                 <Border CornerRadius="6" BorderBrush="LightGray" Background="LightGray" BorderThickness="2" DockPanel.Dock="Top">
                     <StackPanel Orientation="Vertical">
-
-                        <CheckBox x:Name="chkDriverAvalilityStatus" HorizontalAlignment="Center" />
-                        
-                        <Button x:Name="btnSendDriverAvalilityStatus" Content="SendDriverAvalilityStatus" Click="btnSendDriverAvalilityStatus_Click"></Button>
-                    </StackPanel>
+                        <!-- Button for toggling driver mode -->
+                        <Button x:Name="btnDriverMode" Content="DriverMode On" Click="btnSendDriverAvalilityStatus_Click">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Red" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding currentStatus}" Value="Active">
+                                            <Setter Property="Background" Value="Green" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>                    </StackPanel>
                 </Border>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Height="25" />
             </DockPanel>

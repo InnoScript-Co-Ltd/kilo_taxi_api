@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using KiloTaxi.Common.Enums;
+using KiloTaxi.DataAccess.Interface;
+using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace KiloTaxi.API.Services;
 
@@ -6,10 +12,13 @@ public class ApiClientHub : IDisposable
 {
     private readonly HubConnection _hubConnection;
     private readonly IConfiguration _configuration;
+    private readonly IServiceProvider _serviceProvider;
 
-    public ApiClientHub(IConfiguration configuration)
+    
+    public ApiClientHub(IConfiguration configuration,IServiceProvider serviceProvider)
     {
         _configuration = configuration;
+        _serviceProvider = serviceProvider;
 
         string signalrApiHubUrl = _configuration["SignalrApiHubUrl"];
 
@@ -35,6 +44,17 @@ public class ApiClientHub : IDisposable
         {
             Console.WriteLine($"Message from server: {message}");
         });
+        _hubConnection.On<string, int>("ReceiveAvailityStatus", (availityStatus, driverId) =>
+        {
+            Console.WriteLine("status");
+            using var scope = _serviceProvider.CreateScope();
+            var driverRepository = scope.ServiceProvider.GetRequiredService<IDriverRepository>();
+
+            DriverFormDTO driverFormDto = new DriverFormDTO();
+            driverFormDto.Id = driverId;
+            driverFormDto.AvailableStatus =Enum.Parse<DriverStatus>(availityStatus);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+            driverRepository.UpdateDriverStatus(driverFormDto);
+        });
     }
 
     public async Task StartConnectionAsync()
@@ -50,14 +70,7 @@ public class ApiClientHub : IDisposable
         }
     }
 
-    public async Task SendMessageAsync(string message)
-    {
-        if (_hubConnection.State == HubConnectionState.Connected)
-        {
-            await _hubConnection.InvokeAsync("SendMessage", message);
-        }
-    }
-
+  
     public void Dispose()
     {
         _hubConnection?.DisposeAsync();

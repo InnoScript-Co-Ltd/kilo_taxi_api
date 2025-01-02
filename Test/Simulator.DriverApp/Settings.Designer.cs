@@ -24,7 +24,7 @@ namespace Simulator.DriverApp {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://localhost:7044/driver?vehicleId=123")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://localhost:7044/driver?driverId=1")]
         public string DriverHubUrl {
             get {
                 return ((string)(this["DriverHubUrl"]));

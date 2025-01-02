@@ -100,20 +100,7 @@ public class AuthController : ControllerBase
 
         return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
     }
-    // [HttpPost("Otp-verify")]
-    // public IActionResult VerifyOTP([FromBody] RefreshTokenDTO request)
-    // {
-    //     if (string.IsNullOrEmpty(request.AccessToken) || string.IsNullOrEmpty(request.Otp))
-    //         return BadRequest("Token and OTP are required.");
-    //    
-    //     var vaildOtp=_authenticationService.VarifiedOpt(request.AccessToken, request.Otp);
-    //     if (vaildOtp)
-    //     {
-    //         return Ok("OTP verified successfully.");
-    //
-    //     } return BadRequest("Invalid OTP.");
-    //
-    // }
+    
 
     [HttpPost("CustomerRegister")]
     public ActionResult<ResponseDTO<OtpInfo>> CustomerRegister([FromBody] CustomerFormDTO customerFormDto)
@@ -149,23 +136,27 @@ public class AuthController : ControllerBase
             }
         int retryCount = unVerifiedUser.Payload.RetryCount; 
         string phone=unVerifiedUser.Payload.Phone;  
-        if (isCircuitBreaker && sessionTerminateDate>DateTime.UtcNow  && otpFormDto.Phone==phone)
+        if (isCircuitBreaker && sessionTerminateDate>DateTime.Now  && otpFormDto.Phone==phone)
         {
+            unVerifiedUser.Payload.RetryCount = 0; // Update retry count in payload
+            HttpContext.Session.SetString("UnVerifiedUser"+otpFormDto.Phone, JsonConvert.SerializeObject(unVerifiedUser)); 
             return new ResponseDTO<CustomerInfoDTO>()
             {
                 StatusCode = BadRequest().StatusCode,
                 Message="Cant't Verify OTP.Try again later" +" At "+  sessionTerminateDate,
+                TimeStamp = DateTime.Now
             };
         }
-        if (retryCount > 5)
+        if (retryCount >= 5)
         {
-            unVerifiedUser.Payload.TerminateDate = DateTime.UtcNow.AddMinutes(1);; // Update terminate date
+            unVerifiedUser.Payload.TerminateDate = DateTime.Now.AddMinutes(1);; // Update terminate date
             HttpContext.Session.SetString("UnVerifiedUser"+otpFormDto.Phone, JsonConvert.SerializeObject(unVerifiedUser)); // Save updated session
 
             return new ResponseDTO<CustomerInfoDTO>()
             {
                 StatusCode = BadRequest().StatusCode,
                 Message="Cant't Verify OTP.Try again later",
+                TimeStamp = DateTime.Now
             };
         }
          if(otpFormDto.Phone != phone || otpFormDto.Otp != otpCode || retryCount>5)
@@ -180,7 +171,7 @@ public class AuthController : ControllerBase
                 Message="Invalid otp code"
             };
         }
-        if (otpFormDto.Otp ==otpCode && DateTime.UtcNow > otpExpired)
+        if (otpFormDto.Otp ==otpCode && DateTime.Now > otpExpired)
         {
             retryCount += 1;
             unVerifiedUser.Payload.RetryCount = retryCount; // Update retry count in payload
@@ -189,7 +180,8 @@ public class AuthController : ControllerBase
             return new ResponseDTO<CustomerInfoDTO>()
             {
                 StatusCode = BadRequest().StatusCode,
-                Message="Your Otp code is expired."
+                Message="Your Otp code is expired.",
+                TimeStamp = DateTime.Now
             };
         } 
        
@@ -209,6 +201,28 @@ public class AuthController : ControllerBase
             Message="Customer Register Success"
         };
         
+    }
+    
+    [HttpPost("resend-otp")]
+    public async Task<ActionResult<ResponseDTO<OtpInfo>>> resendOtp([FromQuery] string phone)
+    {
+        var session_UnVerifiedUser = HttpContext.Session.GetString("UnVerifiedUser"+phone);
+        ResponseDTO<OtpInfo> responseDto = new ResponseDTO<OtpInfo>();
+
+        if (session_UnVerifiedUser == null)
+        {
+            responseDto.StatusCode = BadRequest().StatusCode;
+            responseDto.Message = "phone number is invalid";
+            return responseDto;
+        }
+        var unVerifiedUser = JsonConvert.DeserializeObject<ResponseDTO<OtpInfo>>(session_UnVerifiedUser);
+        var OtpCode =  _authenticationService.GenerateOtp();
+        unVerifiedUser.Payload.Otp = OtpCode;    
+       HttpContext.Session.SetString("UnVerifiedUser"+phone,JsonConvert.SerializeObject(unVerifiedUser));
+       responseDto.StatusCode = Ok().StatusCode;
+       responseDto.Message = "Generate OTP Resend Success.";
+       responseDto.Payload = unVerifiedUser.Payload;
+        return responseDto;
     }
     
 

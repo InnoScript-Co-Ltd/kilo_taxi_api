@@ -1,5 +1,8 @@
-﻿namespace KiloTaxi.Realtime.HubInterfaces;
+﻿using KiloTaxi.Model.DTO;
+
+namespace KiloTaxi.Realtime.HubInterfaces;
 
 public interface IApiHub
 {
+
 }

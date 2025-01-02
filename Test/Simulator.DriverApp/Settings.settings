@@ -3,7 +3,8 @@
   <Profiles />
   <Settings>
     <Setting Name="DriverHubUrl" Type="System.String" Scope="User">
-      <Value Profile="(Default)">https://localhost:7044/driver?vehicleId=123</Value>
+<!--      <Value Profile="(Default)">https://localhost:7044/driver?vehicleId=123</Value>-->
+      <Value Profile="(Default)">https://localhost:7044/driver?driverId=1</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -13,7 +13,8 @@ public interface IDriverRepository
     DriverPagingDTO GetAllDrivers(PageSortParam pageSortParam);
     
     bool DeleteDriver(int id);
-    
+
     Task<DriverInfoDTO> ValidateDriverCredentials(string email, string password);
 
+    void UpdateDriverStatus(DriverFormDTO driverFormDto);
 }

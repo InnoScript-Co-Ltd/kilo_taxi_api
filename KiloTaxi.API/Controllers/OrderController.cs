@@ -73,14 +73,14 @@ namespace KiloTaxi.API.Controllers
         {
             try
             {
-                _apiClientHub.SendMessageAsync($"Get all orders");
 
                 if (orderDTO == null)
                 {
                     return BadRequest();
                 }
-        
+
                 var createdOrder = _orderRepository.AddOrder(orderDTO);
+                  
                 return CreatedAtAction(nameof(Get), new { id = createdOrder.Id }, createdOrder);
             }
             catch (Exception ex)

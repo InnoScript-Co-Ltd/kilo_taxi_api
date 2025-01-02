@@ -19,7 +19,6 @@ public class ApiHub : Hub<IApiClient>, IApiHub
     }
 
     #region SignalR Events
-    
     #endregion
 
     #region Private Methods

@@ -200,12 +200,12 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public bool UpdateCustomer(CustomerFormDTO customerDTO)
+        public bool UpdateCustomer(CustomerFormDTO customerFormDto)
         {
             try
             {
                 var customerEntity = _dbKiloTaxiContext.Customers.FirstOrDefault(customer =>
-                    customer.Id == customerDTO.Id
+                    customer.Id == customerFormDto.Id
                 );
                 if (customerEntity == null)
                 {
@@ -220,31 +220,31 @@ namespace KiloTaxi.DataAccess.Implementation
                 {
                     // (nameof(customerDTO.NrcImageFront), customerEntity.NrcImageFront),
                     // (nameof(customerDTO.NrcImageBack), customerEntity.NrcImageBack),
-                    (nameof(customerDTO.Profile), customerEntity.Profile),
+                    (nameof(customerFormDto.Profile), customerEntity.Profile),
                 };
 
                 // Loop through image properties and update paths if necessary
                 foreach (var (customerDTOProperty, customerEntityFile) in imageProperties)
                 {
-                    var dtoValue = typeof(CustomerDTO)
+                    var dtoValue = typeof(CustomerFormDTO)
                         .GetProperty(customerDTOProperty)
-                        ?.GetValue(customerDTO)
+                        ?.GetValue(customerFormDto)
                         ?.ToString();
                     if (string.IsNullOrEmpty(dtoValue))
                     {
-                        typeof(CustomerDTO)
+                        typeof(CustomerFormDTO)
                             .GetProperty(customerDTOProperty)
-                            ?.SetValue(customerDTO, customerEntityFile);
+                            ?.SetValue(customerFormDto, customerEntityFile);
                     }
                     else if (dtoValue != customerEntityFile)
                     {
-                        typeof(CustomerDTO)
+                        typeof(CustomerFormDTO)
                             .GetProperty(customerDTOProperty)
-                            ?.SetValue(customerDTO, $"customer/{customerDTO.Id}{dtoValue}");
+                            ?.SetValue(customerFormDto, $"customer/{customerFormDto.Id}{dtoValue}");
                     }
                 }
 
-                CustomerConverter.ConvertModelToEntity(customerDTO, ref customerEntity);
+                CustomerConverter.ConvertModelToEntity(customerFormDto, ref customerEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -253,7 +253,7 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating customer with Id: {customerDTO.Id}"
+                    $"Error occurred while updating customer with Id: {customerFormDto.Id}"
                 );
                 throw;
             }
@@ -356,7 +356,7 @@ namespace KiloTaxi.DataAccess.Implementation
                 otpInfo.Role = customerFormDto.Role;
                 otpInfo.Phone = customerFormDto.Phone;
                 otpInfo.Otp = GenerateOTP();
-                otpInfo.OtpExpired = DateTime.UtcNow.AddMinutes(3);
+                otpInfo.OtpExpired = DateTime.Now.AddMinutes(3);
                 otpInfo.UserName = customerFormDto.Name;
                 otpInfo.RetryCount = 0;
                 responseDto.Payload = otpInfo;
@@ -368,7 +368,7 @@ namespace KiloTaxi.DataAccess.Implementation
             otpInfo.Role = customerFormDto.Role;
             otpInfo.Phone = customerFormDto.Phone;
             otpInfo.Otp = GenerateOTP();
-            otpInfo.OtpExpired = DateTime.UtcNow.AddMinutes(3);
+            otpInfo.OtpExpired = DateTime.Now.AddMinutes(3);
             otpInfo.UserName = customerFormDto.Name;
             otpInfo.RetryCount = 0;
             return new ResponseDTO<OtpInfo>
