@@ -286,4 +286,22 @@ public class DriverRepository : IDriverRepository
         // Convert the entity to a DTO
         return null;
     }
+
+    public List<DriverInfoDTO> SearchNearbyOnlineDriver() {
+        var onlineDrivers = _dbKiloTaxiContext.Drivers
+        .Where(driver => driver.AvabilityStatus == DriverStatus.Online.ToString())
+        .ToList(); 
+
+       
+        var onlineDriverDTOs = onlineDrivers
+            .Select(driver => DriverConverter.ConvertEntityToModel(driver, _mediaHostUrl))
+            .ToList();
+
+        if (!onlineDriverDTOs.Any())
+        {
+            throw new Exception("No online drivers found.");
+        }
+
+        return onlineDriverDTOs;
+    }
 }

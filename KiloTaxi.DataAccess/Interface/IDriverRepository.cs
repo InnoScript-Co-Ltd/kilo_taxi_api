@@ -15,6 +15,7 @@ public interface IDriverRepository
     bool DeleteDriver(int id);
 
     Task<DriverInfoDTO> ValidateDriverCredentials(string email, string password);
+    List<DriverInfoDTO> SearchNearbyOnlineDriver();
 
     void UpdateDriverStatus(DriverFormDTO driverFormDto);
 }

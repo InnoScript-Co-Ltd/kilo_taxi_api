@@ -1,6 +1,8 @@
+using Azure;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
@@ -67,21 +69,22 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<OrderExtraDemandController>
         [HttpPost]
-        public ActionResult<OrderExtraDemandDTO> Post([FromBody] OrderExtraDemandDTO orderExtraDemandDTO)
+        public ActionResult<ResponseDTO<OrderExtraDemandDTO>> Post([FromBody]List<OrderExtraDemandDTO> orderExtraDemandDTOList)
         {
             try
             {
-                if (orderExtraDemandDTO == null)
+                if (orderExtraDemandDTOList == null)
                 {
                     return BadRequest();
                 }
 
-                var createdOrderExtraDemand = _orderExtraDemandRepository.CreateOrderExtraDemand(orderExtraDemandDTO);
-                return CreatedAtAction(
-                    nameof(Get),
-                    new { id = createdOrderExtraDemand.Id },
-                    createdOrderExtraDemand
-                );
+                var createdOrderExtraDemand = _orderExtraDemandRepository.CreateOrderExtraDemand(orderExtraDemandDTOList);
+                ResponseDTO<OrderExtraDemandDTO>response=new ResponseDTO<OrderExtraDemandDTO>();
+                response.StatusCode = Ok().StatusCode;
+                response.Message = "OrderExtraDemand created Success.";
+                response.TimeStamp=DateTime.Now;
+                response.PayloadList = createdOrderExtraDemand;
+                return response;
             }
             catch (Exception ex)
             {

@@ -1,10 +1,11 @@
-﻿using KiloTaxi.Common.Enums;
+using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Model.DTO;
 using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
+
 
 namespace KiloTaxi.API.Services;
 
@@ -70,7 +71,25 @@ public class ApiClientHub : IDisposable
         }
     }
 
-  
+    public async Task SendMessageAsync(string message)
+    {
+        if (_hubConnection.State == HubConnectionState.Connected)
+        {
+            await _hubConnection.InvokeAsync("SendMessage", message);
+        }
+    }
+
+    public async Task SendOrderAsync(OrderDTO orderDTO)
+    {
+        using var scope = _serviceProvider.CreateScope();
+        var driverRepository = scope.ServiceProvider.GetRequiredService<IDriverRepository>();
+        var onlineDriverDTOList = driverRepository.SearchNearbyOnlineDriver();
+        if (_hubConnection.State == HubConnectionState.Connected)
+        {
+            await _hubConnection.InvokeAsync("SendOrder", orderDTO, onlineDriverDTOList);
+        }
+    }
+
     public void Dispose()
     {
         _hubConnection?.DisposeAsync();

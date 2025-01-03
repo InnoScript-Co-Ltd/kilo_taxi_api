@@ -25,6 +25,8 @@ public class VehicleInfoDTO
     public int? VehicleTypeId { get; set; }
     
     public VehicleStatus Status { get; set; }
+    
+    public string DriverName { get; set; }
 
 
 }

@@ -48,20 +48,20 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<CustomerController>
         [HttpGet]
-        public ActionResult<IEnumerable<CustomerPagingDTO>> Get(
+        public ActionResult<ResponseDTO<CustomerPagingDTO>> Get(
             [FromQuery] PageSortParam pageSortParam
         )
         {
             try
             {
-                CustomerPagingDTO customerPagingDTO = _customerRepository.GetAllCustomer(
+                var responseDto = _customerRepository.GetAllCustomer(
                     pageSortParam
                 );
-                if (!customerPagingDTO.Customers.Any())
+                if (!responseDto.Payload.Customers.Any())
                 {
                     return NoContent();
                 }
-                return Ok(customerPagingDTO);
+                return responseDto;
             }
             catch (Exception ex)
             {

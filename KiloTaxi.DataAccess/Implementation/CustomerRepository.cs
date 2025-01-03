@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using System.Net;
+using System.Text;
 using KiloTaxi.Common.ConfigurationSettings;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.Converter;
@@ -9,18 +11,18 @@ using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using System.Text.Json;
+using Serilog;
 
 namespace KiloTaxi.DataAccess.Implementation
 {
     public class CustomerRepository : ICustomerRepository
     {
         private readonly DbKiloTaxiContext _dbKiloTaxiContext;
-
+        private readonly string baseUrl = "https://v3.smspoh.com/api/rest";
+        private readonly string apiKey = "KvwfiuJAeRmJ5Bq8";
+        private readonly string apiSecret = "lpYG_3LOkr-8t6y_";
         private string _mediaHostUrl;
         
         // private IAuthenticationService _authenticationService;
@@ -33,7 +35,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _mediaHostUrl = mediaSettings.Value.MediaHostUrl;
         }
 
-        public CustomerPagingDTO GetAllCustomer(PageSortParam pageSortParam)
+        public ResponseDTO<CustomerPagingDTO> GetAllCustomer(PageSortParam pageSortParam)
         {
             try
             {
@@ -101,11 +103,14 @@ namespace KiloTaxi.DataAccess.Implementation
                         pageSortParam.CurrentPage * pageSortParam.PageSize
                     ),
                 };
-
-                return new CustomerPagingDTO { Paging = pagingResult, Customers = customers };
+                ResponseDTO<CustomerPagingDTO> responseDto= new ResponseDTO<CustomerPagingDTO>();
+                responseDto.StatusCode=(int)HttpStatusCode.OK;
+                responseDto.Message="Customers retrieved successfully";
+                responseDto.TimeStamp=DateTime.Now;
+                responseDto.Payload=new CustomerPagingDTO { Paging = pagingResult, Customers = customers };
+                return responseDto;
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex){
                 LoggerHelper.Instance.LogError(ex, "Error occurred while fetching all customers.");
                 throw;
             }
@@ -332,7 +337,7 @@ namespace KiloTaxi.DataAccess.Implementation
             return null;
         }
 
-        public ResponseDTO<OtpInfo> FindCustomerAndGenerateOtp(CustomerFormDTO customerFormDto)
+        public async Task<ResponseDTO<OtpInfo>> FindCustomerAndGenerateOtp(CustomerFormDTO customerFormDto)
         {
             var existedCustomer=_dbKiloTaxiContext.Customers.FirstOrDefault(customer => customer.Phone == customerFormDto.Phone);
             OtpInfo otpInfo=new OtpInfo();
@@ -371,6 +376,36 @@ namespace KiloTaxi.DataAccess.Implementation
             otpInfo.OtpExpired = DateTime.Now.AddMinutes(3);
             otpInfo.UserName = customerFormDto.Name;
             otpInfo.RetryCount = 0;
+            string credentials = $"{apiKey}:{apiSecret}";
+            string base64Credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials));
+            using (HttpClient client = new HttpClient())
+            {
+                // Set the Authorization header with the Base64-encoded credentials
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", base64Credentials);
+
+                // Prepare the request data
+                var requestData = new
+                {
+                    to = "95" + customerFormDto.Phone, // Prefix country code
+                    message = $"Kilo Taxi OTP: Your one-time otpcode is {otpInfo.Otp}. Please use this code to complete your verification. This OTP is valid for 3 minutes. Do not share it with anyone.",
+                    from = "SMSPoh Demo"
+                };
+                string jsonPayload = JsonSerializer.Serialize(requestData);
+
+                var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await client.PostAsync(baseUrl+"/send", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    LoggerHelper.Instance.LogInfo($"SMS sent successfully: {responseBody}");
+                }
+                else
+                {
+                    string errorDetails = await response.Content.ReadAsStringAsync();
+                    LoggerHelper.Instance.LogError($"Failed to send SMS: {response.StatusCode} - {response.ReasonPhrase}");
+                    LoggerHelper.Instance.LogError($"Error Details: {errorDetails}");                }
+            }
             return new ResponseDTO<OtpInfo>
             {
                 StatusCode = 200,

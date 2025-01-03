@@ -9,11 +9,8 @@ public class ResponseDTO<T>
     public string Message { get; set; }
     public DateTime TimeStamp { get; set; }
     
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] 
     public T Payload{ get; set; }
     
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    
-    public IEnumerable<T> PayloadList { get; set; }
+    public List<T> PayloadList { get; set; }
     
 }

@@ -7,7 +7,7 @@ namespace KiloTaxi.DataAccess.Interface;
 
 public interface ICustomerRepository
 {
-    CustomerPagingDTO GetAllCustomer(PageSortParam pageSortParam);
+    ResponseDTO<CustomerPagingDTO> GetAllCustomer(PageSortParam pageSortParam);
 
     CustomerInfoDTO AddCustomer(CustomerFormDTO customerFormDTO);
     bool UpdateCustomer(CustomerFormDTO customerFormDTO);
@@ -16,6 +16,6 @@ public interface ICustomerRepository
     
     Task<CustomerInfoDTO> ValidateCustomerCredentials(string emailOrPhone,string password);
     
-    ResponseDTO<OtpInfo> FindCustomerAndGenerateOtp(CustomerFormDTO pageSortParam);
+    Task<ResponseDTO<OtpInfo>> FindCustomerAndGenerateOtp(CustomerFormDTO pageSortParam);
 
 }
