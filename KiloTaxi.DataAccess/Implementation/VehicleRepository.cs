@@ -186,6 +186,7 @@ public class VehicleRepository : IVehicleRepository
             var vehicles = query
                 .Select(vehicle => VehicleConverter.ConvertEntityToModel(vehicle, _mediaHostUrl))
                 .ToList();
+            
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSortParam.PageSize);
             var pagingResult = new PagingResult
             {

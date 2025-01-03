@@ -82,7 +82,7 @@ namespace KiloTaxi.Converter
                 customerEntity.Otp = customerFormDto.Otp;
                 customerEntity.Phone = customerFormDto.Phone;
                 customerEntity.Email = customerFormDto.Email;
-                customerEntity.Role = customerFormDto.Role;
+                customerEntity.Role = "Customer";
                 customerEntity.EmailVerifiedAt = customerFormDto.EmailVerifiedAt;
                 customerEntity.PhoneVerifiedAt = customerFormDto.PhoneVerifiedAt;
                 customerEntity.Password = customerFormDto.Password;

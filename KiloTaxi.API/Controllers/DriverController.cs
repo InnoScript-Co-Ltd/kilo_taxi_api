@@ -179,13 +179,14 @@ public class DriverController : ControllerBase
             {
                 return BadRequest(ModelState);
             }
-            var existDriver=_dbKiloTaxiContext.Drivers.FirstOrDefault(driver =>
-                driver.Phone == driverFormDto.Phone
-            );
-            if (existDriver != null)
+            var existPhoneDriver = _dbKiloTaxiContext.Drivers
+                .FirstOrDefault(driver => driver.Phone == driverFormDto.Phone);
+            
+            if (existPhoneDriver != null)
             {
-                throw new InvalidOperationException("Phone number already exists");
+                return Conflict(new { Message = "Another user already has this phone number." });
             }
+
 
             var fileUploadHelper = new FileUploadHelper(
                 _configuration,

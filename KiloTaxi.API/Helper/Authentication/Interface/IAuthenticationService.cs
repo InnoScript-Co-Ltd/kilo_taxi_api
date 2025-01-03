@@ -9,7 +9,7 @@ public interface IAuthenticationService
    
    Task<(string,string)> AuthenticateAdminAsync(string EmailOrPhone, string password);
    
-   string GenerateJwtToken(string username,string role);
+   string GenerateJwtToken(string email,string role);
 
    
    (string,string) NewRefreshToken(string email,string role,RefreshTokenDTO request);
@@ -19,4 +19,6 @@ public interface IAuthenticationService
    Task<(string,string)> AuthenticateDriverAsync(string EmailOrPhone, string password);
    bool VarifiedOpt(string token,string otp);
    ClaimsPrincipal ValidateToken(string token);
+
+   string GenerateOtp();
 }

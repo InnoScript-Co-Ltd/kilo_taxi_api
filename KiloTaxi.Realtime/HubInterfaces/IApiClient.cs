@@ -2,4 +2,5 @@
 
 public interface IApiClient
 {
+    Task ReceiveAvailityStatus(string availabilityStatus,int key);
 }

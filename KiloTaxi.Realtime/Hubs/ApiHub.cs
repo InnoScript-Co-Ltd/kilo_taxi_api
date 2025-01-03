@@ -22,7 +22,6 @@ public class ApiHub : Hub<IApiClient>, IApiHub
     }
 
     #region SignalR Events
-    
     #endregion
     public async Task SendOrder(OrderDTO orderDTO, List<DriverInfoDTO> driverInfoDTOs) 
     {

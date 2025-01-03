@@ -26,6 +26,7 @@ namespace Simulator.DriverApp
         {
             InitializeComponent();
         }
+        private DriverStatus currentStatus = DriverStatus.Offline;
 
         #region Signar Clients Events
         private void RequestVehicleLocation(string vehicleId)
@@ -80,9 +81,21 @@ namespace Simulator.DriverApp
             connection.InvokeAsync("SendSos", sosDto);
             lblLogs.Text += Environment.NewLine + "SendSos has been invoked";
         }
-        private void btnSendDriverAvalilityStatus_Click(object sender, RoutedEventArgs e)
+        private async void btnSendDriverAvalilityStatus_Click(object sender, RoutedEventArgs e)
         {
-            connection.InvokeAsync("SendDriverAvalilityStatus", chkDriverAvalilityStatus.IsChecked);
+            if (currentStatus == DriverStatus.Offline)
+            {
+                currentStatus = DriverStatus.Online;
+                btnDriverMode.Content = "DriverMode Off";
+            }
+            else
+            {
+                currentStatus = DriverStatus.Offline;
+                btnDriverMode.Content = "DriverMode On";
+            }
+
+            // Send the status to the server
+            await connection.InvokeAsync("SendDriverAvalilityStatus", currentStatus.ToString());
         }
         
         #endregion

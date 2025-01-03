@@ -12,10 +12,10 @@ namespace KiloTaxi.API.Controllers
         LoggerHelper _logHelper;
         private readonly IExtraDemandRepository _extraDemandRepository;
 
-        public ExtraDemandController(IExtraDemandRepository _extraDemandRepository)
+        public ExtraDemandController(IExtraDemandRepository extraDemandRepository)
         {
             _logHelper = LoggerHelper.Instance;
-            _extraDemandRepository = _extraDemandRepository;
+            _extraDemandRepository = extraDemandRepository;
         }
 
         // GET: api/<ExtraDemandController>

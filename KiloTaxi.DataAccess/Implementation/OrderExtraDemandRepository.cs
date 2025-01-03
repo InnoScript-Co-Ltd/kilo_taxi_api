@@ -86,23 +86,26 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public OrderExtraDemandDTO CreateOrderExtraDemand(OrderExtraDemandDTO orderExtraDemandDTO)
+        public List<OrderExtraDemandDTO> CreateOrderExtraDemand(List<OrderExtraDemandDTO> orderExtraDemandDTOList)
         {
             try
             {
                 OrderExtraDemand orderExtraDemandEntity = new OrderExtraDemand();
+                List<OrderExtraDemandDTO> orderExtraDemandDTOs = new List<OrderExtraDemandDTO>();
+                foreach (var orderExtraDemandDTO in orderExtraDemandDTOList){
                 OrderExtraDemandConverter.ConvertModelToEntity(orderExtraDemandDTO, ref orderExtraDemandEntity);
                 
                 _dbKiloTaxiContext.Add(orderExtraDemandEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 orderExtraDemandDTO.Id = orderExtraDemandEntity.Id;
-
+                orderExtraDemandDTOs.Add(orderExtraDemandDTO);
+                }
                 LoggerHelper.Instance.LogInfo(
                     $"OrderExtraDemand added successfully with Id: {orderExtraDemandEntity.Id}"
                 );
 
-                return orderExtraDemandDTO;
+                return orderExtraDemandDTOs;
             }
             catch (Exception ex)
             {

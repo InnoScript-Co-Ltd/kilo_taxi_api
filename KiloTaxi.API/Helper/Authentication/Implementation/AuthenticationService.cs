@@ -255,7 +255,11 @@ public class AuthenticationService : IAuthenticationService
     }
     return (newAccessToken, newRefreshToken);
     }
-    
+
+    public string GenerateOtp()
+    {
+        return _customerRepository.GenerateOTP();
+    }
    
 
 

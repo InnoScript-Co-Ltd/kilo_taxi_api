@@ -19,6 +19,7 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<AdminRepository>(); // If AdminRepository is not registered, add this too
 builder.Services.AddScoped<CustomerRepository>();
 builder.Services.AddScoped<DriverRepository>();
+
 // Add services to the container.
 // Configure JWT Bearer Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -85,7 +86,8 @@ builder.Services.AddSession(options =>
 builder.Services.AddSingleton(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
-    return new ApiClientHub(configuration);
+
+    return new ApiClientHub(configuration,provider);
 });
 
 builder.Services.AddControllers();

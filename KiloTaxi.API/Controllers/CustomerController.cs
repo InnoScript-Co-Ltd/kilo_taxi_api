@@ -48,20 +48,20 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<CustomerController>
         [HttpGet]
-        public ActionResult<IEnumerable<CustomerPagingDTO>> Get(
+        public ActionResult<ResponseDTO<CustomerPagingDTO>> Get(
             [FromQuery] PageSortParam pageSortParam
         )
         {
             try
             {
-                CustomerPagingDTO customerPagingDTO = _customerRepository.GetAllCustomer(
+                var responseDto = _customerRepository.GetAllCustomer(
                     pageSortParam
                 );
-                if (!customerPagingDTO.Customers.Any())
+                if (!responseDto.Payload.Customers.Any())
                 {
                     return NoContent();
                 }
-                return Ok(customerPagingDTO);
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -182,7 +182,7 @@ namespace KiloTaxi.API.Controllers
 
         // PUT api/<CustomerController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put([FromRoute] int id, CustomerFormDTO customerDTO)
+        public async Task<ActionResult<ResponseDTO<CustomerInfoDTO>>> Put([FromRoute] int id, CustomerFormDTO customerDTO)
         {
             try
             {
@@ -190,7 +190,20 @@ namespace KiloTaxi.API.Controllers
                 {
                     return BadRequest();
                 }
+                var existPhoneCustomer = _dbKiloTaxiContext.Customers
+                    .FirstOrDefault(customer => customer.Phone == customerDTO.Phone);
 
+                var existEmailCustomer = _dbKiloTaxiContext.Customers
+                    .FirstOrDefault(customer => customer.Email == customerDTO.Email);
+                if (existPhoneCustomer != null && existPhoneCustomer.Id != customerDTO.Id)
+                {
+                    return Conflict(new { Message = "Another user already has this phone number." });
+                }
+
+                if (existEmailCustomer != null && existEmailCustomer.Id != customerDTO.Id)
+                {
+                    return Conflict(new { Message = "Another user already has this email address." });
+                }
                 var fileUploadHelper = new FileUploadHelper(
                     _configuration,
                     _allowedExtensions,
@@ -222,12 +235,12 @@ namespace KiloTaxi.API.Controllers
                             return BadRequest(errorMessage);
                         }
                         var fileName = "_" + filePathProperty + resolvedFilePath;
-                        typeof(CustomerDTO)
+                        typeof(CustomerFormDTO)
                             .GetProperty(filePathProperty)
                             ?.SetValue(customerDTO, fileName);
                     }
                 }
-
+                customerDTO.Password = BCrypt.Net.BCrypt.HashPassword(customerDTO.Password);
                 // Update the customer in the repository
                 var isUpdated = _customerRepository.UpdateCustomer(customerDTO);
                 if (!isUpdated)
@@ -251,7 +264,11 @@ namespace KiloTaxi.API.Controllers
                     }
                 }
 
-                return Ok();
+                ResponseDTO<CustomerInfoDTO> responseDto = new ResponseDTO<CustomerInfoDTO>();
+                responseDto.StatusCode = Ok().StatusCode;
+                responseDto.Message="Customer Info Updated Successfully.";
+                responseDto.TimeStamp=DateTime.Now;
+                return responseDto;
             }
             catch (Exception ex)
             {
