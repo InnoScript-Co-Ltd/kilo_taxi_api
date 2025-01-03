@@ -6,7 +6,6 @@ using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
-
 namespace KiloTaxi.API.Services;
 
 public class ApiClientHub : IDisposable
@@ -15,8 +14,7 @@ public class ApiClientHub : IDisposable
     private readonly IConfiguration _configuration;
     private readonly IServiceProvider _serviceProvider;
 
-    
-    public ApiClientHub(IConfiguration configuration,IServiceProvider serviceProvider)
+    public ApiClientHub(IConfiguration configuration, IServiceProvider serviceProvider)
     {
         _configuration = configuration;
         _serviceProvider = serviceProvider;
@@ -41,21 +39,63 @@ public class ApiClientHub : IDisposable
         };
 
         // Add handlers for incoming messages
-        _hubConnection.On<string>("ReceiveTestMethod", (message) =>
-        {
-            Console.WriteLine($"Message from server: {message}");
-        });
-        _hubConnection.On<string, int>("ReceiveAvailityStatus", (availityStatus, driverId) =>
-        {
-            Console.WriteLine("status");
-            using var scope = _serviceProvider.CreateScope();
-            var driverRepository = scope.ServiceProvider.GetRequiredService<IDriverRepository>();
+        _hubConnection.On<string>(
+            "ReceiveTestMethod",
+            (message) =>
+            {
+                Console.WriteLine($"Message from server: {message}");
+            }
+        );
+        _hubConnection.On<string, int>(
+            "ReceiveAvailityStatus",
+            (availityStatus, driverId) =>
+            {
+                Console.WriteLine("status");
+                using var scope = _serviceProvider.CreateScope();
+                var driverRepository =
+                    scope.ServiceProvider.GetRequiredService<IDriverRepository>();
 
-            DriverFormDTO driverFormDto = new DriverFormDTO();
-            driverFormDto.Id = driverId;
-            driverFormDto.AvailableStatus =Enum.Parse<DriverStatus>(availityStatus);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-            driverRepository.UpdateDriverStatus(driverFormDto);
-        });
+                DriverFormDTO driverFormDto = new DriverFormDTO();
+                driverFormDto.Id = driverId;
+                driverFormDto.AvailableStatus = Enum.Parse<DriverStatus>(availityStatus);
+                driverRepository.UpdateDriverStatus(driverFormDto);
+            }
+        );
+
+        _hubConnection.On<int, double, double>(
+            "ReceiveTripLocation",
+            (orderId, latitude, longitude) =>
+            {
+                Console.WriteLine(
+                    $"OrderId: {orderId}, Latitude: {latitude}, Longitude: {longitude}"
+                );
+
+                // Create an instance of OrderRouteDTO
+                var orderRouteDTO = new OrderRouteDTO
+                {
+                    OrderId = orderId,
+                    Lat = latitude.ToString(),
+                    Long = longitude.ToString(),
+                    CreateDate = DateTime.UtcNow,
+                };
+
+                // Use the repository to update the order route
+                using var scope = _serviceProvider.CreateScope();
+                var tripRepository =
+                    scope.ServiceProvider.GetRequiredService<IOrderRouteRepository>();
+
+                bool isUpdated = tripRepository.UpdateOrderRoute(orderRouteDTO);
+
+                if (isUpdated)
+                {
+                    Console.WriteLine($"Order route updated successfully for OrderId: {orderId}");
+                }
+                else
+                {
+                    Console.WriteLine($"Failed to update order route for OrderId: {orderId}");
+                }
+            }
+        );
     }
 
     public async Task StartConnectionAsync()

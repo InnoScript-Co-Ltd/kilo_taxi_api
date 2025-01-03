@@ -6,7 +6,7 @@ namespace KiloTaxi.Realtime.HubInterfaces
     {
         Task RequestVehicleLocation(string vehicleId);
         Task RequestSos(SosDTO sosDto);
-        
+        Task ReceiveTripLocation(TripLocation tripLocation);
         Task ReceiveTestMethod(string data);
 
         Task ReceiveOrder(OrderDTO orderDTO);

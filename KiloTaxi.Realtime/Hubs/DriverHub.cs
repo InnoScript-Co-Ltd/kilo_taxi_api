@@ -8,34 +8,38 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace KiloTaxi.Realtime.Hubs
 {
-    public class DriverHub:Hub<IDriverClient>,IDriverHubHub
+    public class DriverHub : Hub<IDriverClient>, IDriverHubHub
     {
         LoggerHelper _logHelper;
         private DriverConnectionManager _driverConnectionManager;
         private DashBoardConnectionManager _dashBoardConnectionManager;
-        private readonly IHubContext<DashboardHub,IDashboardClient> _hubDashboard;
+        private readonly IHubContext<DashboardHub, IDashboardClient> _hubDashboard;
         private readonly HttpClient _httpClient;
         private readonly IHubContext<ApiHub, IApiClient> _hubApi;
 
-        public DriverHub(DriverConnectionManager driverConnectionManager, IHubContext<DashboardHub,IDashboardClient> hubDashboard,IHttpClientFactory httpClientFactory,IHubContext<ApiHub, IApiClient> hubApi)
+        public DriverHub(
+            DriverConnectionManager driverConnectionManager,
+            IHubContext<DashboardHub, IDashboardClient> hubDashboard,
+            IHttpClientFactory httpClientFactory,
+            IHubContext<ApiHub, IApiClient> hubApi
+        )
         {
             _logHelper = LoggerHelper.Instance;
             _driverConnectionManager = driverConnectionManager;
             _hubDashboard = hubDashboard;
             _httpClient = httpClientFactory.CreateClient();
             _hubApi = hubApi;
-
         }
 
         #region SignalR Events
         public override async Task OnConnectedAsync()
         {
             try
-            {                
+            {
                 // Assuming the driver app sends a unique identifier (e.g., vehicleId or driverid) when connecting
                 var key = Context.GetHttpContext().Request.Query["driverId"].ToString();
                 _driverConnectionManager.AddConnection(key, Context.ConnectionId);
-                Console.WriteLine($"Connected to"+key);
+                Console.WriteLine($"Connected to" + key);
                 _logHelper.LogDebug("Driver Client connected");
 
                 await base.OnConnectedAsync();
@@ -44,10 +48,9 @@ namespace KiloTaxi.Realtime.Hubs
             {
                 _logHelper.LogError(ex, ex?.Message);
             }
-            
         }
 
-        public override  async Task OnDisconnectedAsync(Exception? exception)
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
             try
             {
@@ -59,13 +62,13 @@ namespace KiloTaxi.Realtime.Hubs
             catch (Exception ex)
             {
                 _logHelper.LogError(ex, ex?.Message);
-            }            
+            }
         }
         #endregion
 
         #region SignalR Server Methods
-       
-        
+
+
         public async Task SendVehicleLocation(VehicleLocation vehicleLocation)
         {
             try
@@ -80,15 +83,21 @@ namespace KiloTaxi.Realtime.Hubs
                 _logHelper.LogError(ex, ex?.Message);
             }
         }
+
         public async Task SendSos(SosDTO sosDto)
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("https://localhost:7181/api/v1/Sos", sosDto);
+                var response = await _httpClient.PostAsJsonAsync(
+                    "https://localhost:7181/api/v1/Sos",
+                    sosDto
+                );
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logHelper.LogError($"Failed to create SOS: {response.StatusCode} {response.ReasonPhrase}");
+                    _logHelper.LogError(
+                        $"Failed to create SOS: {response.StatusCode} {response.ReasonPhrase}"
+                    );
                 }
 
                 // Handle the data received from the client
@@ -101,21 +110,39 @@ namespace KiloTaxi.Realtime.Hubs
                 _logHelper.LogError(ex, ex?.Message);
             }
         }
-        
+
+        public async Task SendTripLocation(TripLocation tripLocation)
+        {
+            try
+            {
+                _logHelper.LogDebug(
+                    $"SendTripLocation: OrderId = {tripLocation.OrderId}, Latitude = {tripLocation.Lat}, Longitude = {tripLocation.Long}"
+                );
+
+                // Broadcast to all clients in the specific group
+                await Clients
+                    .Group($"Order-{tripLocation.OrderId}")
+                    .ReceiveTripLocation(tripLocation);
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex, ex.Message);
+            }
+        }
+
         public async Task SendDriverAvalilityStatus(string AvailityStatus)
         {
             try
             {
                 var key = Context.GetHttpContext().Request.Query["driverId"].ToString();
 
-                await _hubApi.Clients.All.ReceiveAvailityStatus(AvailityStatus,int.Parse(key));
+                await _hubApi.Clients.All.ReceiveAvailityStatus(AvailityStatus, int.Parse(key));
             }
             catch (Exception ex)
             {
                 _logHelper.LogError(ex, ex?.Message);
             }
         }
-        
 
         #endregion
 

@@ -6,8 +6,7 @@ namespace KiloTaxi.Realtime.HubInterfaces
     {
         Task SendVehicleLocation(VehicleLocation vehicleLocation);
         Task SendSos(SosDTO sosDto);
-        
+        Task SendTripLocation(TripLocation tripLocation);
         Task SendDriverAvalilityStatus(string AvailityStatus);
-
     }
 }
