@@ -119,10 +119,8 @@ namespace KiloTaxi.Realtime.Hubs
                     $"SendTripLocation: OrderId = {tripLocation.OrderId}, Latitude = {tripLocation.Lat}, Longitude = {tripLocation.Long}"
                 );
 
-                // Broadcast to all clients in the specific group
-                await Clients
-                    .Group($"Order-{tripLocation.OrderId}")
-                    .ReceiveTripLocation(tripLocation);
+                // Broadcast to the ApiClientHub
+                await _hubApi.Clients.All.ReceiveTripLocation(tripLocation);
             }
             catch (Exception ex)
             {

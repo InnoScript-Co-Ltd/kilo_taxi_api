@@ -11,7 +11,11 @@ namespace KiloTaxi.Realtime.Hubs
         LoggerHelper _logHelper;
         private DriverConnectionManager _driverConnectionManager;
         private readonly IHubContext<DriverHub, IDriverClient> _hubDriver;
-        public DashboardHub(DriverConnectionManager driverConnectionManager, IHubContext<DriverHub,IDriverClient> hubDriver)
+
+        public DashboardHub(
+            DriverConnectionManager driverConnectionManager,
+            IHubContext<DriverHub, IDriverClient> hubDriver
+        )
         {
             _logHelper = LoggerHelper.Instance;
             _driverConnectionManager = driverConnectionManager;
@@ -23,10 +27,9 @@ namespace KiloTaxi.Realtime.Hubs
         {
             try
             {
-                //_clientConnectionService.AddClient(Context.ConnectionId);                
+                //_clientConnectionService.AddClient(Context.ConnectionId);
 
                 _logHelper.LogDebug("Dashbaord Client connected");
-
             }
             catch (Exception ex)
             {
@@ -41,7 +44,6 @@ namespace KiloTaxi.Realtime.Hubs
             {
                 //_clientConnectionService.RemoveClient(Context.ConnectionId);
                 _logHelper.LogDebug("Dashbaord Client disconnected");
-
             }
             catch (Exception ex)
             {
@@ -60,8 +62,9 @@ namespace KiloTaxi.Realtime.Hubs
 
                 if (driverConnectionId != null)
                 {
-                    await _hubDriver.Clients.Client(driverConnectionId).RequestVehicleLocation(vehicleId);
-
+                    await _hubDriver
+                        .Clients.Client(driverConnectionId)
+                        .RequestVehicleLocation(vehicleId);
                 }
                 else
                 {
