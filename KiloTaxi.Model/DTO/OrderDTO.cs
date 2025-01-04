@@ -41,15 +41,13 @@ namespace KiloTaxi.Model.DTO
         [Required]
         [Range(0.01, 10000.00)]
         public decimal? EstimatedAmount { get; set; }
-        
-        public decimal TotalAmount { get; set; }
 
+        public decimal TotalAmount { get; set; }
 
         [Required]
         public OrderStatus Status { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedDate { get; set; }
-
     }
 }

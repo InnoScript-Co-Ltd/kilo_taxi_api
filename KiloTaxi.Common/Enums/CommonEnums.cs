@@ -152,19 +152,20 @@ namespace KiloTaxi.Common.Enums
         Cancelled,
         InProgress,
         DriverAccepted,
-        Waiting
+        Waiting,
+    }
+
+    public enum PromotionType
+    {
+        FixAmount,
+        Percentage,
     }
 
     // public enum PromotionType
     // {
-    //     FixAmount,
-    //     Percentage,
+    //     AllCustomer,
+    //     SpecificCustomer,
     // }
-    public enum PromotionType
-    {
-        AllCustomer,
-        SpecificCustomer,
-    }
 
     public enum TransactionType
     {
@@ -190,7 +191,7 @@ namespace KiloTaxi.Common.Enums
     public enum PropertyStatus
     {
         CarOwner,
-        Rent
+        Rent,
     }
 
     public enum DriverMode

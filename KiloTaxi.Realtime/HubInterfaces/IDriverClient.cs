@@ -8,5 +8,12 @@ namespace KiloTaxi.Realtime.HubInterfaces
         Task RequestSos(SosDTO sosDto);
         Task ReceiveTestMethod(string data);
         Task ReceiveOrder(OrderDTO orderDTO);
+        Task ReceiveTripComplete(
+            string pickUpLocation,
+            string destinationLocation,
+            decimal actualTotalPrice,
+            decimal promoCodeDiscount,
+            List<ExtraDemandDTO> extraDemands
+        );
     }
 }
