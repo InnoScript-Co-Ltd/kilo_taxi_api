@@ -84,15 +84,15 @@ public class ApiClientHub : IDisposable
                 var tripRepository =
                     scope.ServiceProvider.GetRequiredService<IOrderRouteRepository>();
 
-                bool isUpdated = tripRepository.UpdateOrderRoute(orderRouteDTO);
+                bool isUpdated = tripRepository.CreateOrderRoute(orderRouteDTO);
 
                 if (isUpdated)
                 {
-                    Console.WriteLine($"Order route updated successfully for OrderId: {orderId}");
+                    Console.WriteLine($"Order route created successfully for OrderId: {orderId}");
                 }
                 else
                 {
-                    Console.WriteLine($"Failed to update order route for OrderId: {orderId}");
+                    Console.WriteLine($"Failed to create order route for OrderId: {orderId}");
                 }
             }
         );
