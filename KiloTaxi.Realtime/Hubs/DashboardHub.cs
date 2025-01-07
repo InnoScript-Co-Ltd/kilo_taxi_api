@@ -54,22 +54,22 @@ namespace KiloTaxi.Realtime.Hubs
         #endregion
 
         #region SignalR Server Methods
-        public async Task RequestVehicleLocation(string vehicleId)
+        public async Task RequestVehicleLocation(string driverId)
         {
             try
             {
-                var driverConnectionId = _driverConnectionManager.GetConnectionId(vehicleId);
+                var driverConnectionId = _driverConnectionManager.GetConnectionId(driverId);
 
                 if (driverConnectionId != null)
                 {
                     await _hubDriver
                         .Clients.Client(driverConnectionId)
-                        .RequestVehicleLocation(vehicleId);
+                        .RequestVehicleLocation(driverId);
                 }
                 else
                 {
                     // Optionally, handle case where mobile client is not connected
-                    _logHelper.LogDebug("Vehicle not connected: " + vehicleId);
+                    _logHelper.LogDebug("Vehicle not connected: " + driverId);
                 }
             }
             catch (Exception ex)

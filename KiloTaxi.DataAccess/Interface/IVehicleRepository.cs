@@ -6,8 +6,8 @@ namespace KiloTaxi.DataAccess.Interface;
 
 public interface IVehicleRepository
 {
-    VehicleInfoDTO VehicleRegistration(DriverFormDTO vehicleDTO);
-    bool UpdateVehicle(DriverFormDTO vehicleDTO);
+    VehicleInfoDTO VehicleRegistration(DriverCreateFormDTO vehicleDTO);
+    bool UpdateVehicle(VehicleUpdateFormDTO vehicleDTO);
     VehicleInfoDTO GetVehicleById(int id);
     
     VehiclePagingDTO GetAllVehicle(PageSortParam pageSortParam);

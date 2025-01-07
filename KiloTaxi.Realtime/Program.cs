@@ -17,9 +17,12 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.AllowAnyOrigin();
-        builder.AllowAnyMethod();
-        builder.AllowAnyHeader();
+        builder
+            .WithOrigins("http://localhost:3000") // Replace with your frontend's origin
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials(); // Allow credentials
+
     });
 });
 builder.Services.AddHttpClient();
@@ -41,14 +44,14 @@ try
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
+    // if (app.Environment.IsDevelopment())
+    // {
         app.UseSwagger();
         app.UseSwaggerUI();
-    }
+   // }
 
     app.UseHttpsRedirection();
-
+    app.UseCors();
     app.UseRouting();
     
     app.UseAuthorization();

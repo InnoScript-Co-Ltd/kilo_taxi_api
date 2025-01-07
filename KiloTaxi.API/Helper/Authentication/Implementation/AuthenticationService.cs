@@ -87,7 +87,7 @@ public class AuthenticationService : IAuthenticationService
         var accessToken = GenerateJwtToken(ValidUser.Phone, ValidUser.Role);
         var refreshToken = GenerateRefreshToken();
      
-        _driverRepository.UpdateDriver(new DriverFormDTO()
+        _driverRepository.UpdateDriver(new DriverUpdateFormDTO()
         {
             RefreshToken = refreshToken,
             RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
@@ -95,53 +95,53 @@ public class AuthenticationService : IAuthenticationService
         return (accessToken, refreshToken);       
     }
 
-    public bool VarifiedOpt(string token,string otp)
-    {
-        var principal = ValidateToken(token);
-        var email = principal.FindFirstValue(ClaimTypes.Name);
-        var role = principal.FindFirstValue(ClaimTypes.Role);
-        switch (role)
-    {
-        case "Admin":
-        Admin admin = _dbContext.Admins.SingleOrDefault(x => x.Email == email);
-        if (admin.Otp!=otp)
-        {
-            return false;
-        }
-        var adminDto=AdminConverter.ConvertEntityToModel(admin);
-        adminDto.Status =CustomerStatus.Active ;
-        _adminRepository.UpdateAdmin(adminDto);
-        return true;
-        break;
-        
-        case "Customer":
-        Customer customer = _dbContext.Customers.SingleOrDefault(x => x.Phone == email);
-        if (customer.Otp!=otp)
-        {
-            return false;
-        }
-        _customerRepository.UpdateCustomer(new CustomerFormDTO()
-        {
-            Status = CustomerStatus.Active ,
-        });
-        return true;
-        break;
-        
-        case "Driver":
-        Driver driver = _dbContext.Drivers.SingleOrDefault(x => x.Phone == email);
-        if (driver.Otp!=otp)
-        {
-            return false;
-        }
-        _driverRepository.UpdateDriver(new DriverFormDTO()
-        {
-            Status = DriverStatus.Active ,
-        });
-        return true;
-        break;
-    }
-        return false;
-    }
+    // public bool VarifiedOpt(string token,string otp)
+    // {
+    //     var principal = ValidateToken(token);
+    //     var email = principal.FindFirstValue(ClaimTypes.Name);
+    //     var role = principal.FindFirstValue(ClaimTypes.Role);
+    //     switch (role)
+    // {
+    //     case "Admin":
+    //     Admin admin = _dbContext.Admins.SingleOrDefault(x => x.Email == email);
+    //     if (admin.Otp!=otp)
+    //     {
+    //         return false;
+    //     }
+    //     var adminDto=AdminConverter.ConvertEntityToModel(admin);
+    //     adminDto.Status =CustomerStatus.Active ;
+    //     _adminRepository.UpdateAdmin(adminDto);
+    //     return true;
+    //     break;
+    //     
+    //     case "Customer":
+    //     Customer customer = _dbContext.Customers.SingleOrDefault(x => x.Phone == email);
+    //     if (customer.Otp!=otp)
+    //     {
+    //         return false;
+    //     }
+    //     _customerRepository.UpdateCustomer(new CustomerFormDTO()
+    //     {
+    //         Status = CustomerStatus.Active ,
+    //     });
+    //     return true;
+    //     break;
+    //     
+    //     case "Driver":
+    //     Driver driver = _dbContext.Drivers.SingleOrDefault(x => x.Phone == email);
+    //     if (driver.Otp!=otp)
+    //     {
+    //         return false;
+    //     }
+    //     _driverRepository.UpdateDriver(new DriverUpdateFormDTO()
+    //     {
+    //         Status = DriverStatus.Active ,
+    //     });
+    //     return true;
+    //     break;
+    // }
+    //     return false;
+    // }
     
     
     public string GenerateJwtToken(string email,string role)
@@ -246,7 +246,7 @@ public class AuthenticationService : IAuthenticationService
         newRefreshToken = GenerateRefreshToken();
         driver.RefreshToken = newRefreshToken;
         driver.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-        _driverRepository.UpdateDriver(new DriverFormDTO()
+        _driverRepository.UpdateDriver(new DriverUpdateFormDTO()
         {
             RefreshToken = newRefreshToken,
             RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),

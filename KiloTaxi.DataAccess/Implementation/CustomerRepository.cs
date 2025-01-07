@@ -183,13 +183,33 @@ namespace KiloTaxi.DataAccess.Implementation
             try
             {
                 Customer customerEntity = new Customer();
-                customerDTO.Status = CustomerStatus.Pending;
-                customerDTO.KycStatus = KycStatus.Pending;
-                customerDTO.Gender=GenderType.Undefined;
+                customerDTO.Password = BCrypt.Net.BCrypt.HashPassword(customerDTO.Password);
                 CustomerConverter.ConvertModelToEntity(customerDTO, ref customerEntity);
 
                 _dbKiloTaxiContext.Add(customerEntity);
                 _dbKiloTaxiContext.SaveChanges();
+                customerDTO.Id = customerEntity.Id;
+                
+                 var filePaths = new List<(string PropertyName, string FilePath)>
+                 {
+                     (nameof(customerEntity.Profile), customerEntity.Profile)
+                 };
+                 foreach (var (propertyName, filePath) in filePaths)
+                 {
+                     if (!string.IsNullOrEmpty(filePath) && !filePath.Contains("default.png"))
+                     {
+                         switch (propertyName)
+                         {
+                             case nameof(customerEntity.Profile):
+                                 customerEntity.Profile = $"customer/{customerDTO.Id}{filePath}";
+                                 break;
+                             default:
+                                 break;
+                         }
+                     }
+                 }
+                
+                 _dbKiloTaxiContext.SaveChanges();
                var customerInfoDto = CustomerConverter.ConvertEntityToModel(customerEntity, _mediaHostUrl);
 
                 LoggerHelper.Instance.LogInfo(

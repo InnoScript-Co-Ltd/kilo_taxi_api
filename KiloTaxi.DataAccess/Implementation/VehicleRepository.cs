@@ -28,7 +28,7 @@ public class VehicleRepository : IVehicleRepository
         _mediaHostUrl = mediaSettings.Value.MediaHostUrl;
     }
 
-    public VehicleInfoDTO VehicleRegistration(DriverFormDTO vehicleDTO)
+    public VehicleInfoDTO VehicleRegistration(DriverCreateFormDTO vehicleDTO)
     {
         try
         {
@@ -70,13 +70,13 @@ public class VehicleRepository : IVehicleRepository
         }
     }
 
-    public bool UpdateVehicle(DriverFormDTO vehicleDTO)
+    public bool UpdateVehicle(VehicleUpdateFormDTO vehicleUpdateFormDTO)
     {
         bool result = false;
         try
         {
             var vehicleEntity = _dbKiloTaxiContext.Vehicles.FirstOrDefault(v =>
-                v.Id == vehicleDTO.Id
+                v.Id == vehicleUpdateFormDTO.Id
             );
             if (vehicleEntity == null)
             {
@@ -86,33 +86,33 @@ public class VehicleRepository : IVehicleRepository
             // List of image properties to update
             var imageProperties = new List<(string vehicleDTOProperty, string vehicleEntityFile)>
             {
-                (nameof(vehicleDTO.BusinessLicenseImage), vehicleEntity.BusinessLicenseImage),
-                (nameof(vehicleDTO.VehicleLicenseFront), vehicleEntity.VehicleLicenseFront),
-                (nameof(vehicleDTO.VehicleLicenseBack), vehicleEntity.VehicleLicenseBack),
+                (nameof(vehicleUpdateFormDTO.BusinessLicenseImage), vehicleEntity.BusinessLicenseImage),
+                (nameof(vehicleUpdateFormDTO.VehicleLicenseFront), vehicleEntity.VehicleLicenseFront),
+                (nameof(vehicleUpdateFormDTO.VehicleLicenseBack), vehicleEntity.VehicleLicenseBack),
             };
 
             // Loop through image properties and update paths if necessary
             foreach (var (vehicleDTOProperty, vehicleEntityFile) in imageProperties)
             {
-                var dtoValue = typeof(VehicleDTO)
+                var dtoValue = typeof(VehicleUpdateFormDTO)
                     .GetProperty(vehicleDTOProperty)
-                    ?.GetValue(vehicleDTO)
+                    ?.GetValue(vehicleUpdateFormDTO)
                     ?.ToString();
                 if (string.IsNullOrEmpty(dtoValue))
                 {
-                    typeof(VehicleDTO)
+                    typeof(VehicleUpdateFormDTO)
                         .GetProperty(vehicleDTOProperty)
-                        ?.SetValue(vehicleDTO, vehicleEntityFile);
+                        ?.SetValue(vehicleUpdateFormDTO, vehicleEntityFile);
                 }
                 else if (dtoValue != vehicleEntityFile)
                 {
                     typeof(VehicleDTO)
                         .GetProperty(vehicleDTOProperty)
-                        ?.SetValue(vehicleDTO, $"vehicle/{vehicleDTO.Id}{dtoValue}");
+                        ?.SetValue(vehicleUpdateFormDTO, $"vehicle/{vehicleUpdateFormDTO.Id}{dtoValue}");
                 }
             }
 
-            VehicleConverter.ConvertModelToEntity(vehicleDTO, ref vehicleEntity);
+            VehicleConverter.UpdateConvertModelToEntity(vehicleUpdateFormDTO, ref vehicleEntity);
             _dbKiloTaxiContext.SaveChanges();
             result = true;
             return result;
@@ -121,7 +121,7 @@ public class VehicleRepository : IVehicleRepository
         {
             LoggerHelper.Instance.LogError(
                 ex,
-                $"Error occurred while updating vehicle with Id: {vehicleDTO.Id}"
+                $"Error occurred while updating vehicle with Id: {vehicleUpdateFormDTO.Id}"
             );
             throw;
         }

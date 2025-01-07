@@ -118,11 +118,11 @@ public class VehicleController:ControllerBase
     //     }
     // }
         [HttpPut("{id}")]
-    public async Task<IActionResult> Put([FromRoute] int id, DriverFormDTO vehicleDTO)
+    public async Task<IActionResult> Put([FromRoute] int id, VehicleUpdateFormDTO vehicleUpdateFormDTO)
     {
         try
         {
-            if (id != vehicleDTO.Id)
+            if (id != vehicleUpdateFormDTO.Id)
             {
                 return BadRequest();
             }
@@ -130,9 +130,9 @@ public class VehicleController:ControllerBase
             var fileUploadHelper = new FileUploadHelper(_configuration, _allowedExtensions, _allowedMimeTypes, _maxFileSize);
             var filesToProcess = new List<(IFormFile file, string filePathProperty)>
             {
-                (vehicleDTO.File_BusinessLicenseImage, nameof(vehicleDTO.BusinessLicenseImage)),
-                (vehicleDTO.File_VehicleLicenseFront, nameof(vehicleDTO.VehicleLicenseFront)),
-                (vehicleDTO.File_VehicleLicenseBack, nameof(vehicleDTO.VehicleLicenseBack))
+                (vehicleUpdateFormDTO.File_BusinessLicenseImage, nameof(vehicleUpdateFormDTO.BusinessLicenseImage)),
+                (vehicleUpdateFormDTO.File_VehicleLicenseFront, nameof(vehicleUpdateFormDTO.VehicleLicenseFront)),
+                (vehicleUpdateFormDTO.File_VehicleLicenseBack, nameof(vehicleUpdateFormDTO.VehicleLicenseBack))
             };
 
             // Validate and update file paths
@@ -145,10 +145,10 @@ public class VehicleController:ControllerBase
                         return BadRequest(errorMessage);
                     }
                     var fileName = "_" + filePathProperty + resolvedFilePath;
-                    typeof(VehicleDTO).GetProperty(filePathProperty)?.SetValue(vehicleDTO, fileName);
+                    typeof(VehicleUpdateFormDTO).GetProperty(filePathProperty)?.SetValue(vehicleUpdateFormDTO, fileName);
                 }
             }
-            var isUpdated = _vehicleRepository.UpdateVehicle(vehicleDTO);
+            var isUpdated = _vehicleRepository.UpdateVehicle(vehicleUpdateFormDTO);
             if (!isUpdated)
             {
                 return NotFound();
@@ -158,7 +158,7 @@ public class VehicleController:ControllerBase
                 if (file != null && file.Length > 0)
                 {
                     var fileExtension = Path.GetExtension(file.FileName);
-                    var fileName=vehicleDTO.Id.ToString()+"_"+filePathProperty;
+                    var fileName=vehicleUpdateFormDTO.Id.ToString()+"_"+filePathProperty;
                     await fileUploadHelper.SaveFileAsync(file, flagDomain,fileName, fileExtension);
                 }
             }

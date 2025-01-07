@@ -17,7 +17,7 @@ public interface IAuthenticationService
    Task<(string,string)> AuthenticateCustomerAsync(string EmailOrPhone,string password);
    
    Task<(string,string)> AuthenticateDriverAsync(string EmailOrPhone, string password);
-   bool VarifiedOpt(string token,string otp);
+   // bool VarifiedOpt(string token,string otp);
    ClaimsPrincipal ValidateToken(string token);
 
    string GenerateOtp();

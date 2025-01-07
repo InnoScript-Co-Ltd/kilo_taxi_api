@@ -20,7 +20,7 @@ namespace KiloTaxi.EntityFramework.EntityModel {
         public Decimal? EstimatedAmount { get; set; }
         
         [Column(TypeName = "decimal(18,2)")]
-        public Decimal TotalAmount { get; set; }
+        public Decimal? TotalAmount { get; set; }
         
         [Required]
         public string Status { get; set; }
@@ -50,11 +50,11 @@ namespace KiloTaxi.EntityFramework.EntityModel {
         public virtual Customer Customer { get; set; }
         
         [ForeignKey("Driver")]
-        public int DriverId { get; set; }
+        public int? DriverId { get; set; }
         public virtual Driver Driver { get; set; }
         
         [ForeignKey("Vehicle")]
-        public int VehicleId { get; set; }
+        public int? VehicleId { get; set; }
         public virtual Vehicle Vehicle { get; set; }
         
         [ForeignKey("ScheduleBooking")]

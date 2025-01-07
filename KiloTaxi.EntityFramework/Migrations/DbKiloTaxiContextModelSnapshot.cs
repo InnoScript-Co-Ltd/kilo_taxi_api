@@ -465,7 +465,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DriverId")
+                    b.Property<int?>("DriverId")
                         .HasColumnType("int");
 
                     b.Property<decimal?>("EstimatedAmount")
@@ -491,10 +491,10 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("TotalAmount")
+                    b.Property<decimal?>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("VehicleId")
+                    b.Property<int?>("VehicleId")
                         .HasColumnType("int");
 
                     b.Property<int?>("WalletTransactionId")
@@ -1236,9 +1236,7 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     b.HasOne("KiloTaxi.EntityFramework.EntityModel.Driver", "Driver")
                         .WithMany()
-                        .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DriverId");
 
                     b.HasOne("KiloTaxi.EntityFramework.EntityModel.ScheduleBooking", "ScheduleBooking")
                         .WithMany()
@@ -1246,9 +1244,7 @@ namespace KiloTaxi.EntityFramework.Migrations
 
                     b.HasOne("KiloTaxi.EntityFramework.EntityModel.Vehicle", "Vehicle")
                         .WithMany()
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("VehicleId");
 
                     b.HasOne("KiloTaxi.EntityFramework.EntityModel.WalletTransaction", "WalletTransaction")
                         .WithMany()

@@ -80,7 +80,7 @@ namespace KiloTaxi.API.Controllers
         // POST api/<AdminController>
         [HttpPost]
         [AllowAnonymous]
-        public  ActionResult<AdminDTO> Post([FromForm]AdminDTO adminDTO)
+        public  ActionResult<AdminDTO> Post(AdminDTO adminDTO)
         {
             try
             {

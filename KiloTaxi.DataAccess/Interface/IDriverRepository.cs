@@ -6,8 +6,8 @@ namespace KiloTaxi.DataAccess.Interface;
 
 public interface IDriverRepository
 {
-    DriverInfoDTO DriverRegistration(DriverFormDTO driverFormDto);
-    bool UpdateDriver(DriverFormDTO driverDTO);
+    DriverInfoDTO DriverRegistration(DriverCreateFormDTO driverCreateFormDto);
+    bool UpdateDriver(DriverUpdateFormDTO driverUpdateFormDto);
     DriverInfoDTO GetDriverById(int id);
     
     DriverPagingDTO GetAllDrivers(PageSortParam pageSortParam);
@@ -17,5 +17,5 @@ public interface IDriverRepository
     Task<DriverInfoDTO> ValidateDriverCredentials(string email, string password);
     List<DriverInfoDTO> SearchNearbyOnlineDriver();
 
-    void UpdateDriverStatus(DriverFormDTO driverFormDto);
+    void UpdateDriverStatus(DriverCreateFormDTO driverCreateFormDto);
 }

@@ -13,9 +13,9 @@ public class TravelRateDTO
     
     public int CityId { get; set; }
     
-    public string CityName { get; set; }
+    public string? CityName { get; set; }
     
     public int VehicleTypeId { get; set; }
     
-    public string VehicleTypeName { get; set; }
+    public string? VehicleTypeName { get; set; }
 }

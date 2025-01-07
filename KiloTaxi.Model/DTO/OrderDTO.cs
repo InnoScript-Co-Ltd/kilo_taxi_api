@@ -30,11 +30,9 @@ namespace KiloTaxi.Model.DTO
         [Required]
         public int CustomerId { get; set; }
 
-        [Required]
-        public int DriverId { get; set; }
+        public int? DriverId { get; set; }
 
-        [Required]
-        public int VehicleId { get; set; }
+        public int? VehicleId { get; set; }
 
         public int? ScheduleBookingId { get; set; }
 
@@ -42,7 +40,7 @@ namespace KiloTaxi.Model.DTO
         [Range(0.01, 10000.00)]
         public decimal? EstimatedAmount { get; set; }
         
-        public decimal TotalAmount { get; set; }
+        public decimal? TotalAmount { get; set; }
 
 
         [Required]

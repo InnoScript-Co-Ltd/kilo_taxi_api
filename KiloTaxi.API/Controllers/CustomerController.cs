@@ -7,6 +7,7 @@ using KiloTaxi.Model.DTO;
 using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace KiloTaxi.API.Controllers
 {
@@ -97,7 +98,7 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<CustomerController>
         [HttpPost]
-        public async Task<ActionResult<CustomerInfoDTO>> Post(CustomerFormDTO customerDTO)
+        public async Task<ActionResult<ResponseDTO<CustomerInfoDTO>>> Post(CustomerFormDTO customerDTO)
         {
             try
             {
@@ -141,12 +142,12 @@ namespace KiloTaxi.API.Controllers
                     }
 
                     var fileName = "_" + filePathProperty + resolvedFilePath;
-                    typeof(CustomerDTO)
+                    typeof(CustomerFormDTO)
                         .GetProperty(filePathProperty)
                         ?.SetValue(customerDTO, fileName);
                 }
                 var createCustomer = _customerRepository.AddCustomer(customerDTO);
-
+            
                 foreach (var (file, filePathProperty) in filesToProcess)
                 {
                     if (file != null && file.Length > 0)
@@ -171,13 +172,31 @@ namespace KiloTaxi.API.Controllers
                         );
                     }
                 }
-                return CreatedAtAction(nameof(Get), new { id = createCustomer.Id }, createCustomer);
+
+                ResponseDTO<CustomerInfoDTO> responseDto = new ResponseDTO<CustomerInfoDTO>();
+                responseDto.StatusCode = 201;
+                responseDto.Message = "Customer created successfully";
+                responseDto.Payload = createCustomer;
+                return responseDto ;
             }
             catch (Exception ex)
             {
                 _logHelper.LogError(ex);
                 return StatusCode(500, "An error occurred while processing your request.");
             }
+        }
+        [HttpPost("CustomerRegister")]
+        public async Task<ActionResult<ResponseDTO<OtpInfo>>> CustomerRegister([FromBody] CustomerFormDTO customerFormDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            ResponseDTO<OtpInfo> response= await _customerRepository.FindCustomerAndGenerateOtp(customerFormDto);
+            var unVerifiedUser = JsonConvert.SerializeObject(response);
+            HttpContext.Session.SetString("UnVerifiedUser"+customerFormDto.Phone, unVerifiedUser);
+            response.Payload = null;
+            return response;
         }
 
         // PUT api/<CustomerController>/5

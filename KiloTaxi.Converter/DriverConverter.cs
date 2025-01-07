@@ -28,6 +28,7 @@ public static class DriverConverter
             Dob = driverEntity.Dob,
             Nrc = driverEntity.Nrc,
             Role = driverEntity.Role,
+            Password=driverEntity.Password,
             PropertyStatus =Enum.Parse<PropertyStatus>(driverEntity.PropertyStatus),
             ReferralMobileNumber= driverEntity.ReferralMobileNumber,
             DriverLicense = driverEntity.DriverLicense,
@@ -37,7 +38,7 @@ public static class DriverConverter
             State = driverEntity.State,
             City = driverEntity.City,
             TownShip = driverEntity.TownShip,
-            AvailableStatus=string.IsNullOrEmpty(driverEntity.Status ) ? DriverStatus.Online : Enum.Parse<DriverStatus>(driverEntity.Status),
+            AvailableStatus=string.IsNullOrEmpty(driverEntity.AvabilityStatus ) ? DriverStatus.Online : Enum.Parse<DriverStatus>(driverEntity.AvabilityStatus),
             Gender = string.IsNullOrEmpty(driverEntity.Gender ) ? GenderType.Undefined : Enum.Parse<GenderType>(driverEntity.Gender),
             Status = string.IsNullOrEmpty(driverEntity.Status ) ? DriverStatus.Pending : Enum.Parse<DriverStatus>(driverEntity.Status),
             KycStatus = string.IsNullOrEmpty(driverEntity.KycStatus ) ? KycStatus.Pending : Enum.Parse<KycStatus>(driverEntity.KycStatus)
@@ -45,45 +46,89 @@ public static class DriverConverter
 
     }
 
-    public static void  ConvertModelToEntity(DriverFormDTO driverFormDto, ref Driver driverEntity)
+    public static void  ConvertModelToEntity(DriverCreateFormDTO driverCreateFormDto, ref Driver driverEntity)
     {
         try
         {
-            if (driverFormDto == null)
+            if (driverCreateFormDto == null)
             {
-                LoggerHelper.Instance.LogError(new ArgumentNullException(nameof(driverFormDto)), "DriverDTO model is null");
-                throw new ArgumentNullException(nameof(driverFormDto), "Source DriverDTO model cannot be null");
+                LoggerHelper.Instance.LogError(new ArgumentNullException(nameof(driverCreateFormDto)), "DriverDTO model is null");
+                throw new ArgumentNullException(nameof(driverCreateFormDto), "Source DriverDTO model cannot be null");
             }
 
-            driverEntity.Id = driverFormDto.Id;
-            driverEntity.Name = driverFormDto.Name;
-            driverEntity.Profile = driverFormDto.Profile;
-            driverEntity.MobilePrefix = driverFormDto.MobilePrefix;
-            driverEntity.Phone = driverFormDto.Phone;
-            driverEntity.Email = driverFormDto.Email;
-            driverEntity.Dob = driverFormDto.Dob;
-            driverEntity.Nrc = driverFormDto.Nrc;
-            driverEntity.RefreshToken = driverFormDto.RefreshToken;
-            driverEntity.RefreshTokenExpiryTime = driverFormDto.RefreshTokenExpiryTime;
-            driverEntity.Otp = driverFormDto.Otp;
-            driverEntity.Role = driverFormDto.Role;
+            driverEntity.Id = driverCreateFormDto.Id;
+            driverEntity.Name = driverCreateFormDto.Name;
+            driverEntity.Profile = driverCreateFormDto.Profile;
+            driverEntity.MobilePrefix = driverCreateFormDto.MobilePrefix;
+            driverEntity.Phone = driverCreateFormDto.Phone;
+            driverEntity.Email = driverCreateFormDto.Email;
+            driverEntity.Dob = driverCreateFormDto.Dob;
+            driverEntity.Nrc = driverCreateFormDto.Nrc;
+            driverEntity.RefreshToken = driverCreateFormDto.RefreshToken;
+            driverEntity.RefreshTokenExpiryTime = driverCreateFormDto.RefreshTokenExpiryTime;
+            driverEntity.Otp = driverCreateFormDto.Otp;
+            driverEntity.Role = driverCreateFormDto.Role;
             
-            driverEntity.DriverLicense = driverFormDto.DriverLicense;
-            driverEntity.DriverImageLicenseFront = driverFormDto.DriverImageLicenseFront;
-            driverEntity.DriverImageLicenseBack = driverFormDto.DriverImageLicenseBack;
-            driverEntity.EmailVerifiedAt = driverFormDto.EmailVerifiedAt;
-            driverEntity.PhoneVerifiedAt = driverFormDto.PhoneVerifiedAt;
-            driverEntity.Password = driverFormDto.Password;
-            driverEntity.Address = driverFormDto.Address;
-            driverEntity.State = driverFormDto.State;
-            driverEntity.City = driverFormDto.City;
-            driverEntity.TownShip = driverFormDto.TownShip;
-            driverEntity.Gender = driverFormDto.Gender.ToString();
-            driverEntity.PropertyStatus=driverFormDto.PropertyStatus.ToString();
-            driverEntity.ReferralMobileNumber = driverFormDto.ReferralMobileNumber;
-            driverEntity.AvabilityStatus=driverFormDto.AvailableStatus.ToString();
-            driverEntity.Status = driverFormDto.Status.ToString();
-            driverEntity.KycStatus = driverFormDto.KycStatus.ToString();
+            driverEntity.DriverLicense = driverCreateFormDto.DriverLicense;
+            driverEntity.DriverImageLicenseFront = driverCreateFormDto.DriverImageLicenseFront;
+            driverEntity.DriverImageLicenseBack = driverCreateFormDto.DriverImageLicenseBack;
+            driverEntity.EmailVerifiedAt = driverCreateFormDto.EmailVerifiedAt;
+            driverEntity.PhoneVerifiedAt = driverCreateFormDto.PhoneVerifiedAt;
+            driverEntity.Password = driverCreateFormDto.Password;
+            driverEntity.Address = driverCreateFormDto.Address;
+            driverEntity.State = driverCreateFormDto.State;
+            driverEntity.City = driverCreateFormDto.City;
+            driverEntity.TownShip = driverCreateFormDto.TownShip;
+            driverEntity.Gender = driverCreateFormDto.Gender.ToString();
+            driverEntity.PropertyStatus=driverCreateFormDto.PropertyStatus.ToString();
+            driverEntity.ReferralMobileNumber = driverCreateFormDto.ReferralMobileNumber;
+            driverEntity.AvabilityStatus=driverCreateFormDto.AvailableStatus.ToString();
+            driverEntity.Status = driverCreateFormDto.Status.ToString();
+            driverEntity.KycStatus = driverCreateFormDto.KycStatus.ToString();
+
+        }
+        catch (ArgumentException ex)
+        {
+            LoggerHelper.Instance.LogError(ex, "Argument exception during model-to-entity conversion");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            LoggerHelper.Instance.LogError(ex, "Unexpected error during model-to-entity conversion");
+            throw;
+        }
+    }   
+    
+     public static void  UpdateConvertModelToEntity(DriverUpdateFormDTO driverUpdateFormDto, ref Driver driverEntity)
+    {
+        try
+        {
+            if (driverUpdateFormDto == null)
+            {
+                LoggerHelper.Instance.LogError(new ArgumentNullException(nameof(driverUpdateFormDto)), "DriverDTO model is null");
+                throw new ArgumentNullException(nameof(driverUpdateFormDto), "Source DriverDTO model cannot be null");
+            }
+
+            driverEntity.Id = driverUpdateFormDto.Id;
+            driverEntity.Name = driverUpdateFormDto.Name;
+            driverEntity.Profile = driverUpdateFormDto.Profile;
+            driverEntity.Phone = driverUpdateFormDto.Phone;
+            driverEntity.Dob = driverUpdateFormDto.Dob;
+            driverEntity.Nrc = driverUpdateFormDto.Nrc;
+            driverEntity.DriverLicense = driverUpdateFormDto.DriverLicense;
+            driverEntity.DriverImageLicenseFront = driverUpdateFormDto.DriverImageLicenseFront;
+            driverEntity.DriverImageLicenseBack = driverUpdateFormDto.DriverImageLicenseBack;
+            driverEntity.Password = driverUpdateFormDto.Password;
+            driverEntity.Address = driverUpdateFormDto.Address;
+            driverEntity.State = driverUpdateFormDto.State;
+            driverEntity.City = driverUpdateFormDto.City;
+            driverEntity.TownShip = driverUpdateFormDto.TownShip;
+            driverEntity.Gender = driverUpdateFormDto.Gender.ToString();
+            driverEntity.PropertyStatus=driverUpdateFormDto.PropertyStatus.ToString();
+            driverEntity.ReferralMobileNumber = driverUpdateFormDto.ReferralMobileNumber;
+            driverEntity.AvabilityStatus=driverUpdateFormDto.AvailableStatus.ToString();
+            driverEntity.Status = driverUpdateFormDto.Status.ToString();
+            driverEntity.KycStatus = driverUpdateFormDto.KycStatus.ToString();
 
         }
         catch (ArgumentException ex)

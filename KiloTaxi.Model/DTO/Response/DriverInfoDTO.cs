@@ -14,6 +14,8 @@ public class DriverInfoDTO
     
     public string? Profile { get; set; }
     
+    public string Password { get; set; }
+    
     public string MobilePrefix { get; set; }
     
     public string Email { get; set; }

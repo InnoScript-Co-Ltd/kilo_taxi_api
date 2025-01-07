@@ -129,17 +129,17 @@ public class DriverRepository : IDriverRepository
         }
     }
 
-    public DriverInfoDTO DriverRegistration(DriverFormDTO driverDTO)
+    public DriverInfoDTO DriverRegistration(DriverCreateFormDTO driverCreateDto)
     {
         try
         {
             Driver driverEntity = new Driver();
-            driverDTO.Password = BCrypt.Net.BCrypt.HashPassword(driverDTO.Password);
-            DriverConverter.ConvertModelToEntity(driverDTO, ref driverEntity);
+            driverCreateDto.Password = BCrypt.Net.BCrypt.HashPassword(driverCreateDto.Password);
+            DriverConverter.ConvertModelToEntity(driverCreateDto, ref driverEntity);
 
             _dbKiloTaxiContext.Add(driverEntity);
             _dbKiloTaxiContext.SaveChanges();
-            driverDTO.Id = driverEntity.Id;
+            driverCreateDto.Id = driverEntity.Id;
             var filePaths = new List<(string PropertyName, string FilePath)>
             {
                 (nameof(driverEntity.DriverImageLicenseFront), driverEntity.DriverImageLicenseFront),
@@ -151,11 +151,11 @@ public class DriverRepository : IDriverRepository
                 if (!filePath.Contains("default.png"))
                 {
                      if (propertyName == nameof(driverEntity.DriverImageLicenseFront))
-                        driverEntity.DriverImageLicenseFront = $"driver/{driverDTO.Id}{filePath}";
+                        driverEntity.DriverImageLicenseFront = $"driver/{driverCreateDto.Id}{filePath}";
                     else if (propertyName == nameof(driverEntity.DriverImageLicenseBack))
-                        driverEntity.DriverImageLicenseBack = $"driver/{driverDTO.Id}{filePath}";
+                        driverEntity.DriverImageLicenseBack = $"driver/{driverCreateDto.Id}{filePath}";
                     else if (propertyName == nameof(driverEntity.Profile))
-                        driverEntity.Profile = $"driver/{driverDTO.Id}{filePath}";
+                        driverEntity.Profile = $"driver/{driverCreateDto.Id}{filePath}";
                 }
             }
 
@@ -171,12 +171,12 @@ public class DriverRepository : IDriverRepository
         }
     }
 
-    public bool UpdateDriver(DriverFormDTO driverDTO)
+    public bool UpdateDriver(DriverUpdateFormDTO driverUpdateFormDto)
     {
         bool result = false;
         try
         {
-            var driverEntity = _dbKiloTaxiContext.Drivers.FirstOrDefault(d => d.Id == driverDTO.Id);
+            var driverEntity = _dbKiloTaxiContext.Drivers.FirstOrDefault(d => d.Id == driverUpdateFormDto.Id);
             if (driverEntity == null)
             {
                 return result;
@@ -186,33 +186,33 @@ public class DriverRepository : IDriverRepository
             {
                 // (nameof(driverDTO.NrcImageFront), driverEntity.NrcImageFront),
                 // (nameof(driverDTO.NrcImageBack), driverEntity.NrcImageBack),
-                (nameof(driverDTO.DriverImageLicenseFront), driverEntity.DriverImageLicenseFront),
-                (nameof(driverDTO.DriverImageLicenseBack), driverEntity.DriverImageLicenseBack),
-                (nameof(driverDTO.Profile), driverEntity.Profile),
+                (nameof(driverUpdateFormDto.DriverImageLicenseFront), driverEntity.DriverImageLicenseFront),
+                (nameof(driverUpdateFormDto.DriverImageLicenseBack), driverEntity.DriverImageLicenseBack),
+                (nameof(driverUpdateFormDto.Profile), driverEntity.Profile),
             };
 
             // Loop through image properties and update paths if necessary
             foreach (var (driverDTOProperty, driverEntityFile) in imageProperties)
             {
-                var dtoValue = typeof(DriverFormDTO)
+                var dtoValue = typeof(DriverUpdateFormDTO)
                     .GetProperty(driverDTOProperty)
-                    ?.GetValue(driverDTO)
+                    ?.GetValue(driverUpdateFormDto)
                     ?.ToString();
                 if (string.IsNullOrEmpty(dtoValue))
                 {
-                    typeof(DriverFormDTO)
+                    typeof(DriverUpdateFormDTO)
                         .GetProperty(driverDTOProperty)
-                        ?.SetValue(driverDTO, driverEntityFile);
+                        ?.SetValue(driverUpdateFormDto, driverEntityFile);
                 }
                 else if (dtoValue != driverEntityFile)
                 {
-                    typeof(DriverFormDTO)
+                    typeof(DriverUpdateFormDTO)
                         .GetProperty(driverDTOProperty)
-                        ?.SetValue(driverDTO, $"driver/{driverDTO.Id}{dtoValue}");
+                        ?.SetValue(driverUpdateFormDto, $"driver/{driverUpdateFormDto.Id}{dtoValue}");
                 }
             }
 
-            DriverConverter.ConvertModelToEntity(driverDTO, ref driverEntity);
+            DriverConverter.UpdateConvertModelToEntity(driverUpdateFormDto, ref driverEntity);
             _dbKiloTaxiContext.SaveChanges();
             result = true;
             return result;
@@ -221,25 +221,25 @@ public class DriverRepository : IDriverRepository
         {
             LoggerHelper.Instance.LogError(
                 ex,
-                $"Error occurred while updating driver with Id: {driverDTO.Id}"
+                $"Error occurred while updating driver with Id: {driverUpdateFormDto.Id}"
             );
             throw;
         }
     }
     
-        public void UpdateDriverStatus(DriverFormDTO driverDTO)
+        public void UpdateDriverStatus(DriverCreateFormDTO driverCreateDto)
     {
         try
         {
-            var driverEntity = _dbKiloTaxiContext.Drivers.FirstOrDefault(d => d.Id == driverDTO.Id);
-            driverEntity.AvabilityStatus = driverDTO.AvailableStatus.ToString();
+            var driverEntity = _dbKiloTaxiContext.Drivers.FirstOrDefault(d => d.Id == driverCreateDto.Id);
+            driverEntity.AvabilityStatus = driverCreateDto.AvailableStatus.ToString();
             _dbKiloTaxiContext.SaveChanges();
         }
         catch (Exception ex)
         {
             LoggerHelper.Instance.LogError(
                 ex,
-                $"Error occurred while updating driver status with Id: {driverDTO.Id}"
+                $"Error occurred while updating driver status with Id: {driverCreateDto.Id}"
             );
             throw;
         }

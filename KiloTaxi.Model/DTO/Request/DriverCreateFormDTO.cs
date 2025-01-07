@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace KiloTaxi.Model.DTO.Request;
 
-public class DriverFormDTO
+public class DriverCreateFormDTO
 {
     public int Id { get; set; }
     

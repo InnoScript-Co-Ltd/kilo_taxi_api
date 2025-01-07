@@ -102,19 +102,7 @@ public class AuthController : ControllerBase
     }
     
 
-    [HttpPost("CustomerRegister")]
-    public async Task<ActionResult<ResponseDTO<OtpInfo>>> CustomerRegister([FromBody] CustomerFormDTO customerFormDto)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        ResponseDTO<OtpInfo> response= await _customerRepository.FindCustomerAndGenerateOtp(customerFormDto);
-        var unVerifiedUser = JsonConvert.SerializeObject(response);
-        HttpContext.Session.SetString("UnVerifiedUser"+customerFormDto.Phone, unVerifiedUser);
-        response.Payload = null;
-       return response;
-    }
+   
     
     
     [HttpPost("Otp-verify")]

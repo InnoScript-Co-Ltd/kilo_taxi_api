@@ -29,6 +29,8 @@
     <Compile Remove="Migrations\20241111083012_CreateTable_Driver_Vehicle.Designer.cs" />
     <Compile Remove="Migrations\20241111083012_CreateTable_Driver_Vehicle.cs" />
     <Compile Remove="Migrations\20241112031922_CreateTable_Customer_Promotion_Review.cs" />
+    <Compile Remove="Migrations\20241229173331_2_Added_Tables_Init_1.cs" />
+    <Compile Remove="Migrations\20241229173331_2_Added_Tables_Init_1.Designer.cs" />
   </ItemGroup>
 
 </Project>

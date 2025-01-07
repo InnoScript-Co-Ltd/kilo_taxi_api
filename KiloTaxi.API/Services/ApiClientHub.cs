@@ -55,10 +55,10 @@ public class ApiClientHub : IDisposable
                 var driverRepository =
                     scope.ServiceProvider.GetRequiredService<IDriverRepository>();
 
-                DriverFormDTO driverFormDto = new DriverFormDTO();
-                driverFormDto.Id = driverId;
-                driverFormDto.AvailableStatus = Enum.Parse<DriverStatus>(availityStatus);
-                driverRepository.UpdateDriverStatus(driverFormDto);
+                DriverCreateFormDTO driverCreateFormDto = new DriverCreateFormDTO();
+                driverCreateFormDto.Id = driverId;
+                driverCreateFormDto.AvailableStatus = Enum.Parse<DriverStatus>(availityStatus);
+                driverRepository.UpdateDriverStatus(driverCreateFormDto);
             }
         );
 

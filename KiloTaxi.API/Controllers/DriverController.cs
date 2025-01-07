@@ -171,7 +171,7 @@ public class DriverController : ControllerBase
     // }
     [HttpPost("DriverRegister")]
     [AllowAnonymous]
-    public async Task<ActionResult<ResponseDTO<DriverInfoDTO>>> DriverRegister(DriverFormDTO driverFormDto)
+    public async Task<ActionResult<ResponseDTO<DriverInfoDTO>>> DriverRegister(DriverCreateFormDTO driverCreateFormDto)
     {
         try
         {
@@ -180,7 +180,7 @@ public class DriverController : ControllerBase
                 return BadRequest(ModelState);
             }
             var existPhoneDriver = _dbKiloTaxiContext.Drivers
-                .FirstOrDefault(driver => driver.Phone == driverFormDto.Phone);
+                .FirstOrDefault(driver => driver.Phone == driverCreateFormDto.Phone);
             
             if (existPhoneDriver != null)
             {
@@ -196,9 +196,9 @@ public class DriverController : ControllerBase
             );
             var filesToProcess = new List<(IFormFile? File, string FilePathProperty)>
             {
-                (driverFormDto.File_DriverImageLicenseFront, nameof(driverFormDto.DriverImageLicenseFront)),
-                (driverFormDto.File_DriverImageLicenseBack, nameof(driverFormDto.DriverImageLicenseBack)),
-                (driverFormDto.File_Profile, nameof(driverFormDto.Profile)),
+                (driverCreateFormDto.File_DriverImageLicenseFront, nameof(driverCreateFormDto.DriverImageLicenseFront)),
+                (driverCreateFormDto.File_DriverImageLicenseBack, nameof(driverCreateFormDto.DriverImageLicenseBack)),
+                (driverCreateFormDto.File_Profile, nameof(driverCreateFormDto.Profile)),
             };
 
             foreach (var (file, filePathProperty) in filesToProcess)
@@ -217,9 +217,9 @@ public class DriverController : ControllerBase
                 }
 
                 var fileName = "_" + filePathProperty + resolvedFilePath;
-                typeof(DriverFormDTO).GetProperty(filePathProperty)?.SetValue(driverFormDto, fileName);
+                typeof(DriverCreateFormDTO).GetProperty(filePathProperty)?.SetValue(driverCreateFormDto, fileName);
             }
-            var registerDriver = _driverRepository.DriverRegistration(driverFormDto);
+            var registerDriver = _driverRepository.DriverRegistration(driverCreateFormDto);
 
             foreach (var (file, filePathProperty) in filesToProcess)
             {
@@ -247,9 +247,9 @@ public class DriverController : ControllerBase
             }
             var filesToProcessVehicle = new List<(IFormFile? File, string FilePathProperty)>
             {
-                (driverFormDto.File_BusinessLicenseImage, nameof(driverFormDto.BusinessLicenseImage)),
-                (driverFormDto.File_VehicleLicenseFront, nameof(driverFormDto.VehicleLicenseFront)),
-                (driverFormDto.File_VehicleLicenseBack, nameof(driverFormDto.VehicleLicenseBack)),
+                (driverCreateFormDto.File_BusinessLicenseImage, nameof(driverCreateFormDto.BusinessLicenseImage)),
+                (driverCreateFormDto.File_VehicleLicenseFront, nameof(driverCreateFormDto.VehicleLicenseFront)),
+                (driverCreateFormDto.File_VehicleLicenseBack, nameof(driverCreateFormDto.VehicleLicenseBack)),
             };
             foreach (var (file, filePathProperty) in filesToProcessVehicle)
             {
@@ -259,12 +259,12 @@ public class DriverController : ControllerBase
                 }
 
                 var fileName = "_" + filePathProperty + resolvedFilePath;
-                typeof(DriverFormDTO).GetProperty(filePathProperty)?.SetValue(driverFormDto,fileName);
+                typeof(DriverCreateFormDTO).GetProperty(filePathProperty)?.SetValue(driverCreateFormDto,fileName);
 
             }
-            driverFormDto.DriverId = registerDriver.Id;
-            driverFormDto.VehicleTypeId = 1;
-            var registerVehicle=_vehicleRepository.VehicleRegistration(driverFormDto);
+            driverCreateFormDto.DriverId = registerDriver.Id;
+            driverCreateFormDto.VehicleTypeId = 1;
+            var registerVehicle=_vehicleRepository.VehicleRegistration(driverCreateFormDto);
             registerDriver.VehicleInfo = new List<VehicleInfoDTO> { registerVehicle };
             foreach (var (file, filePathProperty) in filesToProcess)
             { 
@@ -298,11 +298,11 @@ public class DriverController : ControllerBase
     
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put([FromRoute] int id, DriverFormDTO driverFormDto)
+    public async Task<IActionResult> Put([FromRoute] int id, DriverUpdateFormDTO driverUpdateFormDto)
     {
         try
         {
-            if (id != driverFormDto.Id)
+            if (id != driverUpdateFormDto.Id)
             {
                 return BadRequest();
             }
@@ -315,11 +315,11 @@ public class DriverController : ControllerBase
             );
             var filesToProcess = new List<(IFormFile file, string filePathProperty)>
             {
-                (driverFormDto.File_Profile, nameof(driverFormDto.Profile)),
+                (driverUpdateFormDto.File_Profile, nameof(driverUpdateFormDto.Profile)),
                 // (driverFormDto.File_NrcImageFront, nameof(driverFormDto.NrcImageFront)),
                 // (driverFormDto.File_NrcImageBack, nameof(driverFormDto.NrcImageBack)),
-                (driverFormDto.File_DriverImageLicenseFront, nameof(driverFormDto.DriverImageLicenseFront)),
-                (driverFormDto.File_DriverImageLicenseBack, nameof(driverFormDto.DriverImageLicenseBack)),
+                (driverUpdateFormDto.File_DriverImageLicenseFront, nameof(driverUpdateFormDto.DriverImageLicenseFront)),
+                (driverUpdateFormDto.File_DriverImageLicenseBack, nameof(driverUpdateFormDto.DriverImageLicenseBack)),
             };
 
             // Validate and update file paths
@@ -340,12 +340,12 @@ public class DriverController : ControllerBase
                         return BadRequest(errorMessage);
                     }
                     var fileName = "_" + filePathProperty + resolvedFilePath;
-                    typeof(DriverDTO).GetProperty(filePathProperty)?.SetValue(driverFormDto, fileName);
+                    typeof(DriverUpdateFormDTO).GetProperty(filePathProperty)?.SetValue(driverUpdateFormDto, fileName);
                 }
             }
 
             // Update the driver in the repository
-            var isUpdated = _driverRepository.UpdateDriver(driverFormDto);
+            var isUpdated = _driverRepository.UpdateDriver(driverUpdateFormDto);
             if (!isUpdated)
             {
                 return NotFound();
@@ -357,7 +357,7 @@ public class DriverController : ControllerBase
                 if (file != null && file.Length > 0)
                 {
                     var fileExtension = Path.GetExtension(file.FileName);
-                    var fileName = driverFormDto.Id.ToString() + "_" + filePathProperty;
+                    var fileName = driverUpdateFormDto.Id.ToString() + "_" + filePathProperty;
                     await fileUploadHelper.SaveFileAsync(file, flagDomainDriver, fileName, fileExtension);
                 }
             }
