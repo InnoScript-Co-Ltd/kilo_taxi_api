@@ -14,7 +14,11 @@ public class ApiHub : Hub<IApiClient>, IApiHub
     private DriverConnectionManager _driverConnectionManager;
 
     LoggerHelper _logHelper;
-    public ApiHub(IHubContext<DriverHub,IDriverClient> hubDriver,DriverConnectionManager driverConnectionManager)
+
+    public ApiHub(
+        IHubContext<DriverHub, IDriverClient> hubDriver,
+        DriverConnectionManager driverConnectionManager
+    )
     {
         _logHelper = LoggerHelper.Instance;
         _hubDriver = hubDriver;
@@ -23,16 +27,17 @@ public class ApiHub : Hub<IApiClient>, IApiHub
 
     #region SignalR Events
     #endregion
-    public async Task SendOrder(OrderDTO orderDTO, List<DriverInfoDTO> driverInfoDTOs) 
+    public async Task SendOrder(OrderDTO orderDTO, List<DriverInfoDTO> driverInfoDTOs)
     {
         try
         {
-            var driverConnectionId = _driverConnectionManager.GetConnectionId(driverInfoDTOs[0].Id.ToString());
+            var driverConnectionId = _driverConnectionManager.GetConnectionId(
+                driverInfoDTOs[0].Id.ToString()
+            );
 
             if (driverConnectionId != null)
             {
                 await _hubDriver.Clients.Client(driverConnectionId).ReceiveOrder(orderDTO);
-
             }
             else
             {
@@ -44,11 +49,9 @@ public class ApiHub : Hub<IApiClient>, IApiHub
         {
             _logHelper.LogError(ex, ex?.Message);
         }
-
     }
 
     #region Private Methods
 
     #endregion
-
 }
