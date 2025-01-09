@@ -13,18 +13,23 @@ namespace KiloTaxi.Realtime.Hubs;
 public class ApiHub : Hub<IApiClient>, IApiHub
 {
     private readonly IHubContext<DriverHub, IDriverClient> _hubDriver;
-    private DriverConnectionManager _driverConnectionManager;
     private readonly IHubContext<CustomerHub, ICustomerClient> _hubCustomer;
+    private DriverConnectionManager _driverConnectionManager;
+    private CustomerConnectionManager _customerConnectionManager;
 
     LoggerHelper _logHelper;
 
-    public ApiHub(IHubContext<DriverHub,IDriverClient> hubDriver,DriverConnectionManager driverConnectionManager,
-                    IHubContext<CustomerHub, ICustomerClient> hubCustomer)
+    public ApiHub(
+        IHubContext<DriverHub, IDriverClient> hubDriver,
+        DriverConnectionManager driverConnectionManager,
+        CustomerConnectionManager customerConnectionManager,
+        IHubContext<CustomerHub, ICustomerClient> hubCustomer)
     {
         _logHelper = LoggerHelper.Instance;
         _hubDriver = hubDriver;
         _hubCustomer = hubCustomer;
         _driverConnectionManager = driverConnectionManager;
+        _customerConnectionManager = customerConnectionManager;
     }
 
     #region SignalR Events
@@ -74,6 +79,37 @@ public class ApiHub : Hub<IApiClient>, IApiHub
         await _hubCustomer.Clients.Client(orderDTO.CustomerId.ToString()).ReceiveDriverInfo(orderDTO, driverDTO);
     }
 
+
+    public async Task NotifyCustomerTripComplete(OrderDTO order, List<ExtraDemandDTO> extraDemands)
+    {
+        try
+        {
+            var customerConnectionId = _customerConnectionManager.GetConnectionId(
+                order.CustomerId.ToString()
+            );
+
+            if (!string.IsNullOrEmpty(customerConnectionId))
+            {
+                await _hubCustomer
+                    .Clients.Client(customerConnectionId)
+                    .ReceiveTripComplete(
+                        order.PickUpLocation,
+                        order.DestinationLocation,
+                        order.TotalAmount ?? 0m, // Use 0m as the default value if TotalAmount is null
+                        0,
+                        extraDemands
+                    );
+            }
+            else
+            {
+                _logHelper.LogDebug($"Customer with ID {order.CustomerId} is not connected.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logHelper.LogError(ex, "Error while notifying customer about trip completion.");
+        }
+    }
 
     #region Private Methods
 
