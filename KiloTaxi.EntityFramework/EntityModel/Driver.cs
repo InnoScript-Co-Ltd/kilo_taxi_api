@@ -24,6 +24,9 @@ public class Driver
     
     public string? Email{get;set;}
     
+    [DataType(DataType.DateTime)]
+    public DateTime CreatedDate{get;set;}
+        
     public DateTime? Dob{get;set;}
     
     public string Nrc{get;set;}

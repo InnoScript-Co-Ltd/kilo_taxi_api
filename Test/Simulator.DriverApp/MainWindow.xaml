@@ -46,6 +46,14 @@
             <DockPanel Margin="8">
                 <Border CornerRadius="6" BorderBrush="LightGray" Background="LightGray" BorderThickness="2" DockPanel.Dock="Top">
                     <StackPanel Orientation="Vertical">
+                        <Button x:Name="btnSendTripLocation" Content="Send TripLocation" Click="btnSendTripLocation_Click"></Button>
+                    </StackPanel>
+                </Border>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Height="25" />
+            </DockPanel>
+            <DockPanel Margin="8">
+                <Border CornerRadius="6" BorderBrush="LightGray" Background="LightGray" BorderThickness="2" DockPanel.Dock="Top">
+                    <StackPanel Orientation="Vertical">
                         <!-- Button for toggling driver mode -->
                         <Button x:Name="btnDriverMode" Content="DriverMode On" Click="btnSendDriverAvalilityStatus_Click">
                             <Button.Style>

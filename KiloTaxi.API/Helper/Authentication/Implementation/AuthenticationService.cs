@@ -53,36 +53,35 @@ public class AuthenticationService : IAuthenticationService
         var accessToken = GenerateJwtToken(ValidUser.Email, ValidUser.Role);
         var refreshToken = GenerateRefreshToken();
         ValidUser.RefreshToken = refreshToken;
-        ValidUser.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        ValidUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
         _adminRepository.UpdateAdmin(ValidUser);
         return (accessToken, refreshToken);    
     }
-    public async Task<(string,string)> AuthenticateCustomerAsync(string EmailOrPhone, string password)
+    public async Task<(string,string,int)> AuthenticateCustomerAsync(string EmailOrPhone, string password)
     {
         var ValidUser = await _customerRepository.ValidateCustomerCredentials(EmailOrPhone,password);
 
         if (ValidUser ==null)
         {
-            return (null,null);
+            return (null,null,0);
         }            
         var accessToken = GenerateJwtToken(ValidUser.Phone, ValidUser.Role);
         var refreshToken = GenerateRefreshToken();
         _customerRepository.UpdateCustomer(new CustomerFormDTO()
         {
             RefreshToken = refreshToken,
-            RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
+            RefreshTokenExpiryTime = DateTime.Now.AddDays(7),
         });
-        return (accessToken, refreshToken);    
-
+        return (accessToken, refreshToken,ValidUser.Id);    
     }
     
-    public async Task<(string,string)> AuthenticateDriverAsync(string EmailOrPhone, string password)
+    public async Task<(string,string,int)> AuthenticateDriverAsync(string EmailOrPhone, string password)
     {
         var ValidUser = await _driverRepository.ValidateDriverCredentials(EmailOrPhone, password);
 
         if (ValidUser ==null)
         {
-            return (null,null);
+            return (null,null,0);
         }            
         var accessToken = GenerateJwtToken(ValidUser.Phone, ValidUser.Role);
         var refreshToken = GenerateRefreshToken();
@@ -90,9 +89,9 @@ public class AuthenticationService : IAuthenticationService
         _driverRepository.UpdateDriver(new DriverUpdateFormDTO()
         {
             RefreshToken = refreshToken,
-            RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
+            RefreshTokenExpiryTime = DateTime.Now.AddDays(7),
         });
-        return (accessToken, refreshToken);       
+        return (accessToken, refreshToken,ValidUser.Id);       
     }
 
     // public bool VarifiedOpt(string token,string otp)

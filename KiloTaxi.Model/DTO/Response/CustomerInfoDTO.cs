@@ -15,7 +15,7 @@ public class CustomerInfoDTO
     public string? MobilePrefix { get; set; }
     public string? Email { get; set; }
     
-    
+    public DateTime CreatedDate { get; set; }
     public string Phone { get; set; }
 
     public string Role {get;set;}

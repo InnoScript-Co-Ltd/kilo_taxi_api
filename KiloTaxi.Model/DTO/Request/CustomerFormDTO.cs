@@ -22,6 +22,8 @@ public class CustomerFormDTO
     public string Phone { get; set; }
 
     public string? Role {get;set;}
+    
+    public DateTime? CreatedDate { get; set; }
 
     public string? RefreshToken { get; set; }
 

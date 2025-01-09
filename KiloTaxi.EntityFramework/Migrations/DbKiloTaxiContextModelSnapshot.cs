@@ -163,6 +163,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("Dob")
                         .HasColumnType("datetime2");
 
@@ -261,6 +264,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("Dob")
                         .HasColumnType("datetime2");

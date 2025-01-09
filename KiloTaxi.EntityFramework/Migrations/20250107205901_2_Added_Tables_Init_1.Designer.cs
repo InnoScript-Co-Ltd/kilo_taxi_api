@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KiloTaxi.EntityFramework.Migrations
 {
     [DbContext(typeof(DbKiloTaxiContext))]
-    [Migration("20250107070334_2_Added_Tables_Init_1")]
+    [Migration("20250107205901_2_Added_Tables_Init_1")]
     partial class _2_Added_Tables_Init_1
     {
         /// <inheritdoc />
@@ -166,6 +166,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("Dob")
                         .HasColumnType("datetime2");
 
@@ -264,6 +267,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("Dob")
                         .HasColumnType("datetime2");

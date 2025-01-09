@@ -17,7 +17,7 @@ public class TopUpTransactionDTO
     [Required]
     public TopUpTransactionStatus Status { get; set; }
     
-    public string? PhoneNumber { get; set; }
+    public string? PhoneNumber { get; set; }    
     
     public string? DigitalPaymentFromPhoneNumber { get; set; }
     

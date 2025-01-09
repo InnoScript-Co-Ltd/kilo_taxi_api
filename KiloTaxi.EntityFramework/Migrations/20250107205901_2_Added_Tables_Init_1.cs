@@ -190,6 +190,13 @@ namespace KiloTaxi.EntityFramework.Migrations
                 nullable: false,
                 defaultValue: "");
 
+            migrationBuilder.AddColumn<DateTime>(
+                name: "CreatedDate",
+                table: "Driver",
+                type: "datetime2",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+
             migrationBuilder.AddColumn<string>(
                 name: "Otp",
                 table: "Driver",
@@ -251,6 +258,13 @@ namespace KiloTaxi.EntityFramework.Migrations
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "CreatedDate",
+                table: "Customer",
+                type: "datetime2",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<string>(
                 name: "Otp",
@@ -616,6 +630,10 @@ namespace KiloTaxi.EntityFramework.Migrations
                 table: "Driver");
 
             migrationBuilder.DropColumn(
+                name: "CreatedDate",
+                table: "Driver");
+
+            migrationBuilder.DropColumn(
                 name: "Otp",
                 table: "Driver");
 
@@ -634,6 +652,10 @@ namespace KiloTaxi.EntityFramework.Migrations
             migrationBuilder.DropColumn(
                 name: "RefreshTokenExpiryTime",
                 table: "Driver");
+
+            migrationBuilder.DropColumn(
+                name: "CreatedDate",
+                table: "Customer");
 
             migrationBuilder.DropColumn(
                 name: "Otp",

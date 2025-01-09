@@ -17,5 +17,6 @@ public interface ICustomerRepository
     Task<CustomerInfoDTO> ValidateCustomerCredentials(string emailOrPhone,string password);
     
     Task<ResponseDTO<OtpInfo>> FindCustomerAndGenerateOtp(CustomerFormDTO pageSortParam);
+   void sendSms(string phone, string otpCode, string base64Credentials, string baseUrl);
 
 }

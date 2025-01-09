@@ -23,7 +23,10 @@ namespace KiloTaxi.DataAccess.Implementation
         {
             try
             {
-                var query = _dbKiloTaxiContext.Orders.AsQueryable();
+                var query = _dbKiloTaxiContext.Orders
+                    .Include(o => o.Customer)
+                    .Include(o=>o.Driver)
+                    .AsQueryable();
                 if (!string.IsNullOrEmpty(pageSortParam.SearchTerm))
                 {
                     query = query.Where(p => p.Status.Contains(pageSortParam.SearchTerm));

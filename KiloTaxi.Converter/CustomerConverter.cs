@@ -31,6 +31,7 @@ namespace KiloTaxi.Converter
                 Profile = mediaHostUrl + customerEntity.Profile,
                 MobilePrefix = customerEntity.MobilePrefix,
                 Role = customerEntity.Role,
+                CreatedDate = customerEntity.CreatedDate,
                 Phone = customerEntity.Phone,
                 Email = customerEntity.Email,
                 Gender =  Enum.Parse<GenderType>(customerEntity.Gender),
@@ -79,6 +80,7 @@ namespace KiloTaxi.Converter
                 customerEntity.Profile = customerFormDto.Profile;
                 customerEntity.MobilePrefix = customerFormDto.MobilePrefix;
                 customerEntity.RefreshToken = customerFormDto.RefreshToken;
+                customerEntity.CreatedDate=customerFormDto.CreatedDate ?? DateTime.MinValue;
                 customerEntity.RefreshTokenExpiryTime = customerFormDto.RefreshTokenExpiryTime;
                 customerEntity.Otp = customerFormDto.Otp;
                 customerEntity.Phone = customerFormDto.Phone;

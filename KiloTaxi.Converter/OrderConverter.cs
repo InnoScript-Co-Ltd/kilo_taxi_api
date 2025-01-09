@@ -37,6 +37,8 @@ namespace KiloTaxi.Converter
                 VehicleId = orderEntity.VehicleId,
                 ScheduleBookingId = orderEntity.ScheduleBookingId,
                 EstimatedAmount = orderEntity.EstimatedAmount,
+                customer = orderEntity.Customer,
+                driver = orderEntity.Driver,
                 Status = Enum.Parse<OrderStatus>(orderEntity.Status),
                 CreatedDate = orderEntity.CreatedDate,
             };

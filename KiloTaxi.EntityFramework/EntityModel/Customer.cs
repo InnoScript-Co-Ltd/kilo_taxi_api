@@ -17,8 +17,6 @@ namespace KiloTaxi.EntityFramework.EntityModel
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         
-
-
         [MaxLength(100)]
         public string Name { get; set; }
 
@@ -37,6 +35,9 @@ namespace KiloTaxi.EntityFramework.EntityModel
         public DateTime? EmailVerifiedAt { get; set; }
         
         public DateTime? PhoneVerifiedAt { get; set; }
+        
+        [DataType(DataType.DateTime)]
+        public DateTime CreatedDate { get; set; }
 
         public string? Password { get; set; }
 

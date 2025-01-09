@@ -62,21 +62,21 @@ public class ApiClientHub : IDisposable
             }
         );
 
-        _hubConnection.On<int, double, double>(
+        _hubConnection.On<TripLocation>(
             "ReceiveTripLocation",
-            (orderId, latitude, longitude) =>
+            (tripLocation) =>
             {
                 Console.WriteLine(
-                    $"OrderId: {orderId}, Latitude: {latitude}, Longitude: {longitude}"
+                    $"OrderId: {tripLocation.OrderId}, Latitude: {tripLocation.Lat}, Longitude: {tripLocation.Long}"
                 );
 
                 // Create an instance of OrderRouteDTO
                 var orderRouteDTO = new OrderRouteDTO
                 {
-                    OrderId = orderId,
-                    Lat = latitude.ToString(),
-                    Long = longitude.ToString(),
-                    CreateDate = DateTime.UtcNow,
+                    OrderId = int.Parse(tripLocation.OrderId),
+                    Lat = tripLocation.Lat,
+                    Long = tripLocation.Long,
+                    CreateDate = DateTime.Now,
                 };
 
                 // Use the repository to update the order route
@@ -84,15 +84,15 @@ public class ApiClientHub : IDisposable
                 var tripRepository =
                     scope.ServiceProvider.GetRequiredService<IOrderRouteRepository>();
 
-                bool isUpdated = tripRepository.CreateOrderRoute(orderRouteDTO);
+                var createdOrderRoute= tripRepository.CreateOrderRoute(orderRouteDTO);
 
-                if (isUpdated)
+                if (createdOrderRoute !=null)
                 {
-                    Console.WriteLine($"Order route created successfully for OrderId: {orderId}");
+                    Console.WriteLine($"Order route created successfully for OrderId: {tripLocation.OrderId}");
                 }
                 else
                 {
-                    Console.WriteLine($"Failed to create order route for OrderId: {orderId}");
+                    Console.WriteLine($"Failed to create order route for OrderId: {tripLocation.OrderId}");
                 }
             }
         );

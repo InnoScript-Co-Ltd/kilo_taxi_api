@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KiloTaxi.Common.Enums;
+using KiloTaxi.EntityFramework.EntityModel;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Model.DTO
 {
@@ -42,7 +44,9 @@ namespace KiloTaxi.Model.DTO
         
         public decimal? TotalAmount { get; set; }
 
-
+        public Customer? customer { get; set; }
+        
+        public  Driver? driver { get; set; }
         [Required]
         public OrderStatus Status { get; set; }
 

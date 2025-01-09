@@ -14,9 +14,9 @@ public interface IAuthenticationService
    
    (string,string) NewRefreshToken(string email,string role,RefreshTokenDTO request);
    string GenerateRefreshToken();
-   Task<(string,string)> AuthenticateCustomerAsync(string EmailOrPhone,string password);
+   Task<(string,string,int)> AuthenticateCustomerAsync(string EmailOrPhone,string password);
    
-   Task<(string,string)> AuthenticateDriverAsync(string EmailOrPhone, string password);
+   Task<(string,string,int)> AuthenticateDriverAsync(string EmailOrPhone, string password);
    // bool VarifiedOpt(string token,string otp);
    ClaimsPrincipal ValidateToken(string token);
 

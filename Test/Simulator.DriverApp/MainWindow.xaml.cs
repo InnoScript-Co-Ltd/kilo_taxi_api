@@ -81,6 +81,18 @@ namespace Simulator.DriverApp
             connection.InvokeAsync("SendSos", sosDto);
             lblLogs.Text += Environment.NewLine + "SendSos has been invoked";
         }
+        private void btnSendTripLocation_Click(object sender, RoutedEventArgs e)
+        {
+            var tripLocation = new TripLocation
+            {
+                OrderId = "1",
+                Lat = "12.15",
+                Long = "18.12",
+               
+            };
+            connection.InvokeAsync("SendTripLocation", tripLocation);
+            lblLogs.Text += Environment.NewLine + "SendTripLocation has been invoked";
+        }
         private async void btnSendDriverAvalilityStatus_Click(object sender, RoutedEventArgs e)
         {
             if (currentStatus == DriverStatus.Offline)

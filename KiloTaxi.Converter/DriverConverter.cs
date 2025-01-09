@@ -28,6 +28,7 @@ public static class DriverConverter
             Dob = driverEntity.Dob,
             Nrc = driverEntity.Nrc,
             Role = driverEntity.Role,
+            CreatedDate = driverEntity.CreatedDate,
             Password=driverEntity.Password,
             PropertyStatus =Enum.Parse<PropertyStatus>(driverEntity.PropertyStatus),
             ReferralMobileNumber= driverEntity.ReferralMobileNumber,
@@ -68,7 +69,7 @@ public static class DriverConverter
             driverEntity.RefreshTokenExpiryTime = driverCreateFormDto.RefreshTokenExpiryTime;
             driverEntity.Otp = driverCreateFormDto.Otp;
             driverEntity.Role = driverCreateFormDto.Role;
-            
+            driverEntity.CreatedDate=driverCreateFormDto.CreatedDate ?? DateTime.MinValue;
             driverEntity.DriverLicense = driverCreateFormDto.DriverLicense;
             driverEntity.DriverImageLicenseFront = driverCreateFormDto.DriverImageLicenseFront;
             driverEntity.DriverImageLicenseBack = driverCreateFormDto.DriverImageLicenseBack;

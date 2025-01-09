@@ -33,6 +33,8 @@ public class DriverCreateFormDTO
     
     public DateTime? EmailVerifiedAt{get; set;}
     
+    public DateTime? CreatedDate{get; set;}
+    
     public DateTime? PhoneVerifiedAt{get; set;}
     
     [StringLength(26, MinimumLength = 6, ErrorMessage = "Phone number must be between 6 and 26 Characters.")]

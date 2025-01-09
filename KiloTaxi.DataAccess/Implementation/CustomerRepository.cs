@@ -13,6 +13,8 @@ using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -20,18 +22,18 @@ namespace KiloTaxi.DataAccess.Implementation
     public class CustomerRepository : ICustomerRepository
     {
         private readonly DbKiloTaxiContext _dbKiloTaxiContext;
-        private readonly string baseUrl = "https://v3.smspoh.com/api/rest";
-        private readonly string apiKey = "KvwfiuJAeRmJ5Bq8";
-        private readonly string apiSecret = "lpYG_3LOkr-8t6y_";
+        public readonly IConfiguration _configuration;
         private string _mediaHostUrl;
         
         // private IAuthenticationService _authenticationService;
         public CustomerRepository(
             DbKiloTaxiContext dbContext,
-            IOptions<MediaSettings> mediaSettings
+            IOptions<MediaSettings> mediaSettings,
+            IConfiguration configuration
         )
         {
             _dbKiloTaxiContext = dbContext;
+            _configuration = configuration;
             _mediaHostUrl = mediaSettings.Value.MediaHostUrl;
         }
 
@@ -183,6 +185,8 @@ namespace KiloTaxi.DataAccess.Implementation
             try
             {
                 Customer customerEntity = new Customer();
+                DateTime createdDate=DateTime.Now;
+                customerDTO.CreatedDate = createdDate;
                 customerDTO.Password = BCrypt.Net.BCrypt.HashPassword(customerDTO.Password);
                 CustomerConverter.ConvertModelToEntity(customerDTO, ref customerEntity);
 
@@ -396,8 +400,30 @@ namespace KiloTaxi.DataAccess.Implementation
             otpInfo.OtpExpired = DateTime.Now.AddMinutes(3);
             otpInfo.UserName = customerFormDto.Name;
             otpInfo.RetryCount = 0;
+            var smsApi = _configuration.GetSection("SmsApi");
+            var BaseUrl = smsApi["BaseUrl"];
+            var apiKey = smsApi["ApiKey"];
+            var apiSecret = smsApi["ApiSecret"];
             string credentials = $"{apiKey}:{apiSecret}";
             string base64Credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials));
+            sendSms(customerFormDto.Phone, otpInfo.Otp, base64Credentials,BaseUrl);
+            return new ResponseDTO<OtpInfo>
+            {
+                StatusCode = 200,
+                Message = "OTP generated successfully.",
+                Payload = otpInfo,
+                TimeStamp = DateTime.Now
+            };
+        }
+        public string GenerateOTP()
+        {
+            Random random = new Random();
+            int otp = random.Next(100000, 1000000); // Generates a number between 100000 and 999999
+            return otp.ToString();
+        }
+
+        public async void sendSms(string phone,string otpCode,string base64Credentials,string baseUrl)
+        {
             using (HttpClient client = new HttpClient())
             {
                 // Set the Authorization header with the Base64-encoded credentials
@@ -406,8 +432,8 @@ namespace KiloTaxi.DataAccess.Implementation
                 // Prepare the request data
                 var requestData = new
                 {
-                    to = "95" + customerFormDto.Phone, // Prefix country code
-                    message = $"Kilo Taxi OTP: Your one-time otpcode is {otpInfo.Otp}. Please use this code to complete your verification. This OTP is valid for 3 minutes. Do not share it with anyone.",
+                    to = "95" + phone, // Prefix country code
+                    message = $"Your one-time otpcode is {otpCode}. Please use this code to complete your verification. This OTP is valid for 3 minutes. Do not share it with anyone.",
                     from = "SMSPoh Demo"
                 };
                 string jsonPayload = JsonSerializer.Serialize(requestData);
@@ -426,20 +452,6 @@ namespace KiloTaxi.DataAccess.Implementation
                     LoggerHelper.Instance.LogError($"Failed to send SMS: {response.StatusCode} - {response.ReasonPhrase}");
                     LoggerHelper.Instance.LogError($"Error Details: {errorDetails}");                }
             }
-            return new ResponseDTO<OtpInfo>
-            {
-                StatusCode = 200,
-                Message = "OTP generated successfully.",
-                Payload = otpInfo,
-                TimeStamp = DateTime.Now
-            };
-        }
-        public string GenerateOTP()
-        {
-            Random random = new Random();
-            int otp = random.Next(100000, 1000000); // Generates a number between 100000 and 999999
-            return otp.ToString();
-        }
-            
+        }    
     }
 }

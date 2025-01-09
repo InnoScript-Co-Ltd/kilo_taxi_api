@@ -134,6 +134,8 @@ public class DriverRepository : IDriverRepository
         try
         {
             Driver driverEntity = new Driver();
+            DateTime createdDate = DateTime.Now;
+            driverCreateDto.CreatedDate = createdDate;
             driverCreateDto.Password = BCrypt.Net.BCrypt.HashPassword(driverCreateDto.Password);
             DriverConverter.ConvertModelToEntity(driverCreateDto, ref driverEntity);
 

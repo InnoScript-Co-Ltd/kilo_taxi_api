@@ -34,6 +34,7 @@ public class ApiHub : Hub<IApiClient>, IApiHub
             var driverConnectionId = _driverConnectionManager.GetConnectionId(
                 driverInfoDTOs[0].Id.ToString()
             );
+            Console.WriteLine("send order");
 
             if (driverConnectionId != null)
             {

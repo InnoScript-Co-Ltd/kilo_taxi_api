@@ -54,7 +54,7 @@ public class AuthController : ControllerBase
             return BadRequest("Invalid login request.");
         }
 
-        var (accessToken, refreshToken) = await _authenticationService.AuthenticateCustomerAsync(authDto.EmailOrPhone,authDto.Password);            
+        var (accessToken, refreshToken,customerId) = await _authenticationService.AuthenticateCustomerAsync(authDto.EmailOrPhone,authDto.Password);            
       
         if (string.IsNullOrEmpty(accessToken))
         {
@@ -62,7 +62,7 @@ public class AuthController : ControllerBase
         }
 
         //return Ok(new { Token = token });
-        return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
+        return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken, customerId = customerId });
     }
     
     [HttpPost("driverLogin")]
@@ -73,7 +73,7 @@ public class AuthController : ControllerBase
             return BadRequest("Invalid login request.");
         }
 
-        var (accessToken, refreshToken) = await _authenticationService.AuthenticateDriverAsync(authDto.EmailOrPhone, authDto.Password);            
+        var (accessToken, refreshToken,driverId) = await _authenticationService.AuthenticateDriverAsync(authDto.EmailOrPhone, authDto.Password);            
       
         if (string.IsNullOrEmpty(accessToken))
         {
@@ -81,7 +81,7 @@ public class AuthController : ControllerBase
         }
 
         //return Ok(new { Token = token });
-        return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
+        return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken,driverId = driverId });
     }
     
     [HttpPost("refresh-token")]
@@ -201,13 +201,19 @@ public class AuthController : ControllerBase
             responseDto.Message = "phone number is invalid";
             return responseDto;
         }
+        
         var unVerifiedUser = JsonConvert.DeserializeObject<ResponseDTO<OtpInfo>>(session_UnVerifiedUser);
         var OtpCode =  _authenticationService.GenerateOtp();
         unVerifiedUser.Payload.Otp = OtpCode;    
        HttpContext.Session.SetString("UnVerifiedUser"+phone,JsonConvert.SerializeObject(unVerifiedUser));
+       var smsApi = _configuration.GetSection("SmsApi");
+       var BaseUrl = smsApi["BaseUrl"];
+       var apiKey = smsApi["ApiKey"];
+       var apiSecret = smsApi["ApiSecret"];
+       string credentials = $"{apiKey}:{apiSecret}";
+       _customerRepository.sendSms(phone, OtpCode, credentials, BaseUrl);
        responseDto.StatusCode = Ok().StatusCode;
        responseDto.Message = "Generate OTP Resend Success.";
-       responseDto.Payload = unVerifiedUser.Payload;
         return responseDto;
     }
     
