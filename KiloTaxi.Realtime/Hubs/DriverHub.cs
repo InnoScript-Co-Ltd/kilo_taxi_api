@@ -142,6 +142,20 @@ namespace KiloTaxi.Realtime.Hubs
             }
         }
 
+
+        public async Task AcceptOrder(OrderDTO orderDTO)
+        {
+            try
+            {
+                var key = Context.GetHttpContext().Request.Query["driverId"].ToString();
+                await _hubApi.Clients.All.AcceptOrderAsync(orderDTO, int.Parse(key));
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex, ex?.Message);
+            }
+
+        }
         #endregion
 
         #region Private Methods

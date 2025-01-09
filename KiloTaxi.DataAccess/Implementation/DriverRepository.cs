@@ -118,8 +118,10 @@ public class DriverRepository : IDriverRepository
                     WalletUserMappingConverter.ConvertEntityToModel(walletUserMapping)
                 )
                 .ToList();
-            // driverDTO.Vehicle = vehicleDTO;
-            // driverDTO.WalletUserMapping = WalletUserMappingDTO;
+                 //driverDTO.Vehicle = vehicleDTO;
+                //driverDTO.WalletUserMapping = WalletUserMappingDTO;
+                driverDTO.VehicleInfo = vehicleDTO;
+                
             return driverDTO;
         }
         catch (Exception ex)

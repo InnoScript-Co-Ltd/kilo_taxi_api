@@ -8,5 +8,6 @@ namespace KiloTaxi.Realtime.HubInterfaces
         Task SendSos(SosDTO sosDto);
         Task SendTripLocation(TripLocation tripLocation);
         Task SendDriverAvalilityStatus(string AvailityStatus);
+        Task AcceptOrder(OrderDTO orderDTO);
     }
 }

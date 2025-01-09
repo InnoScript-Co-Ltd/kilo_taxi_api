@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Response;
+using Microsoft.AspNetCore.SignalR.Client;
+using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
 using System.Windows;
@@ -18,7 +21,51 @@ namespace Simulator.CustomerApp
     /// </summary>
     public partial class MainWindow : Window
     {
-       HubConnection connection;
+
+        private string driverName;
+        private string driverPhone;
+        private string vehicleNo;
+
+        // The properties that will be bound to the UI
+        public string DriverName
+        {
+            get => driverName;
+            set
+            {
+                driverName = value;
+                OnPropertyChanged(nameof(DriverName)); // Notify the UI that the property changed
+            }
+        }
+
+        public string DriverPhone
+        {
+            get => driverPhone;
+            set
+            {
+                driverPhone = value;
+                OnPropertyChanged(nameof(DriverPhone)); // Notify the UI that the property changed
+            }
+        }
+
+        public string VehicleNo
+        {
+            get => vehicleNo;
+            set
+            {
+                vehicleNo = value;
+                OnPropertyChanged(nameof(VehicleNo)); // Notify the UI that the property changed
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
+        HubConnection connection;
         Settings appSettings = new Settings();
         public MainWindow()
         {
@@ -33,9 +80,16 @@ namespace Simulator.CustomerApp
             Console.WriteLine(jsonSerializedModel);
             lblLogs.Text += Environment.NewLine + $"ReceiveTestMethod : {jsonSerializedModel}";
         }
-      
+
+        private void ReceiveDriverInfo(string order, string driver)
+        {
+          
+            Console.WriteLine("Hello");
+            lblLogs.Text += Environment.NewLine + $"ReceiveDriverInfo : {order} {driver}";
+        }
+
         #endregion
-    
+
         #region Form Events
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
@@ -113,8 +167,22 @@ namespace Simulator.CustomerApp
                     this.ReceiveTestMethod(data);
                 });
             });
-          
+
+            connection.On("ReceiveDriverInfo", async (OrderDTO orderDTO, DriverInfoDTO driverDTO) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    var jsonSerializedModelOrderDTO = JsonSerializer.Serialize(orderDTO);
+                    var jsonSerializedModelDriverDTO = JsonSerializer.Serialize(driverDTO);
+                    lblLogs.Text += Environment.NewLine + $"ReceiveDriverInfo : Hello";
+                    this.ReceiveDriverInfo(jsonSerializedModelOrderDTO, jsonSerializedModelDriverDTO);
+
+                });
+            });
+
         }
+
+       
         #endregion
     }
 }

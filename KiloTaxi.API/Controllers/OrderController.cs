@@ -4,6 +4,7 @@ using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace KiloTaxi.API.Controllers
 {
@@ -14,13 +15,15 @@ namespace KiloTaxi.API.Controllers
         LoggerHelper _logHelper;
         private readonly IOrderRepository _orderRepository;
         private ApiClientHub _apiClientHub;
+        private readonly IDriverRepository _driverRepository;
 
 
-        public OrderController(IOrderRepository orderRepository,ApiClientHub apiClientHub)
+        public OrderController(IOrderRepository orderRepository,ApiClientHub apiClientHub, IDriverRepository driverRepository)
         {
             _logHelper = LoggerHelper.Instance;
             _orderRepository = orderRepository;
             _apiClientHub = apiClientHub;
+            _driverRepository = driverRepository;
         }
 
         //GET: api/<AdminController>
@@ -74,7 +77,7 @@ namespace KiloTaxi.API.Controllers
             try
             {
                 _apiClientHub.SendMessageAsync($"Get all orders");
-                _apiClientHub.SendOrderAsync(orderDTO);
+               
 
                 if (orderDTO == null)
                 {
@@ -82,7 +85,9 @@ namespace KiloTaxi.API.Controllers
                 }
         
                 var createdOrder = _orderRepository.AddOrder(orderDTO);
+                _apiClientHub.SendOrderAsync(createdOrder, _driverRepository);
                 return CreatedAtAction(nameof(Get), new { id = createdOrder.Id }, createdOrder);
+               
             }
             catch (Exception ex)
             {
