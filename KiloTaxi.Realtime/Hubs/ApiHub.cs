@@ -1,12 +1,14 @@
-﻿using KiloTaxi.EntityFramework.EntityModel;
+﻿using System.Net.Http;
+using System.Text.Json;
+using KiloTaxi.Common.Enums;
+using KiloTaxi.DataAccess.Interface;
+using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using KiloTaxi.Model.DTO.Response;
 using KiloTaxi.Realtime.HubInterfaces;
 using KiloTaxi.Realtime.Services;
 using Microsoft.AspNetCore.SignalR;
-using System.Net.Http;
-using System.Text.Json;
 
 namespace KiloTaxi.Realtime.Hubs;
 
@@ -17,19 +19,24 @@ public class ApiHub : Hub<IApiClient>, IApiHub
     private DriverConnectionManager _driverConnectionManager;
     private CustomerConnectionManager _customerConnectionManager;
 
+    private readonly IOrderRepository _orderService;
+
     LoggerHelper _logHelper;
 
     public ApiHub(
         IHubContext<DriverHub, IDriverClient> hubDriver,
         DriverConnectionManager driverConnectionManager,
         CustomerConnectionManager customerConnectionManager,
-        IHubContext<CustomerHub, ICustomerClient> hubCustomer)
+        IOrderRepository orderService, // Injected here
+        IHubContext<CustomerHub, ICustomerClient> hubCustomer
+    )
     {
         _logHelper = LoggerHelper.Instance;
         _hubDriver = hubDriver;
         _hubCustomer = hubCustomer;
         _driverConnectionManager = driverConnectionManager;
         _customerConnectionManager = customerConnectionManager;
+        _orderService = orderService; // Initialize _orderService
     }
 
     #region SignalR Events
@@ -76,9 +83,10 @@ public class ApiHub : Hub<IApiClient>, IApiHub
 
         // Send data to SignalR hub
         //await _hubDriver.Clients.All.SendAsync("ReceiveDriverInfo", payload);
-        await _hubCustomer.Clients.Client(orderDTO.CustomerId.ToString()).ReceiveDriverInfo(orderDTO, driverDTO);
+        await _hubCustomer
+            .Clients.Client(orderDTO.CustomerId.ToString())
+            .ReceiveDriverInfo(orderDTO, driverDTO);
     }
-
 
     public async Task NotifyCustomerTripComplete(OrderDTO order, List<ExtraDemandDTO> extraDemands)
     {
@@ -108,6 +116,49 @@ public class ApiHub : Hub<IApiClient>, IApiHub
         catch (Exception ex)
         {
             _logHelper.LogError(ex, "Error while notifying customer about trip completion.");
+        }
+    }
+
+    public async Task UpdateOrderStatus(
+        int orderId,
+        OrderStatus orderStatus,
+        List<ExtraDemandDTO> extraDemands
+    )
+    {
+        try
+        {
+            // Fetch the order by ID
+            var order = _orderService.GetOrderById(orderId);
+            if (order == null)
+            {
+                _logHelper.LogDebug($"Order with ID {orderId} not found.");
+                return;
+            }
+
+            // Update the order status
+            order.Status = orderStatus;
+            var isOrderUpdated = _orderService.UpdateOrder(order);
+
+            if (!isOrderUpdated)
+            {
+                _logHelper.LogError($"Failed to update order status for Order ID {orderId}.");
+                return;
+            }
+
+            // Optionally handle extra demands (add your logic here)
+            foreach (var extraDemand in extraDemands)
+            {
+                // Update or insert extra demands in the database
+            }
+
+            _logHelper.LogDebug($"Order status updated to {orderStatus} for Order ID {orderId}.");
+
+            // Notify clients about the updated order status
+            await Clients.All.ReceiveOrderUpdate(orderId, orderStatus);
+        }
+        catch (Exception ex)
+        {
+            _logHelper.LogError(ex, "Error occurred while updating order status.");
         }
     }
 
