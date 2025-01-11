@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using KiloTaxi.Common.ConfigurationSettings;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.Converter;
@@ -11,9 +12,8 @@ using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
-using Microsoft.Extensions.Options;
-using System.Text.Json;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
@@ -24,7 +24,7 @@ namespace KiloTaxi.DataAccess.Implementation
         private readonly DbKiloTaxiContext _dbKiloTaxiContext;
         public readonly IConfiguration _configuration;
         private string _mediaHostUrl;
-        
+
         // private IAuthenticationService _authenticationService;
         public CustomerRepository(
             DbKiloTaxiContext dbContext,
@@ -105,14 +105,19 @@ namespace KiloTaxi.DataAccess.Implementation
                         pageSortParam.CurrentPage * pageSortParam.PageSize
                     ),
                 };
-                ResponseDTO<CustomerPagingDTO> responseDto= new ResponseDTO<CustomerPagingDTO>();
-                responseDto.StatusCode=(int)HttpStatusCode.OK;
-                responseDto.Message="Customers retrieved successfully";
-                responseDto.TimeStamp=DateTime.Now;
-                responseDto.Payload=new CustomerPagingDTO { Paging = pagingResult, Customers = customers };
+                ResponseDTO<CustomerPagingDTO> responseDto = new ResponseDTO<CustomerPagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "Customers retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new CustomerPagingDTO
+                {
+                    Paging = pagingResult,
+                    Customers = customers,
+                };
                 return responseDto;
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 LoggerHelper.Instance.LogError(ex, "Error occurred while fetching all customers.");
                 throw;
             }
@@ -180,12 +185,12 @@ namespace KiloTaxi.DataAccess.Implementation
         //         throw;
         //     }
         // }
-         public CustomerInfoDTO AddCustomer(CustomerFormDTO customerDTO)
+        public CustomerInfoDTO AddCustomer(CustomerFormDTO customerDTO)
         {
             try
             {
                 Customer customerEntity = new Customer();
-                DateTime createdDate=DateTime.Now;
+                DateTime createdDate = DateTime.Now;
                 customerDTO.CreatedDate = createdDate;
                 customerDTO.Password = BCrypt.Net.BCrypt.HashPassword(customerDTO.Password);
                 CustomerConverter.ConvertModelToEntity(customerDTO, ref customerEntity);
@@ -193,28 +198,31 @@ namespace KiloTaxi.DataAccess.Implementation
                 _dbKiloTaxiContext.Add(customerEntity);
                 _dbKiloTaxiContext.SaveChanges();
                 customerDTO.Id = customerEntity.Id;
-                
-                 var filePaths = new List<(string PropertyName, string FilePath)>
-                 {
-                     (nameof(customerEntity.Profile), customerEntity.Profile)
-                 };
-                 foreach (var (propertyName, filePath) in filePaths)
-                 {
-                     if (!string.IsNullOrEmpty(filePath) && !filePath.Contains("default.png"))
-                     {
-                         switch (propertyName)
-                         {
-                             case nameof(customerEntity.Profile):
-                                 customerEntity.Profile = $"customer/{customerDTO.Id}{filePath}";
-                                 break;
-                             default:
-                                 break;
-                         }
-                     }
-                 }
-                
-                 _dbKiloTaxiContext.SaveChanges();
-               var customerInfoDto = CustomerConverter.ConvertEntityToModel(customerEntity, _mediaHostUrl);
+
+                var filePaths = new List<(string PropertyName, string FilePath)>
+                {
+                    (nameof(customerEntity.Profile), customerEntity.Profile),
+                };
+                foreach (var (propertyName, filePath) in filePaths)
+                {
+                    if (!string.IsNullOrEmpty(filePath) && !filePath.Contains("default.png"))
+                    {
+                        switch (propertyName)
+                        {
+                            case nameof(customerEntity.Profile):
+                                customerEntity.Profile = $"customer/{customerDTO.Id}{filePath}";
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                _dbKiloTaxiContext.SaveChanges();
+                var customerInfoDto = CustomerConverter.ConvertEntityToModel(
+                    customerEntity,
+                    _mediaHostUrl
+                );
 
                 LoggerHelper.Instance.LogInfo(
                     $"Customer added successfully with Id: {customerEntity.Id}"
@@ -343,42 +351,63 @@ namespace KiloTaxi.DataAccess.Implementation
                 throw;
             }
         }
-        public async Task<CustomerInfoDTO> ValidateCustomerCredentials(string EmailOrPhone,string password)
-        {
 
+        public async Task<CustomerInfoDTO> ValidateCustomerCredentials(
+            string EmailOrPhone,
+            string password
+        )
+        {
             if (string.IsNullOrEmpty(EmailOrPhone))
             {
                 return null; // Or throw an exception depending on your use case
             }
 
-            Customer customerEntity =  _dbKiloTaxiContext.Customers.SingleOrDefault(customer => customer.Phone == EmailOrPhone);
-            if (customerEntity != null || ! BCrypt.Net.BCrypt.Verify(password, customerEntity.Password))
+            Customer customerEntity = _dbKiloTaxiContext.Customers.SingleOrDefault(customer =>
+                customer.Phone == EmailOrPhone
+            );
+            if (
+                customerEntity != null
+                || !BCrypt.Net.BCrypt.Verify(password, customerEntity.Password)
+            )
             {
                 return CustomerConverter.ConvertEntityToModel(customerEntity, _mediaHostUrl);
             }
 
-         
             return null;
         }
 
-        public async Task<ResponseDTO<OtpInfo>> FindCustomerAndGenerateOtp(CustomerFormDTO customerFormDto)
+        public async Task<ResponseDTO<OtpInfo>> FindCustomerAndGenerateOtp(
+            CustomerFormDTO customerFormDto
+        )
         {
-            var existedCustomer=_dbKiloTaxiContext.Customers.FirstOrDefault(customer => customer.Phone == customerFormDto.Phone);
-            OtpInfo otpInfo=new OtpInfo();
-            if (existedCustomer != null && existedCustomer.Status == CustomerStatus.Active.ToString())
+            var existedCustomer = _dbKiloTaxiContext.Customers.FirstOrDefault(customer =>
+                customer.Phone == customerFormDto.Phone
+            );
+            OtpInfo otpInfo = new OtpInfo();
+            if (
+                existedCustomer != null
+                && existedCustomer.Status == CustomerStatus.Active.ToString()
+            )
             {
-                
                 ResponseDTO<OtpInfo> responseDto = new ResponseDTO<OtpInfo>();
-                responseDto.StatusCode=209;        
-                responseDto.Message="User Already exist with this phone number "+existedCustomer.Phone;
+                responseDto.StatusCode = 209;
+                responseDto.Message =
+                    "User Already exist with this phone number " + existedCustomer.Phone;
                 otpInfo.UserStatus = existedCustomer.Status;
                 responseDto.Payload = otpInfo;
                 return responseDto;
-            }else if (existedCustomer != null && existedCustomer.Status == CustomerStatus.Pending.ToString())
+            }
+            else if (
+                existedCustomer != null
+                && existedCustomer.Status == CustomerStatus.Pending.ToString()
+            )
             {
                 ResponseDTO<OtpInfo> responseDto = new ResponseDTO<OtpInfo>();
-                responseDto.StatusCode=209;        
-                responseDto.Message="User Already exist with this phone number "+existedCustomer.Phone +" but Account status is Pending";
+                responseDto.StatusCode = 209;
+                responseDto.Message =
+                    "User Already exist with this phone number "
+                    + existedCustomer.Phone
+                    + " but Account status is Pending";
                 otpInfo.UserStatus = existedCustomer.Status;
                 otpInfo.Email = customerFormDto.Email;
                 otpInfo.Password = BCrypt.Net.BCrypt.HashPassword(customerFormDto.Password);
@@ -389,7 +418,7 @@ namespace KiloTaxi.DataAccess.Implementation
                 otpInfo.UserName = customerFormDto.Name;
                 otpInfo.RetryCount = 0;
                 responseDto.Payload = otpInfo;
-                responseDto.TimeStamp =DateTime.Now;
+                responseDto.TimeStamp = DateTime.Now;
                 return responseDto;
             }
             otpInfo.Email = customerFormDto.Email;
@@ -406,15 +435,16 @@ namespace KiloTaxi.DataAccess.Implementation
             var apiSecret = smsApi["ApiSecret"];
             string credentials = $"{apiKey}:{apiSecret}";
             string base64Credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials));
-            sendSms(customerFormDto.Phone, otpInfo.Otp, base64Credentials,BaseUrl);
+            sendSms(customerFormDto.Phone, otpInfo.Otp, base64Credentials, BaseUrl);
             return new ResponseDTO<OtpInfo>
             {
                 StatusCode = 200,
                 Message = "OTP generated successfully.",
                 Payload = otpInfo,
-                TimeStamp = DateTime.Now
+                TimeStamp = DateTime.Now,
             };
         }
+
         public string GenerateOTP()
         {
             Random random = new Random();
@@ -422,25 +452,34 @@ namespace KiloTaxi.DataAccess.Implementation
             return otp.ToString();
         }
 
-        public async void sendSms(string phone,string otpCode,string base64Credentials,string baseUrl)
+        public async void sendSms(
+            string phone,
+            string otpCode,
+            string base64Credentials,
+            string baseUrl
+        )
         {
             using (HttpClient client = new HttpClient())
             {
                 // Set the Authorization header with the Base64-encoded credentials
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", base64Credentials);
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue(
+                        "Bearer",
+                        base64Credentials
+                    );
 
                 // Prepare the request data
                 var requestData = new
                 {
                     to = "95" + phone, // Prefix country code
                     message = $"Your one-time otpcode is {otpCode}. Please use this code to complete your verification. This OTP is valid for 3 minutes. Do not share it with anyone.",
-                    from = "SMSPoh Demo"
+                    from = "SMSPoh Demo",
                 };
                 string jsonPayload = JsonSerializer.Serialize(requestData);
 
                 var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await client.PostAsync(baseUrl+"/send", content);
+                HttpResponseMessage response = await client.PostAsync(baseUrl + "/send", content);
                 if (response.IsSuccessStatusCode)
                 {
                     string responseBody = await response.Content.ReadAsStringAsync();
@@ -449,9 +488,12 @@ namespace KiloTaxi.DataAccess.Implementation
                 else
                 {
                     string errorDetails = await response.Content.ReadAsStringAsync();
-                    LoggerHelper.Instance.LogError($"Failed to send SMS: {response.StatusCode} - {response.ReasonPhrase}");
-                    LoggerHelper.Instance.LogError($"Error Details: {errorDetails}");                }
+                    LoggerHelper.Instance.LogError(
+                        $"Failed to send SMS: {response.StatusCode} - {response.ReasonPhrase}"
+                    );
+                    LoggerHelper.Instance.LogError($"Error Details: {errorDetails}");
+                }
             }
-        }    
+        }
     }
 }

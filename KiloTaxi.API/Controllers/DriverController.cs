@@ -32,14 +32,18 @@ public class DriverController : ControllerBase
     private const string flagDomainDriver = "driver";
     private const string flagDomainVehicle = "vehicle";
 
-    public DriverController(IDriverRepository driverRepository, IConfiguration configuration,DbKiloTaxiContext dbContext, IVehicleRepository vehicleRepository)
+    public DriverController(
+        IDriverRepository driverRepository,
+        IConfiguration configuration,
+        DbKiloTaxiContext dbContext,
+        IVehicleRepository vehicleRepository
+    )
     {
         _logHelper = LoggerHelper.Instance;
         _driverRepository = driverRepository;
         _configuration = configuration;
         _dbKiloTaxiContext = dbContext;
         _vehicleRepository = vehicleRepository;
-        
     }
 
     [HttpGet]
@@ -171,7 +175,9 @@ public class DriverController : ControllerBase
     // }
     [HttpPost("DriverRegister")]
     [AllowAnonymous]
-    public async Task<ActionResult<ResponseDTO<DriverInfoDTO>>> DriverRegister(DriverCreateFormDTO driverCreateFormDto)
+    public async Task<ActionResult<ResponseDTO<DriverInfoDTO>>> DriverRegister(
+        DriverCreateFormDTO driverCreateFormDto
+    )
     {
         try
         {
@@ -179,14 +185,14 @@ public class DriverController : ControllerBase
             {
                 return BadRequest(ModelState);
             }
-            var existPhoneDriver = _dbKiloTaxiContext.Drivers
-                .FirstOrDefault(driver => driver.Phone == driverCreateFormDto.Phone);
-            
+            var existPhoneDriver = _dbKiloTaxiContext.Drivers.FirstOrDefault(driver =>
+                driver.Phone == driverCreateFormDto.Phone
+            );
+
             if (existPhoneDriver != null)
             {
                 return Conflict(new { Message = "Another user already has this phone number." });
             }
-
 
             var fileUploadHelper = new FileUploadHelper(
                 _configuration,
@@ -196,8 +202,14 @@ public class DriverController : ControllerBase
             );
             var filesToProcess = new List<(IFormFile? File, string FilePathProperty)>
             {
-                (driverCreateFormDto.File_DriverImageLicenseFront, nameof(driverCreateFormDto.DriverImageLicenseFront)),
-                (driverCreateFormDto.File_DriverImageLicenseBack, nameof(driverCreateFormDto.DriverImageLicenseBack)),
+                (
+                    driverCreateFormDto.File_DriverImageLicenseFront,
+                    nameof(driverCreateFormDto.DriverImageLicenseFront)
+                ),
+                (
+                    driverCreateFormDto.File_DriverImageLicenseBack,
+                    nameof(driverCreateFormDto.DriverImageLicenseBack)
+                ),
                 (driverCreateFormDto.File_Profile, nameof(driverCreateFormDto.Profile)),
             };
 
@@ -217,7 +229,9 @@ public class DriverController : ControllerBase
                 }
 
                 var fileName = "_" + filePathProperty + resolvedFilePath;
-                typeof(DriverCreateFormDTO).GetProperty(filePathProperty)?.SetValue(driverCreateFormDto, fileName);
+                typeof(DriverCreateFormDTO)
+                    .GetProperty(filePathProperty)
+                    ?.SetValue(driverCreateFormDto, fileName);
             }
             var registerDriver = _driverRepository.DriverRegistration(driverCreateFormDto);
 
@@ -247,58 +261,87 @@ public class DriverController : ControllerBase
             }
             var filesToProcessVehicle = new List<(IFormFile? File, string FilePathProperty)>
             {
-                (driverCreateFormDto.File_BusinessLicenseImage, nameof(driverCreateFormDto.BusinessLicenseImage)),
-                (driverCreateFormDto.File_VehicleLicenseFront, nameof(driverCreateFormDto.VehicleLicenseFront)),
-                (driverCreateFormDto.File_VehicleLicenseBack, nameof(driverCreateFormDto.VehicleLicenseBack)),
+                (
+                    driverCreateFormDto.File_BusinessLicenseImage,
+                    nameof(driverCreateFormDto.BusinessLicenseImage)
+                ),
+                (
+                    driverCreateFormDto.File_VehicleLicenseFront,
+                    nameof(driverCreateFormDto.VehicleLicenseFront)
+                ),
+                (
+                    driverCreateFormDto.File_VehicleLicenseBack,
+                    nameof(driverCreateFormDto.VehicleLicenseBack)
+                ),
             };
             foreach (var (file, filePathProperty) in filesToProcessVehicle)
             {
-                if (!fileUploadHelper.ValidateFile(file, true, flagDomainVehicle, out var resolvedFilePath, out var errorMessage))
+                if (
+                    !fileUploadHelper.ValidateFile(
+                        file,
+                        true,
+                        flagDomainVehicle,
+                        out var resolvedFilePath,
+                        out var errorMessage
+                    )
+                )
                 {
                     return BadRequest(errorMessage);
                 }
 
                 var fileName = "_" + filePathProperty + resolvedFilePath;
-                typeof(DriverCreateFormDTO).GetProperty(filePathProperty)?.SetValue(driverCreateFormDto,fileName);
-
+                typeof(DriverCreateFormDTO)
+                    .GetProperty(filePathProperty)
+                    ?.SetValue(driverCreateFormDto, fileName);
             }
             driverCreateFormDto.DriverId = registerDriver.Id;
             driverCreateFormDto.VehicleTypeId = 1;
-            var registerVehicle=_vehicleRepository.VehicleRegistration(driverCreateFormDto);
+            var registerVehicle = _vehicleRepository.VehicleRegistration(driverCreateFormDto);
             registerDriver.VehicleInfo = new List<VehicleInfoDTO> { registerVehicle };
             foreach (var (file, filePathProperty) in filesToProcess)
-            { 
+            {
                 if (file != null && file.Length > 0)
                 {
-                    if (!fileUploadHelper.ValidateFile(file, true, flagDomainVehicle, out var resolvedFilePath, out var errorMessage))
+                    if (
+                        !fileUploadHelper.ValidateFile(
+                            file,
+                            true,
+                            flagDomainVehicle,
+                            out var resolvedFilePath,
+                            out var errorMessage
+                        )
+                    )
                     {
                         return BadRequest(errorMessage);
                     }
-                    await fileUploadHelper.SaveFileAsync(file, flagDomainVehicle,registerVehicle.Id.ToString()+"_"+filePathProperty, resolvedFilePath);
-
+                    await fileUploadHelper.SaveFileAsync(
+                        file,
+                        flagDomainVehicle,
+                        registerVehicle.Id.ToString() + "_" + filePathProperty,
+                        resolvedFilePath
+                    );
                 }
             }
             ResponseDTO<DriverInfoDTO> response = new ResponseDTO<DriverInfoDTO>();
-            response.StatusCode =Ok().StatusCode;
+            response.StatusCode = Ok().StatusCode;
             response.Message = "Driver Register Success.";
             response.Payload = registerDriver;
-            response.TimeStamp=DateTime.Now;
+            response.TimeStamp = DateTime.Now;
             return response;
-            
         }
         catch (Exception ex)
         {
             _logHelper.LogError(ex);
             throw new Exception("An error occurred while processing your request.");
-           // return StatusCode(500, "An error occurred while processing your request.");
+            // return StatusCode(500, "An error occurred while processing your request.");
         }
     }
-    
-    
-    
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put([FromRoute] int id, DriverUpdateFormDTO driverUpdateFormDto)
+    public async Task<IActionResult> Put(
+        [FromRoute] int id,
+        DriverUpdateFormDTO driverUpdateFormDto
+    )
     {
         try
         {
@@ -318,8 +361,14 @@ public class DriverController : ControllerBase
                 (driverUpdateFormDto.File_Profile, nameof(driverUpdateFormDto.Profile)),
                 // (driverFormDto.File_NrcImageFront, nameof(driverFormDto.NrcImageFront)),
                 // (driverFormDto.File_NrcImageBack, nameof(driverFormDto.NrcImageBack)),
-                (driverUpdateFormDto.File_DriverImageLicenseFront, nameof(driverUpdateFormDto.DriverImageLicenseFront)),
-                (driverUpdateFormDto.File_DriverImageLicenseBack, nameof(driverUpdateFormDto.DriverImageLicenseBack)),
+                (
+                    driverUpdateFormDto.File_DriverImageLicenseFront,
+                    nameof(driverUpdateFormDto.DriverImageLicenseFront)
+                ),
+                (
+                    driverUpdateFormDto.File_DriverImageLicenseBack,
+                    nameof(driverUpdateFormDto.DriverImageLicenseBack)
+                ),
             };
 
             // Validate and update file paths
@@ -340,7 +389,9 @@ public class DriverController : ControllerBase
                         return BadRequest(errorMessage);
                     }
                     var fileName = "_" + filePathProperty + resolvedFilePath;
-                    typeof(DriverUpdateFormDTO).GetProperty(filePathProperty)?.SetValue(driverUpdateFormDto, fileName);
+                    typeof(DriverUpdateFormDTO)
+                        .GetProperty(filePathProperty)
+                        ?.SetValue(driverUpdateFormDto, fileName);
                 }
             }
 
@@ -358,7 +409,12 @@ public class DriverController : ControllerBase
                 {
                     var fileExtension = Path.GetExtension(file.FileName);
                     var fileName = driverUpdateFormDto.Id.ToString() + "_" + filePathProperty;
-                    await fileUploadHelper.SaveFileAsync(file, flagDomainDriver, fileName, fileExtension);
+                    await fileUploadHelper.SaveFileAsync(
+                        file,
+                        flagDomainDriver,
+                        fileName,
+                        fileExtension
+                    );
                 }
             }
 
@@ -396,7 +452,10 @@ public class DriverController : ControllerBase
                     var resolvedFilePath = Path.Combine(
                             _configuration["MediaFilePath"],
                             flagDomainDriver,
-                            filePath.Replace($"{_configuration["MediaHostUrl"]}{flagDomainDriver}/", "")
+                            filePath.Replace(
+                                $"{_configuration["MediaHostUrl"]}{flagDomainDriver}/",
+                                ""
+                            )
                         )
                         .Replace('\\', '/');
                     if (System.IO.File.Exists(resolvedFilePath))
