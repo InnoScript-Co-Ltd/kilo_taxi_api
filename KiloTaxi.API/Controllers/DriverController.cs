@@ -47,16 +47,16 @@ public class DriverController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<DriverPagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
+    public ActionResult<ResponseDTO<DriverPagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
     {
         try
         {
-            DriverPagingDTO driverPagingDto = _driverRepository.GetAllDrivers(pageSortParam);
-            if (!driverPagingDto.Drivers.Any())
+            var responseDto = _driverRepository.GetAllDrivers(pageSortParam);
+            if (!responseDto.Payload.Drivers.Any())
             {
                 return NoContent();
             }
-            return Ok(driverPagingDto);
+            return responseDto;
         }
         catch (Exception ex)
         {
@@ -470,6 +470,241 @@ public class DriverController : ControllerBase
                 return NotFound();
             }
             return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logHelper.LogError(ex);
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
+    }
+
+    [HttpGet("GetAllDrivers")]
+    public ActionResult<ResponseDTO<DriverPagingDTO>> GetAllDrivers(
+        [FromQuery] PageSortParam pageSortParam
+    )
+    {
+        try
+        {
+            var responseDto = _driverRepository.GetAllDrivers(pageSortParam);
+
+            if (responseDto?.Payload?.Drivers == null || !responseDto.Payload.Drivers.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(responseDto);
+        }
+        catch (Exception ex)
+        {
+            _logHelper.LogError(ex);
+
+            return StatusCode(
+                500,
+                new
+                {
+                    Message = "An error occurred while processing your request.",
+                    Details = ex.Message,
+                }
+            );
+        }
+    }
+
+    [HttpGet("GetDriverById/{id}")]
+    public ActionResult<ResponseDTO<DriverInfoDTO>> GetDriverById(int id)
+    {
+        try
+        {
+            if (id == 0)
+            {
+                return BadRequest("Invalid driver ID.");
+            }
+
+            var result = _driverRepository.GetDriverById(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            ResponseDTO<DriverInfoDTO> responseDto = new ResponseDTO<DriverInfoDTO>
+            {
+                StatusCode = Ok().StatusCode,
+                Message = "Driver retrieved successfully.",
+                Payload = result,
+            };
+
+            return Ok(responseDto);
+        }
+        catch (Exception ex)
+        {
+            _logHelper.LogError(ex);
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
+    }
+
+    [HttpPut("UpdateDriver/{id}")]
+    public async Task<ActionResult<ResponseDTO<DriverInfoDTO>>> UpdateDriver(
+        [FromRoute] int id,
+        DriverUpdateFormDTO driverUpdateFormDto
+    )
+    {
+        try
+        {
+            if (id != driverUpdateFormDto.Id)
+            {
+                return BadRequest("Driver ID mismatch.");
+            }
+
+            // Check if the phone and email are unique
+            var existPhoneDriver = _dbKiloTaxiContext.Drivers.FirstOrDefault(driver =>
+                driver.Phone == driverUpdateFormDto.Phone
+            );
+
+            if (existPhoneDriver != null && existPhoneDriver.Id != driverUpdateFormDto.Id)
+            {
+                return Conflict(new { Message = "Another driver already has this phone number." });
+            }
+
+            var fileUploadHelper = new FileUploadHelper(
+                _configuration,
+                _allowedExtensions,
+                _allowedMimeTypes,
+                _maxFileSize
+            );
+            var filesToProcess = new List<(IFormFile file, string filePathProperty)>
+            {
+                (driverUpdateFormDto.File_Profile, nameof(driverUpdateFormDto.Profile)),
+                (
+                    driverUpdateFormDto.File_DriverImageLicenseFront,
+                    nameof(driverUpdateFormDto.DriverImageLicenseFront)
+                ),
+                (
+                    driverUpdateFormDto.File_DriverImageLicenseBack,
+                    nameof(driverUpdateFormDto.DriverImageLicenseBack)
+                ),
+            };
+
+            foreach (var (file, filePathProperty) in filesToProcess)
+            {
+                if (file != null && file.Length > 0)
+                {
+                    if (
+                        !fileUploadHelper.ValidateFile(
+                            file,
+                            true,
+                            flagDomainDriver,
+                            out var resolvedFilePath,
+                            out var errorMessage
+                        )
+                    )
+                    {
+                        return BadRequest(errorMessage);
+                    }
+                    var fileName = "_" + filePathProperty + resolvedFilePath;
+                    typeof(DriverUpdateFormDTO)
+                        .GetProperty(filePathProperty)
+                        ?.SetValue(driverUpdateFormDto, fileName);
+                }
+            }
+
+            driverUpdateFormDto.Password = BCrypt.Net.BCrypt.HashPassword(
+                driverUpdateFormDto.Password
+            );
+
+            var isUpdated = _driverRepository.UpdateDriver(driverUpdateFormDto);
+            if (!isUpdated)
+            {
+                return NotFound();
+            }
+
+            foreach (var (file, filePathProperty) in filesToProcess)
+            {
+                if (file != null && file.Length > 0)
+                {
+                    var fileExtension = Path.GetExtension(file.FileName);
+                    var fileName = driverUpdateFormDto.Id.ToString() + "_" + filePathProperty;
+                    await fileUploadHelper.SaveFileAsync(
+                        file,
+                        flagDomainDriver,
+                        fileName,
+                        fileExtension
+                    );
+                }
+            }
+
+            ResponseDTO<DriverInfoDTO> responseDto = new ResponseDTO<DriverInfoDTO>
+            {
+                StatusCode = 200, // OK status
+                Message = "Driver Info Updated Successfully.",
+                Payload =
+                    null // No payload since we're just updating the driver
+                ,
+            };
+
+            return Ok(responseDto);
+        }
+        catch (Exception ex)
+        {
+            _logHelper.LogError(ex);
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
+    }
+
+    [HttpGet("DeleteDriver/{id}")]
+    public ActionResult<ResponseDTO<DriverInfoDTO>> DeleteDriver([FromRoute] int id)
+    {
+        try
+        {
+            var deleteEntity = _driverRepository.GetDriverById(id);
+            if (deleteEntity == null)
+            {
+                return NotFound();
+            }
+
+            // List of file paths to delete (modify as necessary)
+            var filePaths = new List<string?>
+            {
+                deleteEntity.Profile,
+                deleteEntity.DriverImageLicenseFront,
+                deleteEntity.DriverImageLicenseBack,
+            };
+
+            foreach (var filePath in filePaths)
+            {
+                if (!filePath.Contains("default.png") && !string.IsNullOrEmpty(filePath))
+                {
+                    var resolvedFilePath = Path.Combine(
+                            _configuration["MediaFilePath"],
+                            flagDomainDriver,
+                            filePath.Replace(
+                                $"{_configuration["MediaHostUrl"]}{flagDomainDriver}/",
+                                ""
+                            )
+                        )
+                        .Replace('\\', '/');
+                    if (System.IO.File.Exists(resolvedFilePath))
+                    {
+                        System.IO.File.Delete(resolvedFilePath);
+                    }
+                }
+            }
+
+            var result = _driverRepository.DeleteDriver(deleteEntity.Id);
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            // Return a response with a success message
+            ResponseDTO<DriverInfoDTO> responseDto = new ResponseDTO<DriverInfoDTO>
+            {
+                StatusCode = 200, // OK status
+                Message = "Driver Info Deleted Successfully.",
+                Payload =
+                    null // No payload since we are deleting the driver
+                ,
+            };
+
+            return Ok(responseDto);
         }
         catch (Exception ex)
         {

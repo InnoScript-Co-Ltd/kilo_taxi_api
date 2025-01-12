@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Common.ConfigurationSettings;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.Converter;
@@ -27,7 +28,7 @@ public class DriverRepository : IDriverRepository
         _mediaHostUrl = mediaSettings.Value.MediaHostUrl;
     }
 
-    public DriverPagingDTO GetAllDrivers(PageSortParam pageSortParam)
+    public ResponseDTO<DriverPagingDTO> GetAllDrivers(PageSortParam pageSortParam)
     {
         try
         {
@@ -89,7 +90,14 @@ public class DriverRepository : IDriverRepository
                     pageSortParam.CurrentPage * pageSortParam.PageSize
                 ),
             };
-            return new DriverPagingDTO() { Paging = pagingResult, Drivers = drivers };
+            // return new DriverPagingDTO() { Paging = pagingResult, Drivers = drivers };
+
+            ResponseDTO<DriverPagingDTO> responseDto = new ResponseDTO<DriverPagingDTO>();
+            responseDto.StatusCode = (int)HttpStatusCode.OK;
+            responseDto.Message = "Drivers retrieved successfully";
+            responseDto.TimeStamp = DateTime.Now;
+            responseDto.Payload = new DriverPagingDTO { Paging = pagingResult, Drivers = drivers };
+            return responseDto;
         }
         catch (Exception ex)
         {
@@ -102,15 +110,21 @@ public class DriverRepository : IDriverRepository
     {
         try
         {
-            var driverDTO = DriverConverter.ConvertEntityToModel(
-                _dbKiloTaxiContext.Drivers.FirstOrDefault(x => x.Id == id),
-                _mediaHostUrl
-            );
+            var driverEntity = _dbKiloTaxiContext.Drivers.FirstOrDefault(driver => driver.Id == id);
+            if (driverEntity == null)
+            {
+                LoggerHelper.Instance.LogError($"Driver with Id: {id} not found.");
+                return null;
+            }
+
+            var driverDTO = DriverConverter.ConvertEntityToModel(driverEntity, _mediaHostUrl);
+
             var vehicleDTO = _dbKiloTaxiContext
                 .Vehicles.Where(v => v.DriverId == driverDTO.Id)
                 .Select(vehicle => VehicleConverter.ConvertEntityToModel(vehicle, _mediaHostUrl))
                 .ToList();
-            var WalletUserMappingDTO = _dbKiloTaxiContext
+
+            var walletUserMappingDTO = _dbKiloTaxiContext
                 .WalletUserMappings.Where(w =>
                     w.UserId == driverDTO.Id && w.UserType == UserType.Driver.ToString()
                 )
@@ -118,15 +132,18 @@ public class DriverRepository : IDriverRepository
                     WalletUserMappingConverter.ConvertEntityToModel(walletUserMapping)
                 )
                 .ToList();
-                 //driverDTO.Vehicle = vehicleDTO;
-                //driverDTO.WalletUserMapping = WalletUserMappingDTO;
-                driverDTO.VehicleInfo = vehicleDTO;
-                
+
+            driverDTO.VehicleInfo = vehicleDTO;
+            // driverDTO.WalletUserMappingInfo = walletUserMappingDTO;
+
             return driverDTO;
         }
         catch (Exception ex)
         {
-            LoggerHelper.Instance.LogError(ex, $"Error occured while getting driver by id: {id}");
+            LoggerHelper.Instance.LogError(
+                ex,
+                $"Error occurred while fetching driver with Id: {id}"
+            );
             throw;
         }
     }
@@ -146,7 +163,10 @@ public class DriverRepository : IDriverRepository
             driverCreateDto.Id = driverEntity.Id;
             var filePaths = new List<(string PropertyName, string FilePath)>
             {
-                (nameof(driverEntity.DriverImageLicenseFront), driverEntity.DriverImageLicenseFront),
+                (
+                    nameof(driverEntity.DriverImageLicenseFront),
+                    driverEntity.DriverImageLicenseFront
+                ),
                 (nameof(driverEntity.DriverImageLicenseBack), driverEntity.DriverImageLicenseBack),
                 (nameof(driverEntity.Profile), driverEntity.Profile),
             };
@@ -154,10 +174,12 @@ public class DriverRepository : IDriverRepository
             {
                 if (!filePath.Contains("default.png"))
                 {
-                     if (propertyName == nameof(driverEntity.DriverImageLicenseFront))
-                        driverEntity.DriverImageLicenseFront = $"driver/{driverCreateDto.Id}{filePath}";
+                    if (propertyName == nameof(driverEntity.DriverImageLicenseFront))
+                        driverEntity.DriverImageLicenseFront =
+                            $"driver/{driverCreateDto.Id}{filePath}";
                     else if (propertyName == nameof(driverEntity.DriverImageLicenseBack))
-                        driverEntity.DriverImageLicenseBack = $"driver/{driverCreateDto.Id}{filePath}";
+                        driverEntity.DriverImageLicenseBack =
+                            $"driver/{driverCreateDto.Id}{filePath}";
                     else if (propertyName == nameof(driverEntity.Profile))
                         driverEntity.Profile = $"driver/{driverCreateDto.Id}{filePath}";
                 }
@@ -165,7 +187,7 @@ public class DriverRepository : IDriverRepository
 
             _dbKiloTaxiContext.SaveChanges();
 
-           var driverInfoDTO = DriverConverter.ConvertEntityToModel(driverEntity, _mediaHostUrl);
+            var driverInfoDTO = DriverConverter.ConvertEntityToModel(driverEntity, _mediaHostUrl);
             return driverInfoDTO;
         }
         catch (Exception ex)
@@ -180,18 +202,26 @@ public class DriverRepository : IDriverRepository
         bool result = false;
         try
         {
-            var driverEntity = _dbKiloTaxiContext.Drivers.FirstOrDefault(d => d.Id == driverUpdateFormDto.Id);
+            var driverEntity = _dbKiloTaxiContext.Drivers.FirstOrDefault(d =>
+                d.Id == driverUpdateFormDto.Id
+            );
             if (driverEntity == null)
             {
-                return result;
+                return false;
             }
             // List of image properties to update
             var imageProperties = new List<(string driverDTOProperty, string driverEntityFile)>
             {
                 // (nameof(driverDTO.NrcImageFront), driverEntity.NrcImageFront),
                 // (nameof(driverDTO.NrcImageBack), driverEntity.NrcImageBack),
-                (nameof(driverUpdateFormDto.DriverImageLicenseFront), driverEntity.DriverImageLicenseFront),
-                (nameof(driverUpdateFormDto.DriverImageLicenseBack), driverEntity.DriverImageLicenseBack),
+                (
+                    nameof(driverUpdateFormDto.DriverImageLicenseFront),
+                    driverEntity.DriverImageLicenseFront
+                ),
+                (
+                    nameof(driverUpdateFormDto.DriverImageLicenseBack),
+                    driverEntity.DriverImageLicenseBack
+                ),
                 (nameof(driverUpdateFormDto.Profile), driverEntity.Profile),
             };
 
@@ -212,7 +242,10 @@ public class DriverRepository : IDriverRepository
                 {
                     typeof(DriverUpdateFormDTO)
                         .GetProperty(driverDTOProperty)
-                        ?.SetValue(driverUpdateFormDto, $"driver/{driverUpdateFormDto.Id}{dtoValue}");
+                        ?.SetValue(
+                            driverUpdateFormDto,
+                            $"driver/{driverUpdateFormDto.Id}{dtoValue}"
+                        );
                 }
             }
 
@@ -230,12 +263,14 @@ public class DriverRepository : IDriverRepository
             throw;
         }
     }
-    
-        public void UpdateDriverStatus(DriverCreateFormDTO driverCreateDto)
+
+    public void UpdateDriverStatus(DriverCreateFormDTO driverCreateDto)
     {
         try
         {
-            var driverEntity = _dbKiloTaxiContext.Drivers.FirstOrDefault(d => d.Id == driverCreateDto.Id);
+            var driverEntity = _dbKiloTaxiContext.Drivers.FirstOrDefault(d =>
+                d.Id == driverCreateDto.Id
+            );
             driverEntity.AvabilityStatus = driverCreateDto.AvailableStatus.ToString();
             _dbKiloTaxiContext.SaveChanges();
         }
@@ -257,7 +292,7 @@ public class DriverRepository : IDriverRepository
             var driverEntity = _dbKiloTaxiContext.Drivers.FirstOrDefault(x => x.Id == id);
             if (driverEntity == null)
             {
-                return result;
+                return false;
             }
 
             _dbKiloTaxiContext.Drivers.Remove(driverEntity);
@@ -271,18 +306,19 @@ public class DriverRepository : IDriverRepository
             throw;
         }
     }
-    
+
     public async Task<DriverInfoDTO> ValidateDriverCredentials(string EmailOrPhone, string password)
     {
-
         if (string.IsNullOrEmpty(EmailOrPhone) || string.IsNullOrEmpty(password))
         {
             return null; // Or throw an exception depending on your use case
         }
 
-        Driver driverEntity =  _dbKiloTaxiContext.Drivers.SingleOrDefault(driver => driver.Phone == EmailOrPhone);
-           
-        if (driverEntity != null || ! BCrypt.Net.BCrypt.Verify(password, driverEntity.Password))
+        Driver driverEntity = _dbKiloTaxiContext.Drivers.SingleOrDefault(driver =>
+            driver.Phone == EmailOrPhone
+        );
+
+        if (driverEntity != null || !BCrypt.Net.BCrypt.Verify(password, driverEntity.Password))
         {
             return DriverConverter.ConvertEntityToModel(driverEntity, _mediaHostUrl);
         }
@@ -291,12 +327,12 @@ public class DriverRepository : IDriverRepository
         return null;
     }
 
-    public List<DriverInfoDTO> SearchNearbyOnlineDriver() {
-        var onlineDrivers = _dbKiloTaxiContext.Drivers
-        .Where(driver => driver.AvabilityStatus == DriverStatus.Online.ToString())
-        .ToList(); 
+    public List<DriverInfoDTO> SearchNearbyOnlineDriver()
+    {
+        var onlineDrivers = _dbKiloTaxiContext
+            .Drivers.Where(driver => driver.AvabilityStatus == DriverStatus.Online.ToString())
+            .ToList();
 
-       
         var onlineDriverDTOs = onlineDrivers
             .Select(driver => DriverConverter.ConvertEntityToModel(driver, _mediaHostUrl))
             .ToList();
