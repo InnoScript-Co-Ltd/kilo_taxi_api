@@ -10,7 +10,10 @@ namespace KiloTaxi.Converter
 {
     public static class CustomerConverter
     {
-        public static CustomerInfoDTO ConvertEntityToModel(Customer customerEntity, string mediaHostUrl)
+        public static CustomerInfoDTO ConvertEntityToModel(
+            Customer customerEntity,
+            string mediaHostUrl
+        )
         {
             if (customerEntity == null)
             {
@@ -34,13 +37,13 @@ namespace KiloTaxi.Converter
                 CreatedDate = customerEntity.CreatedDate,
                 Phone = customerEntity.Phone,
                 Email = customerEntity.Email,
-                Gender =  Enum.Parse<GenderType>(customerEntity.Gender),
-                Password= customerEntity.Password,
+                Gender = Enum.Parse<GenderType>(customerEntity.Gender),
+                Password = customerEntity.Password,
                 Address = customerEntity.Address,
                 City = customerEntity.City,
                 Township = customerEntity.Township,
-                Status =    Enum.Parse<CustomerStatus>(customerEntity.Status),
-                KycStatus =Enum.Parse<KycStatus>(customerEntity.KycStatus),
+                Status = Enum.Parse<CustomerStatus>(customerEntity.Status),
+                KycStatus = Enum.Parse<KycStatus>(customerEntity.KycStatus),
             };
         }
 
@@ -80,7 +83,7 @@ namespace KiloTaxi.Converter
                 customerEntity.Profile = customerFormDto.Profile;
                 customerEntity.MobilePrefix = customerFormDto.MobilePrefix;
                 customerEntity.RefreshToken = customerFormDto.RefreshToken;
-                customerEntity.CreatedDate=customerFormDto.CreatedDate ?? DateTime.MinValue;
+                customerEntity.CreatedDate = customerFormDto.CreatedDate ?? DateTime.MinValue;
                 customerEntity.RefreshTokenExpiryTime = customerFormDto.RefreshTokenExpiryTime;
                 customerEntity.Otp = customerFormDto.Otp;
                 customerEntity.Phone = customerFormDto.Phone;
@@ -90,18 +93,20 @@ namespace KiloTaxi.Converter
                 customerEntity.EmailVerifiedAt = customerFormDto.EmailVerifiedAt;
                 customerEntity.PhoneVerifiedAt = customerFormDto.PhoneVerifiedAt;
                 customerEntity.Password = customerFormDto.Password;
-                customerEntity.Gender = string.IsNullOrEmpty(customerFormDto.Gender.ToString()) 
-                    ? GenderType.Undefined.ToString() 
+                customerEntity.Gender = string.IsNullOrEmpty(customerFormDto.Gender.ToString())
+                    ? GenderType.Undefined.ToString()
                     : customerFormDto.Gender.ToString();
                 customerEntity.Address = customerFormDto.Address;
                 customerEntity.State = customerFormDto.State;
                 customerEntity.City = customerFormDto.City;
                 customerEntity.Township = customerFormDto.Township;
-                customerEntity.Status = string.IsNullOrEmpty(customerFormDto.Status.ToString()) 
-                    ? CustomerStatus.Pending.ToString() 
+                customerEntity.Status = string.IsNullOrEmpty(customerFormDto.Status.ToString())
+                    ? CustomerStatus.Pending.ToString()
                     : customerFormDto.Status.ToString();
-                customerEntity.KycStatus = string.IsNullOrEmpty(customerFormDto.KycStatus.ToString()) 
-                    ? KycStatus.Pending.ToString() 
+                customerEntity.KycStatus = string.IsNullOrEmpty(
+                    customerFormDto.KycStatus.ToString()
+                )
+                    ? KycStatus.Pending.ToString()
                     : customerFormDto.KycStatus.ToString();
             }
             catch (Exception ex)

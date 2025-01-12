@@ -3,6 +3,8 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
@@ -35,9 +37,9 @@ namespace KiloTaxi.Converter
                 EmailVerifiedAt = adminEntity.EmailVerifiedAt,
                 PhoneVerifiedAt = adminEntity.PhoneVerifiedAt,
                 Password = adminEntity.Password,
-                Gender =Enum.Parse<GenderType>(adminEntity.Gender),
+                Gender = Enum.Parse<GenderType>(adminEntity.Gender),
                 Address = adminEntity.Address,
-                Status =Enum.Parse<CustomerStatus>(adminEntity.Status),
+                Status = Enum.Parse<CustomerStatus>(adminEntity.Status),
             };
         }
 
@@ -60,7 +62,7 @@ namespace KiloTaxi.Converter
                 adminEntity.Id = adminDTO.Id;
                 adminEntity.Name = adminDTO.Name;
                 adminEntity.Phone = adminDTO.Phone;
-                adminEntity.RefreshToken= adminDTO.RefreshToken;
+                adminEntity.RefreshToken = adminDTO.RefreshToken;
                 adminEntity.RefreshTokenExpiryTime = adminDTO.RefreshTokenExpiryTime;
                 adminEntity.Email = adminDTO.Email;
                 adminEntity.Role = adminDTO.Role;

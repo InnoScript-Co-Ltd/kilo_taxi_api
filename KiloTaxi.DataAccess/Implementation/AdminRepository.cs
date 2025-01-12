@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using System.Net;
+using BCrypt.Net;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
@@ -6,8 +8,8 @@ using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
-using BCrypt.Net;
 
 namespace KiloTaxi.DataAccess.Implementation
 {
@@ -20,7 +22,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbKiloTaxiContext;
         }
 
-        public AdminPagingDTO GetAllAdmin(PageSortParam pageSortParam)
+        public ResponseDTO<AdminPagingDTO> GetAllAdmin(PageSortParam pageSortParam)
         {
             try
             {
@@ -85,7 +87,13 @@ namespace KiloTaxi.DataAccess.Implementation
                     ),
                 };
 
-                return new AdminPagingDTO { Paging = pagingResult, Admins = admins };
+                // return new AdminPagingDTO { Paging = pagingResult, Admins = admins };
+                ResponseDTO<AdminPagingDTO> responseDto = new ResponseDTO<AdminPagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "Admins retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new AdminPagingDTO { Paging = pagingResult, Admins = admins };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -98,8 +106,8 @@ namespace KiloTaxi.DataAccess.Implementation
         {
             try
             {
-                Admin adminEntity = new Admin(); 
-                 adminDTO.Password=BCrypt.Net.BCrypt.HashPassword(adminDTO.Password);
+                Admin adminEntity = new Admin();
+                adminDTO.Password = BCrypt.Net.BCrypt.HashPassword(adminDTO.Password);
 
                 AdminConverter.ConvertModelToEntity(adminDTO, ref adminEntity);
 
@@ -198,15 +206,16 @@ namespace KiloTaxi.DataAccess.Implementation
 
         public async Task<AdminDTO> ValidateAdminCredentials(string EmailOrPhone, string password)
         {
-
             if (string.IsNullOrEmpty(EmailOrPhone) || string.IsNullOrEmpty(password))
             {
                 return null; // Or throw an exception depending on your use case
             }
 
-            Admin adminEntity =  _dbKiloTaxiContext.Admins.SingleOrDefault(admin => admin.Email == EmailOrPhone);
-            var adminDto= AdminConverter.ConvertEntityToModel(adminEntity);
-            if (adminEntity != null || ! BCrypt.Net.BCrypt.Verify(password, adminEntity.Password))
+            Admin adminEntity = _dbKiloTaxiContext.Admins.SingleOrDefault(admin =>
+                admin.Email == EmailOrPhone
+            );
+            var adminDto = AdminConverter.ConvertEntityToModel(adminEntity);
+            if (adminEntity != null || !BCrypt.Net.BCrypt.Verify(password, adminEntity.Password))
             {
                 return adminDto;
             }
