@@ -13,10 +13,9 @@ public interface ICustomerRepository
     bool UpdateCustomer(CustomerFormDTO customerFormDTO);
     CustomerInfoDTO GetCustomerById(int id);
     bool DeleteCustomer(int id);
-    
-    Task<CustomerInfoDTO> ValidateCustomerCredentials(string emailOrPhone,string password);
-    
-    Task<ResponseDTO<OtpInfo>> FindCustomerAndGenerateOtp(CustomerFormDTO pageSortParam);
-   void sendSms(string phone, string otpCode, string base64Credentials, string baseUrl);
 
+    Task<CustomerInfoDTO> ValidateCustomerCredentials(string emailOrPhone, string password);
+
+    Task<ResponseDTO<OtpInfo>> FindCustomerAndGenerateOtp(CustomerFormDTO pageSortParam);
+    void sendSms(string phone, string otpCode, string base64Credentials, string baseUrl);
 }
