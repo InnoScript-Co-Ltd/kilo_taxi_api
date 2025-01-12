@@ -7,4 +7,7 @@ public class OrderExtraDemandDTO
     public int OrderId { get; set; }
     
     public int ExtraDemandId { get; set; }
+    
+    public int Unit { get; set; }
+
 }

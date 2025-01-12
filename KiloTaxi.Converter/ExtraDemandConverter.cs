@@ -26,7 +26,6 @@ namespace KiloTaxi.Converter
                 Id = extraDemandEntity.Id,
                 Title = extraDemandEntity.Title,
                 Description = extraDemandEntity.Description,
-                Unit = extraDemandEntity.Unit,
                 Amount = extraDemandEntity.Amount,
                 CreateDate = extraDemandEntity.CreateDate,
             };
@@ -66,7 +65,6 @@ namespace KiloTaxi.Converter
                 extraDemandEntity.Id = extraDemandDTO.Id;
                 extraDemandEntity.Title = extraDemandDTO.Title;
                 extraDemandEntity.Description = extraDemandDTO.Description;
-                extraDemandEntity.Unit = extraDemandDTO.Unit;
                 extraDemandEntity.Amount = extraDemandDTO.Amount;
                 extraDemandEntity.CreateDate = extraDemandDTO.CreateDate;
             }

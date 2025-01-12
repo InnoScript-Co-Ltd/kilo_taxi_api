@@ -8,4 +8,8 @@ public interface IApiClient
     Task ReceiveTripLocation(TripLocation tripLocation);
 
     Task AcceptOrderAsync(OrderDTO orderDTO, int driverID);
+    
+    Task ArrivedLocation(OrderDTO orderDTO, int driverID);
+    
+    Task TripBegin(OrderDTO orderDTO);
 }

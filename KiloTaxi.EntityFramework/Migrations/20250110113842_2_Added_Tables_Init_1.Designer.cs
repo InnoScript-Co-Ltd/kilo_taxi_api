@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KiloTaxi.EntityFramework.Migrations
 {
     [DbContext(typeof(DbKiloTaxiContext))]
-    [Migration("20250107205901_2_Added_Tables_Init_1")]
+    [Migration("20250110113842_2_Added_Tables_Init_1")]
     partial class _2_Added_Tables_Init_1
     {
         /// <inheritdoc />
@@ -393,9 +393,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Unit")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("ExtraDemand", (string)null);
@@ -569,6 +566,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Unit")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

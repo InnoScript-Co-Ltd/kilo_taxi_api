@@ -22,11 +22,10 @@ public class CustomerHub : Hub<ICustomerClient>, ICustomerHub
         try
         {
             //  Assuming the driver app sends a unique identifier (e.g., vehicleId or driverid) when connecting
-            Console.WriteLine("hello");
             var key = Context.GetHttpContext().Request.Query["customerId"].ToString();
-            Console.WriteLine($"Connected to " + key);
             _customerConnectionManager.AddConnection(key, Context.ConnectionId);
             _logHelper.LogDebug("Customer Client connected");
+            Console.WriteLine($"Connected to customer " + key);
 
             await base.OnConnectedAsync();
         }

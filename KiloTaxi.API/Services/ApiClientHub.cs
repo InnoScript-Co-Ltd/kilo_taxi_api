@@ -112,14 +112,35 @@ public class ApiClientHub : IDisposable
             var driverRepository = scope.ServiceProvider.GetRequiredService<IDriverRepository>();
             var orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
             var driverInfoDTO = driverRepository.GetDriverById(driverID);
-            orderDTO.Status = Common.Enums.OrderStatus.InProgress;
+            orderDTO.Status = Common.Enums.OrderStatus.DriverAccepted;
             orderRepository.UpdateOrder(orderDTO);
             if (_hubConnection.State == HubConnectionState.Connected)
             {
                 await _hubConnection.InvokeAsync("SendDriverInfoToCustomer", orderDTO, driverInfoDTO);
             }
         });
-        _serviceProvider = serviceProvider;
+        _hubConnection.On<OrderDTO, int>("ArrivedLocation", async (orderDTO, driverID) =>
+        {
+            Console.WriteLine($"Message from server: accept order");
+            using var scope = _serviceProvider.CreateScope();
+            var driverRepository = scope.ServiceProvider.GetRequiredService<IDriverRepository>();
+            var driverInfoDTO = driverRepository.GetDriverById(driverID);
+            if (_hubConnection.State == HubConnectionState.Connected)
+            {
+                await _hubConnection.InvokeAsync("SendReceiveDriverArrivedLocation", orderDTO, driverInfoDTO);
+            }
+        });
+        _hubConnection.On<OrderDTO>("TripBegin", async(orderDTO) =>
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
+            orderDTO.Status = Common.Enums.OrderStatus.InProgress;
+            orderRepository.UpdateOrder(orderDTO);
+            if (_hubConnection.State == HubConnectionState.Connected)
+            {
+                await _hubConnection.InvokeAsync("SendTripBeginToCustomer", orderDTO);
+            }
+        });
     }
 
     public async Task StartConnectionAsync()

@@ -13,7 +13,6 @@ public class ExtraDemand
     
     public string Description { get; set; }
     
-    public int Unit { get; set; }
     
     [Column(TypeName = "decimal(18, 2)")]
     public decimal Amount { get; set; }

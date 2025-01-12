@@ -70,15 +70,40 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-                        </Button>                    </StackPanel>
+                        </Button>                   
+                    </StackPanel>
                 </Border>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Height="25" />
-                <StackPanel>
-                    <Button x:Name="btnAcceptOrder" Content="AcceptOrder" Click="btnAcceptOrder_Click"></Button>
-
-                </StackPanel>
             </DockPanel>
-
+            <Grid>
+                <StackPanel>
+                    <Button x:Name="btnAcceptOrder" Content="Accept Order" Click="btnAcceptOrder_Click" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    </ScrollViewer>
+                </StackPanel>
+            </Grid>
+            <Grid>
+                <StackPanel>
+                    <Button x:Name="btnArrivedLocation" Content="Arrived" Click="btnArrivedLocation_Click" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    </ScrollViewer>
+                </StackPanel>
+            </Grid>
+            <Grid>
+                <StackPanel>
+                    <Button x:Name="btnTripBegin" Content="Start" Click="btnTripBegin_Click" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    </ScrollViewer>
+                </StackPanel>
+            </Grid>
+            <Grid>
+                <StackPanel>
+                    <Button x:Name="btnTripFinish" Content="Finish" Click="btnTripFinish_Click" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    </ScrollViewer>
+                </StackPanel>
+            </Grid>
+            
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="100" Height="310" >
                 <Grid>
                     <Grid.RowDefinitions>

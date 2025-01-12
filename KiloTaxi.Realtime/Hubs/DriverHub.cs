@@ -148,7 +148,37 @@ namespace KiloTaxi.Realtime.Hubs
             try
             {
                 var key = Context.GetHttpContext().Request.Query["driverId"].ToString();
+                var driverConnectionId = _driverConnectionManager.GetConnectionId(key);
+
+                _driverConnectionManager.NotifyOrderAccepted(driverConnectionId, orderDTO.Id.ToString());
+                Console.WriteLine($"Driver {key} accepted order {orderDTO.Id}.");
+
                 await _hubApi.Clients.All.AcceptOrderAsync(orderDTO, int.Parse(key));
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex, ex?.Message);
+            }
+
+        }
+        public async Task ArrivedLocation(OrderDTO orderDTO)
+        {
+            try
+            {
+                var key = Context.GetHttpContext().Request.Query["driverId"].ToString();
+                await _hubApi.Clients.All.ArrivedLocation(orderDTO, int.Parse(key));
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex, ex?.Message);
+            }
+
+        }
+        public async Task SendTripBegin(OrderDTO orderDTO)
+        {
+            try
+            {
+                await _hubApi.Clients.All.TripBegin(orderDTO);
             }
             catch (Exception ex)
             {

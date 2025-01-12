@@ -179,7 +179,25 @@ namespace Simulator.CustomerApp
 
                 });
             });
+            connection.On("ReceiveDriverArrivedLocation", async (OrderDTO orderDTO, DriverInfoDTO driverDTO) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    var jsonSerializedModelOrderDTO = JsonSerializer.Serialize(orderDTO);
+                    var jsonSerializedModelDriverDTO = JsonSerializer.Serialize(driverDTO);
+                    lblLogs.Text += Environment.NewLine + $"Driver {driverDTO.Name} arrived {orderDTO.PickUpLocation}";
 
+                });
+            });
+            connection.On("ReceiveTripBegin", async (OrderDTO orderDTO) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    var jsonSerializedModelOrderDTO = JsonSerializer.Serialize(orderDTO);
+                    lblLogs.Text += Environment.NewLine + $"Trip Beginned";
+
+                });
+            });
         }
 
        

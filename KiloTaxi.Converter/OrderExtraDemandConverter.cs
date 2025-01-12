@@ -26,6 +26,7 @@ namespace KiloTaxi.Converter
                 Id = orderExtraDemandEntity.Id,
                 OrderId = orderExtraDemandEntity.OrderId,
                 ExtraDemandId = orderExtraDemandEntity.ExtraDemandId,
+                Unit = orderExtraDemandEntity.Unit,
             };
         }
 
@@ -63,6 +64,7 @@ namespace KiloTaxi.Converter
                 orderExtraDemandEntity.Id = orderExtraDemandDTO.Id;
                 orderExtraDemandEntity.OrderId = orderExtraDemandDTO.OrderId;
                 orderExtraDemandEntity.ExtraDemandId = orderExtraDemandDTO.ExtraDemandId;
+                orderExtraDemandEntity.Unit = orderExtraDemandDTO.Unit;
             }
             catch (Exception ex)
             {

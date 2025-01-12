@@ -35,8 +35,8 @@ namespace Simulator.DriverApp
         {
             VehicleLocation vehicleLocation = new VehicleLocation() { 
                 VehicleId = vehicleId,
-                Lat ="123.45",
-                Long = "678.98"
+                Lat ="16.78083",
+                Long = "96.14972"
             };
             connection.InvokeAsync("SendVehicleLocation", vehicleLocation);
         }
@@ -113,15 +113,16 @@ namespace Simulator.DriverApp
             await connection.InvokeAsync("SendDriverAvalilityStatus", currentStatus.ToString());
         }
 
-        private void btnAcceptOrder_Click(object sender, RoutedEventArgs e)
+        private async  void btnAcceptOrder_Click(object sender, RoutedEventArgs e)
         {
             if (currentOrderDto != null)
             {
                 // Log the OrderDTO data
                 var jsonSerializedModel = JsonSerializer.Serialize(currentOrderDto);
+                
              
                 // Invoke the SignalR hub method
-                connection.InvokeAsync("AcceptOrder", currentOrderDto);
+              await  connection.InvokeAsync("AcceptOrder", currentOrderDto);
                 
             }
             else
@@ -130,7 +131,48 @@ namespace Simulator.DriverApp
                 lblLogs.Text += Environment.NewLine + "No order available to accept.";
             }
         }
-
+        private async  void btnArrivedLocation_Click(object sender, RoutedEventArgs e)
+        {
+            if (currentOrderDto != null)
+            {
+                // Log the OrderDTO data
+                var jsonSerializedModel = JsonSerializer.Serialize(currentOrderDto);
+                
+             
+                // Invoke the SignalR hub method
+                await  connection.InvokeAsync("ArrivedLocation", currentOrderDto);
+                
+            }
+            else
+            {
+                // Handle case when no OrderDTO is available
+                lblLogs.Text += Environment.NewLine + "No order available to accept.";
+            }
+        }
+        private async  void btnTripBegin_Click(object sender, RoutedEventArgs e)
+        {
+            if (currentOrderDto != null)
+            {
+                var jsonSerializedModel = JsonSerializer.Serialize(currentOrderDto);
+                await  connection.InvokeAsync("SendTripBegin", currentOrderDto);
+            }
+            else
+            {
+                lblLogs.Text += Environment.NewLine + "No order for Trip begin.";
+            }
+        }
+        private async  void btnTripFinish_Click(object sender, RoutedEventArgs e)
+        {
+            if (currentOrderDto != null)
+            {
+                var jsonSerializedModel = JsonSerializer.Serialize(currentOrderDto);
+                await  connection.InvokeAsync("SendTripFinish", currentOrderDto);
+            }
+            else
+            {
+                lblLogs.Text += Environment.NewLine + "No order for finsih.";
+            }
+        }
 
         #endregion
 

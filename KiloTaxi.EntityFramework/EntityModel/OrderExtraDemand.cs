@@ -13,6 +13,9 @@ public class OrderExtraDemand
     public int OrderId { get; set; }
     public virtual Order Order { get; set; }
     
+    public int Unit { get; set; }
+
+    
     [ForeignKey("ExtraDemand")]
     public int ExtraDemandId { get; set; }
     public virtual ExtraDemand ExtraDemand { get; set; }

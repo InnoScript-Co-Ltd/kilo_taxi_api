@@ -964,6 +964,7 @@
       "KiloTaxi.Model/1.0.0": {
         "dependencies": {
           "KiloTaxi.Common": "1.0.0",
+          "KiloTaxi.EntityFramework": "1.0.0",
           "Microsoft.AspNetCore.Http.Abstractions": "2.2.0",
           "Newtonsoft.Json": "13.0.3"
         },

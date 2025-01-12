@@ -390,9 +390,6 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Unit")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("ExtraDemand", (string)null);
@@ -566,6 +563,9 @@ namespace KiloTaxi.EntityFramework.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Unit")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

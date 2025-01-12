@@ -17,14 +17,16 @@ public class DriverRepository : IDriverRepository
 {
     private readonly DbKiloTaxiContext _dbKiloTaxiContext;
     private string _mediaHostUrl;
-
+    private readonly IWalletUserMappingRepository _walletUserMappingRepository;
     public DriverRepository(
         DbKiloTaxiContext dbKiloTaxiContext,
-        IOptions<MediaSettings> mediaSettings
+        IOptions<MediaSettings> mediaSettings,
+        IWalletUserMappingRepository walletUserMappingRepository
     )
     {
         _dbKiloTaxiContext = dbKiloTaxiContext;
         _mediaHostUrl = mediaSettings.Value.MediaHostUrl;
+        _walletUserMappingRepository = walletUserMappingRepository;
     }
 
     public DriverPagingDTO GetAllDrivers(PageSortParam pageSortParam)
@@ -164,6 +166,14 @@ public class DriverRepository : IDriverRepository
             }
 
             _dbKiloTaxiContext.SaveChanges();
+            WalletUserMappingDTO walletUserMappingDTO = new WalletUserMappingDTO();
+            walletUserMappingDTO.UserId = driverCreateDto.Id;
+            walletUserMappingDTO.UserType = UserType.Driver;
+            walletUserMappingDTO.Balance = 0;
+            walletUserMappingDTO.WalletId = 1;
+            walletUserMappingDTO.CreatedDate = createdDate;
+            walletUserMappingDTO.Status = WalletStatus.Active;
+            _walletUserMappingRepository.CreateWalletUserMapping(walletUserMappingDTO);
 
            var driverInfoDTO = DriverConverter.ConvertEntityToModel(driverEntity, _mediaHostUrl);
             return driverInfoDTO;

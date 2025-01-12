@@ -8,4 +8,8 @@ public interface IApiHub
     Task SendOrder(OrderDTO orderDTO, List<DriverInfoDTO> driverInfoDTOs);
     
     Task SendDriverInfoToCustomer(OrderDTO order, DriverInfoDTO driverDTO);
+    
+    Task SendReceiveDriverArrivedLocation(OrderDTO order, DriverInfoDTO driverInfoDTO);
+    
+    Task SendTripBeginToCustomer(OrderDTO order);
 }

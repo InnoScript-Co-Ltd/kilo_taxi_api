@@ -169,7 +169,7 @@ namespace KiloTaxi.EntityFramework.Migrations
                     DriverImageLicenseBack = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EmailVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PhoneVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
