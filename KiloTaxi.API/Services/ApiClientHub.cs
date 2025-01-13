@@ -1,10 +1,10 @@
 using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
-using KiloTaxi.Model.DTO;
-using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
@@ -41,7 +41,6 @@ public class ApiClientHub : IDisposable
             await StartConnectionAsync();
         };
 
- 
         // Add handlers for incoming messages
         _hubConnection.On<string>(
             "ReceiveTestMethod",
@@ -88,37 +87,53 @@ public class ApiClientHub : IDisposable
                 var tripRepository =
                     scope.ServiceProvider.GetRequiredService<IOrderRouteRepository>();
 
-                var createdOrderRoute= tripRepository.CreateOrderRoute(orderRouteDTO);
+                var createdOrderRoute = tripRepository.CreateOrderRoute(orderRouteDTO);
 
-                if (createdOrderRoute !=null)
+                if (createdOrderRoute != null)
                 {
-                    Console.WriteLine($"Order route created successfully for OrderId: {tripLocation.OrderId}");
+                    Console.WriteLine(
+                        $"Order route created successfully for OrderId: {tripLocation.OrderId}"
+                    );
                 }
                 else
                 {
-                    Console.WriteLine($"Failed to create order route for OrderId: {tripLocation.OrderId}");
+                    Console.WriteLine(
+                        $"Failed to create order route for OrderId: {tripLocation.OrderId}"
+                    );
                 }
             }
         );
-        _hubConnection.On<string>("ReceiveTestMethod", (message) =>
-        {
-            Console.WriteLine($"Message from server: {message}");
-        });
-
-        _hubConnection.On<OrderDTO,int>("AcceptOrderAsync", async(orderDTO, driverID) =>
-        {
-            Console.WriteLine($"Message from server: accept order");
-            using var scope = _serviceProvider.CreateScope();
-            var driverRepository = scope.ServiceProvider.GetRequiredService<IDriverRepository>();
-            var orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
-            var driverInfoDTO = driverRepository.GetDriverById(driverID);
-            orderDTO.Status = Common.Enums.OrderStatus.InProgress;
-            orderRepository.UpdateOrder(orderDTO);
-            if (_hubConnection.State == HubConnectionState.Connected)
+        _hubConnection.On<string>(
+            "ReceiveTestMethod",
+            (message) =>
             {
-                await _hubConnection.InvokeAsync("SendDriverInfoToCustomer", orderDTO, driverInfoDTO);
+                Console.WriteLine($"Message from server: {message}");
             }
-        });
+        );
+
+        _hubConnection.On<OrderFormDTO, int>(
+            "AcceptOrderAsync",
+            async (orderFormDTO, driverID) =>
+            {
+                Console.WriteLine($"Message from server: accept order");
+                using var scope = _serviceProvider.CreateScope();
+                var driverRepository =
+                    scope.ServiceProvider.GetRequiredService<IDriverRepository>();
+                var orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
+                var driverInfoDTO = driverRepository.GetDriverById(driverID);
+                orderFormDTO.Status = Common.Enums.OrderStatus.InProgress;
+
+                orderRepository.UpdateOrder(orderFormDTO);
+                if (_hubConnection.State == HubConnectionState.Connected)
+                {
+                    await _hubConnection.InvokeAsync(
+                        "SendDriverInfoToCustomer",
+                        orderFormDTO,
+                        driverInfoDTO
+                    );
+                }
+            }
+        );
         _serviceProvider = serviceProvider;
     }
 

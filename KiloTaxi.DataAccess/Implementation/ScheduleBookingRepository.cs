@@ -171,13 +171,13 @@ namespace KiloTaxi.DataAccess.Implementation
                 );
 
                 // Fetch and populate Orders associated with the ScheduleBooking
-                var orderDTOs = _dbKiloTaxiContext
-                    .Orders.Where(o => o.ScheduleBookingId == scheduleBookingDTO.Id)
-                    .Select(order => OrderConverter.ConvertEntityToModel(order))
-                    .ToList();
+                // var orderInfoDTOs = _dbKiloTaxiContext
+                //     .Orders.Where(o => o.ScheduleBookingId == scheduleBookingDTO.Id)
+                //     .Select(order => OrderConverter.ConvertEntityToModel(order))
+                //     .ToList();
 
-                // Assign associated Orders to the ScheduleBookingDTO
-                scheduleBookingDTO.Orders = orderDTOs;
+                // // Assign associated Orders to the ScheduleBookingDTO
+                // scheduleBookingDTO.Orders = orderInfoDTOs;
 
                 return scheduleBookingDTO;
             }
