@@ -11,6 +11,6 @@ namespace KiloTaxi.Model.DTO
     public class AdminPagingDTO
     {
         public PagingResult Paging { get; set; }
-        public IEnumerable<AdminDTO> Admins { get; set; }
+        public IEnumerable<AdminInfoDTO> Admins { get; set; }
     }
 }

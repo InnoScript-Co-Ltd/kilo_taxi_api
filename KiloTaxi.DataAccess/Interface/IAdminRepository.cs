@@ -1,4 +1,5 @@
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.DataAccess.Interface;
@@ -7,10 +8,10 @@ public interface IAdminRepository
 {
     ResponseDTO<AdminPagingDTO> GetAllAdmin(PageSortParam pageSortParam);
 
-    AdminDTO AddAdmin(AdminDTO adminDTO);
-    bool UpdateAdmin(AdminDTO adminDTO);
-    AdminDTO GetAdminById(int id);
+    AdminInfoDTO AdminRegistration(AdminFormDTO adminDTO);
+    bool UpdateAdmin(AdminFormDTO adminDTO);
+    AdminInfoDTO GetAdminById(int id);
     bool DeleteAdmin(int id);
 
-    Task<AdminDTO> ValidateAdminCredentials(string email, string password);
+    Task<AdminInfoDTO> ValidateAdminCredentials(string email, string password);
 }

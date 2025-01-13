@@ -25,12 +25,14 @@ public class AuthenticationService : IAuthenticationService
     public readonly DriverRepository _driverRepository;
     private string _mediaHostUrl;
 
-    public AuthenticationService(AdminRepository adminRepository,DbKiloTaxiContext dbContext,
-        IConfiguration configuration,CustomerRepository customerRepository,DriverRepository driverRepository,
+    public AuthenticationService(
+        AdminRepository adminRepository,
+        DbKiloTaxiContext dbContext,
+        IConfiguration configuration,
+        CustomerRepository customerRepository,
+        DriverRepository driverRepository,
         IOptions<MediaSettings> mediaSettings
-
-        )
-    
+    )
     {
         _adminRepository = adminRepository;
         _dbContext = dbContext;
@@ -39,9 +41,8 @@ public class AuthenticationService : IAuthenticationService
         _driverRepository = driverRepository;
         _mediaHostUrl = mediaSettings.Value.MediaHostUrl;
     }
-    
 
-    public async Task<(string,string)> AuthenticateAdminAsync(string EmailOrPhone, string password)
+    public async Task<(string, string)> AuthenticateAdminAsync(string EmailOrPhone, string password)
     {
         var ValidUser = await _adminRepository.ValidateAdminCredentials(EmailOrPhone, password);
 
@@ -54,44 +55,64 @@ public class AuthenticationService : IAuthenticationService
         var refreshToken = GenerateRefreshToken();
         ValidUser.RefreshToken = refreshToken;
         ValidUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
-        _adminRepository.UpdateAdmin(ValidUser);
-        return (accessToken, refreshToken);    
+        _adminRepository.UpdateAdmin(
+            new AdminFormDTO()
+            {
+                RefreshToken = refreshToken,
+                RefreshTokenExpiryTime = DateTime.Now.AddDays(7),
+            }
+        );
+        return (accessToken, refreshToken);
     }
-    public async Task<(string,string,int)> AuthenticateCustomerAsync(string EmailOrPhone, string password)
-    {
-        var ValidUser = await _customerRepository.ValidateCustomerCredentials(EmailOrPhone,password);
 
-        if (ValidUser ==null)
+    public async Task<(string, string, int)> AuthenticateCustomerAsync(
+        string EmailOrPhone,
+        string password
+    )
+    {
+        var ValidUser = await _customerRepository.ValidateCustomerCredentials(
+            EmailOrPhone,
+            password
+        );
+
+        if (ValidUser == null)
         {
-            return (null,null,0);
-        }            
+            return (null, null, 0);
+        }
         var accessToken = GenerateJwtToken(ValidUser.Phone, ValidUser.Role);
         var refreshToken = GenerateRefreshToken();
-        _customerRepository.UpdateCustomer(new CustomerFormDTO()
-        {
-            RefreshToken = refreshToken,
-            RefreshTokenExpiryTime = DateTime.Now.AddDays(7),
-        });
-        return (accessToken, refreshToken,ValidUser.Id);    
+        _customerRepository.UpdateCustomer(
+            new CustomerFormDTO()
+            {
+                RefreshToken = refreshToken,
+                RefreshTokenExpiryTime = DateTime.Now.AddDays(7),
+            }
+        );
+        return (accessToken, refreshToken, ValidUser.Id);
     }
-    
-    public async Task<(string,string,int)> AuthenticateDriverAsync(string EmailOrPhone, string password)
+
+    public async Task<(string, string, int)> AuthenticateDriverAsync(
+        string EmailOrPhone,
+        string password
+    )
     {
         var ValidUser = await _driverRepository.ValidateDriverCredentials(EmailOrPhone, password);
 
-        if (ValidUser ==null)
+        if (ValidUser == null)
         {
-            return (null,null,0);
-        }            
+            return (null, null, 0);
+        }
         var accessToken = GenerateJwtToken(ValidUser.Phone, ValidUser.Role);
         var refreshToken = GenerateRefreshToken();
-     
-        _driverRepository.UpdateDriver(new DriverUpdateFormDTO()
-        {
-            RefreshToken = refreshToken,
-            RefreshTokenExpiryTime = DateTime.Now.AddDays(7),
-        });
-        return (accessToken, refreshToken,ValidUser.Id);       
+
+        _driverRepository.UpdateDriver(
+            new DriverUpdateFormDTO()
+            {
+                RefreshToken = refreshToken,
+                RefreshTokenExpiryTime = DateTime.Now.AddDays(7),
+            }
+        );
+        return (accessToken, refreshToken, ValidUser.Id);
     }
 
     // public bool VarifiedOpt(string token,string otp)
@@ -112,7 +133,7 @@ public class AuthenticationService : IAuthenticationService
     //     _adminRepository.UpdateAdmin(adminDto);
     //     return true;
     //     break;
-    //     
+    //
     //     case "Customer":
     //     Customer customer = _dbContext.Customers.SingleOrDefault(x => x.Phone == email);
     //     if (customer.Otp!=otp)
@@ -125,7 +146,7 @@ public class AuthenticationService : IAuthenticationService
     //     });
     //     return true;
     //     break;
-    //     
+    //
     //     case "Driver":
     //     Driver driver = _dbContext.Drivers.SingleOrDefault(x => x.Phone == email);
     //     if (driver.Otp!=otp)
@@ -141,9 +162,9 @@ public class AuthenticationService : IAuthenticationService
     // }
     //     return false;
     // }
-    
-    
-    public string GenerateJwtToken(string email,string role)
+
+
+    public string GenerateJwtToken(string email, string role)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]));
@@ -152,9 +173,9 @@ public class AuthenticationService : IAuthenticationService
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, email),
-            new Claim(ClaimTypes.Role,role),
-            new Claim(ClaimTypes.Name,email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(ClaimTypes.Role, role),
+            new Claim(ClaimTypes.Name, email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
         var token = new JwtSecurityToken(
@@ -162,15 +183,17 @@ public class AuthenticationService : IAuthenticationService
             audience: jwtSettings["Audience"],
             claims: claims,
             expires: DateTime.Now.AddMinutes(double.Parse(jwtSettings["ExpirationInMinutes"])),
-            signingCredentials: credentials);
+            signingCredentials: credentials
+        );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
-
     }
+
     public string GenerateRefreshToken()
     {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)); // Secure random string
     }
+
     public ClaimsPrincipal? ValidateToken(string token)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
@@ -179,18 +202,21 @@ public class AuthenticationService : IAuthenticationService
 
         try
         {
-            var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = true,
-                ValidIssuer = jwtSettings["Issuer"],
-                ValidateAudience = true,
-                ValidAudience = jwtSettings["Audience"],
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
-                
-            }, out _);
+            var principal = tokenHandler.ValidateToken(
+                token,
+                new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = jwtSettings["Audience"],
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
+                },
+                out _
+            );
 
             return principal;
         }
@@ -199,67 +225,86 @@ public class AuthenticationService : IAuthenticationService
             return null; // Invalid token
         }
     }
-    
-    public  (string,string) NewRefreshToken(string email,string role,RefreshTokenDTO request){
-    dynamic newAccessToken = null;
-    dynamic newRefreshToken = null;
-        switch (role)
+
+    public (string, string) NewRefreshToken(string email, string role, RefreshTokenDTO request)
     {
-        case "Admin":
-        Admin admin = _dbContext.Admins.SingleOrDefault(x => x.Email == email);
-        if (admin == null || admin.RefreshToken != request.RefreshToken || admin.RefreshTokenExpiryTime < DateTime.UtcNow)
+        dynamic newAccessToken = null;
+        dynamic newRefreshToken = null;
+        switch (role)
         {
-            return (null,null);
+            case "Admin":
+                Admin admin = _dbContext.Admins.SingleOrDefault(x => x.Email == email);
+                if (
+                    admin == null
+                    || admin.RefreshToken != request.RefreshToken
+                    || admin.RefreshTokenExpiryTime < DateTime.UtcNow
+                )
+                {
+                    return (null, null);
+                }
+                newAccessToken = GenerateJwtToken(admin.Email, admin.Role);
+                newRefreshToken = GenerateRefreshToken();
+                admin.RefreshToken = newRefreshToken;
+                admin.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+                var adminDto = AdminConverter.ConvertEntityToModel(admin);
+                _adminRepository.UpdateAdmin(
+                    new AdminFormDTO()
+                    {
+                        RefreshToken = newRefreshToken,
+                        RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
+                    }
+                );
+                break;
+
+            case "Customer":
+                Customer customer = _dbContext.Customers.SingleOrDefault(x => x.Phone == email);
+                if (
+                    customer == null
+                    || customer.RefreshToken != request.RefreshToken
+                    || customer.RefreshTokenExpiryTime < DateTime.UtcNow
+                )
+                {
+                    return (null, null);
+                }
+                newAccessToken = GenerateJwtToken(customer.Email, customer.Role);
+                newRefreshToken = GenerateRefreshToken();
+                _customerRepository.UpdateCustomer(
+                    new CustomerFormDTO()
+                    {
+                        RefreshToken = newRefreshToken,
+                        RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
+                    }
+                );
+                break;
+
+            case "Driver":
+                Driver driver = _dbContext.Drivers.SingleOrDefault(x => x.Phone == email);
+                if (
+                    driver == null
+                    || driver.RefreshToken != request.RefreshToken
+                    || driver.RefreshTokenExpiryTime < DateTime.UtcNow
+                )
+                {
+                    return (null, null);
+                }
+                newAccessToken = GenerateJwtToken(driver.Email, driver.Role);
+                newRefreshToken = GenerateRefreshToken();
+                driver.RefreshToken = newRefreshToken;
+                driver.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+                _driverRepository.UpdateDriver(
+                    new DriverUpdateFormDTO()
+                    {
+                        RefreshToken = newRefreshToken,
+                        RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
+                    }
+                );
+                break;
         }
-         newAccessToken = GenerateJwtToken(admin.Email, admin.Role);
-         newRefreshToken = GenerateRefreshToken();
-         admin.RefreshToken = newRefreshToken;
-         admin.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-         var adminDto = AdminConverter.ConvertEntityToModel(admin);
-        _adminRepository.UpdateAdmin(adminDto);
-        break;
-        
-        case "Customer":
-        Customer customer = _dbContext.Customers.SingleOrDefault(x => x.Phone == email);
-        if (customer == null || customer.RefreshToken != request.RefreshToken || customer.RefreshTokenExpiryTime < DateTime.UtcNow)
-        {
-            return (null,null);
-        }
-        newAccessToken = GenerateJwtToken(customer.Email, customer.Role);
-        newRefreshToken = GenerateRefreshToken();
-        _customerRepository.UpdateCustomer(new CustomerFormDTO()
-        {
-            RefreshToken = newRefreshToken,
-            RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
-                
-        });
-        break;
-        
-        case "Driver":
-        Driver driver = _dbContext.Drivers.SingleOrDefault(x => x.Phone == email);
-        if (driver == null || driver.RefreshToken != request.RefreshToken || driver.RefreshTokenExpiryTime < DateTime.UtcNow)
-        {
-            return (null,null);
-        }
-        newAccessToken = GenerateJwtToken(driver.Email, driver.Role);
-        newRefreshToken = GenerateRefreshToken();
-        driver.RefreshToken = newRefreshToken;
-        driver.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-        _driverRepository.UpdateDriver(new DriverUpdateFormDTO()
-        {
-            RefreshToken = newRefreshToken,
-            RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
-        });
-        break;
-    }
-    return (newAccessToken, newRefreshToken);
+        return (newAccessToken, newRefreshToken);
     }
 
     public string GenerateOtp()
     {
         return _customerRepository.GenerateOTP();
     }
-   
-
-
 }

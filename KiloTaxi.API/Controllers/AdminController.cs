@@ -60,7 +60,7 @@ namespace KiloTaxi.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<AdminDTO> Get(int id)
+        public ActionResult<AdminInfoDTO> Get(int id)
         {
             try
             {
@@ -86,43 +86,43 @@ namespace KiloTaxi.API.Controllers
         // POST api/<AdminController>
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult<AdminDTO> Post(AdminDTO adminDTO)
-        {
-            try
-            {
-                if (adminDTO == null)
-                {
-                    return BadRequest();
-                }
-                var existEmailAdmin = _dbKiloTaxiContext.Admins.FirstOrDefault(admin =>
-                    admin.Email == adminDTO.Email
-                );
-                if (existEmailAdmin != null)
-                {
-                    return Conflict();
-                }
+        // public ActionResult<AdminDTO> Post(AdminDTO adminDTO)
+        // {
+        //     try
+        //     {
+        //         if (adminDTO == null)
+        //         {
+        //             return BadRequest();
+        //         }
+        //         var existEmailAdmin = _dbKiloTaxiContext.Admins.FirstOrDefault(admin =>
+        //             admin.Email == adminDTO.Email
+        //         );
+        //         if (existEmailAdmin != null)
+        //         {
+        //             return Conflict();
+        //         }
 
-                var createdAdmin = _adminRepository.AddAdmin(adminDTO);
-                return CreatedAtAction(nameof(Get), new { id = createdAdmin.Id }, createdAdmin);
-            }
-            catch (Exception ex)
-            {
-                _logHelper.LogError(ex);
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
-        }
+        //         var createdAdmin = _adminRepository.AddAdmin(adminDTO);
+        //         return CreatedAtAction(nameof(Get), new { id = createdAdmin.Id }, createdAdmin);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logHelper.LogError(ex);
+        //         return StatusCode(500, "An error occurred while processing your request.");
+        //     }
+        // }
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] AdminDTO adminDTO)
+        public ActionResult Put(int id, [FromBody] AdminFormDTO adminFormDTO)
         {
             try
             {
-                if (adminDTO == null || id != adminDTO.Id)
+                if (adminFormDTO == null || id != adminFormDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _adminRepository.UpdateAdmin(adminDTO);
+                var result = _adminRepository.UpdateAdmin(adminFormDTO);
 
                 if (!result)
                 {
@@ -195,8 +195,64 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
+        [HttpPost("AdminRegister")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ResponseDTO<AdminInfoDTO>>> AdminRegister(
+            AdminFormDTO adminFormDTO
+        )
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                // Check for duplicate phone
+                var existPhoneAdmin = _dbKiloTaxiContext.Admins.FirstOrDefault(admin =>
+                    admin.Phone == adminFormDTO.Phone
+                );
+                if (existPhoneAdmin != null)
+                {
+                    return Conflict(
+                        new { Message = "Another admin already has this phone number." }
+                    );
+                }
+
+                // Check for duplicate email
+                var existEmailAdmin = _dbKiloTaxiContext.Admins.FirstOrDefault(admin =>
+                    admin.Email == adminFormDTO.Email
+                );
+                if (existEmailAdmin != null)
+                {
+                    return Conflict(
+                        new { Message = "Another admin already has this email address." }
+                    );
+                }
+
+                // Register the admin
+                var registerAdmin = _adminRepository.AdminRegistration(adminFormDTO);
+
+                // Prepare response
+                var response = new ResponseDTO<AdminInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "Admin Register Success.",
+                    Payload = registerAdmin,
+                    TimeStamp = DateTime.Now,
+                };
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex);
+                throw new Exception("An error occurred while processing your request.");
+            }
+        }
+
         [HttpGet("GetAdminById/{id}")]
-        public ActionResult<ResponseDTO<AdminDTO>> GetAdminById(int id)
+        public ActionResult<ResponseDTO<AdminInfoDTO>> GetAdminById(int id)
         {
             try
             {
@@ -213,7 +269,7 @@ namespace KiloTaxi.API.Controllers
                 }
 
                 // Create the response DTO and return the result
-                ResponseDTO<AdminDTO> responseDto = new ResponseDTO<AdminDTO>
+                ResponseDTO<AdminInfoDTO> responseDto = new ResponseDTO<AdminInfoDTO>
                 {
                     StatusCode = Ok().StatusCode,
                     Message = "Admin retrieved successfully.",
@@ -232,25 +288,25 @@ namespace KiloTaxi.API.Controllers
         }
 
         [HttpPut("UpdateAdmin/{id}")]
-        public async Task<ActionResult<ResponseDTO<AdminDTO>>> UpdateAdmin(
+        public async Task<ActionResult<ResponseDTO<AdminInfoDTO>>> UpdateAdmin(
             [FromRoute] int id,
-            AdminDTO adminDTO
+            AdminFormDTO adminFormDTO
         )
         {
             try
             {
-                if (id != adminDTO.Id)
+                if (id != adminFormDTO.Id)
                 {
                     return BadRequest("Admin ID mismatch.");
                 }
 
-                var isUpdated = _adminRepository.UpdateAdmin(adminDTO);
+                var isUpdated = _adminRepository.UpdateAdmin(adminFormDTO);
                 if (!isUpdated)
                 {
                     return NotFound();
                 }
 
-                ResponseDTO<AdminDTO> responseDto = new ResponseDTO<AdminDTO>
+                ResponseDTO<AdminInfoDTO> responseDto = new ResponseDTO<AdminInfoDTO>
                 {
                     StatusCode = 200, // OK status
                     Message = "Admin Info Updated Successfully.",
@@ -269,7 +325,7 @@ namespace KiloTaxi.API.Controllers
         }
 
         [HttpDelete("DeleteAdmin/{id}")]
-        public ActionResult<ResponseDTO<AdminDTO>> DeleteAdmin([FromRoute] int id)
+        public ActionResult<ResponseDTO<AdminInfoDTO>> DeleteAdmin([FromRoute] int id)
         {
             try
             {
@@ -286,7 +342,7 @@ namespace KiloTaxi.API.Controllers
                 }
 
                 // Return a response with a success message
-                ResponseDTO<AdminDTO> responseDto = new ResponseDTO<AdminDTO>
+                ResponseDTO<AdminInfoDTO> responseDto = new ResponseDTO<AdminInfoDTO>
                 {
                     StatusCode = 200, // OK status
                     Message = "Admin Info Deleted Successfully.",

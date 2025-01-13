@@ -8,6 +8,7 @@ using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
@@ -102,46 +103,46 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public AdminDTO AddAdmin(AdminDTO adminDTO)
-        {
-            try
-            {
-                Admin adminEntity = new Admin();
-                adminDTO.Password = BCrypt.Net.BCrypt.HashPassword(adminDTO.Password);
+        // public AdminDTO AddAdmin(AdminDTO adminDTO)
+        // {
+        //     try
+        //     {
+        //         Admin adminEntity = new Admin();
+        //         adminDTO.Password = BCrypt.Net.BCrypt.HashPassword(adminDTO.Password);
 
-                AdminConverter.ConvertModelToEntity(adminDTO, ref adminEntity);
+        //         AdminConverter.ConvertModelToEntity(adminDTO, ref adminEntity);
 
-                _dbKiloTaxiContext.Add(adminEntity);
-                _dbKiloTaxiContext.SaveChanges();
+        //         _dbKiloTaxiContext.Add(adminEntity);
+        //         _dbKiloTaxiContext.SaveChanges();
 
-                adminDTO.Id = adminEntity.Id;
+        //         adminDTO.Id = adminEntity.Id;
 
-                LoggerHelper.Instance.LogInfo(
-                    $"Admin added successfully with Id: {adminEntity.Id}"
-                );
+        //         LoggerHelper.Instance.LogInfo(
+        //             $"Admin added successfully with Id: {adminEntity.Id}"
+        //         );
 
-                return adminDTO;
-            }
-            catch (Exception ex)
-            {
-                LoggerHelper.Instance.LogError(ex, "Error occurred while adding admin.");
-                throw;
-            }
-        }
+        //         return adminDTO;
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         LoggerHelper.Instance.LogError(ex, "Error occurred while adding admin.");
+        //         throw;
+        //     }
+        // }
 
-        public bool UpdateAdmin(AdminDTO adminDTO)
+        public bool UpdateAdmin(AdminFormDTO adminFormDTO)
         {
             try
             {
                 var adminEntity = _dbKiloTaxiContext.Admins.FirstOrDefault(admin =>
-                    admin.Id == adminDTO.Id
+                    admin.Id == adminFormDTO.Id
                 );
                 if (adminEntity == null)
                 {
                     return false;
                 }
 
-                AdminConverter.ConvertModelToEntity(adminDTO, ref adminEntity);
+                AdminConverter.ConvertModelToEntity(adminFormDTO, ref adminEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -150,13 +151,13 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating admin with Id: {adminDTO.Id}"
+                    $"Error occurred while updating admin with Id: {adminFormDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public AdminDTO GetAdminById(int id)
+        public AdminInfoDTO GetAdminById(int id)
         {
             try
             {
@@ -204,7 +205,39 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public async Task<AdminDTO> ValidateAdminCredentials(string EmailOrPhone, string password)
+        public AdminInfoDTO AdminRegistration(AdminFormDTO adminFormDTO)
+        {
+            try
+            {
+                // Initialize Admin entity
+                Admin adminEntity = new Admin();
+
+                // Set created date and hash the password
+                adminFormDTO.Password = BCrypt.Net.BCrypt.HashPassword(adminFormDTO.Password);
+
+                // Convert DTO to entity
+                AdminConverter.ConvertModelToEntity(adminFormDTO, ref adminEntity);
+
+                // Save admin to the database
+                _dbKiloTaxiContext.Add(adminEntity);
+                _dbKiloTaxiContext.SaveChanges();
+                adminFormDTO.Id = adminEntity.Id;
+
+                // Generate AdminInfoDTO
+                var adminInfoDTO = AdminConverter.ConvertEntityToModel(adminEntity);
+                return adminInfoDTO;
+            }
+            catch (Exception ex)
+            {
+                LoggerHelper.Instance.LogError(ex, "Error occurred while registering admin.");
+                throw;
+            }
+        }
+
+        public async Task<AdminInfoDTO> ValidateAdminCredentials(
+            string EmailOrPhone,
+            string password
+        )
         {
             if (string.IsNullOrEmpty(EmailOrPhone) || string.IsNullOrEmpty(password))
             {
@@ -214,10 +247,10 @@ namespace KiloTaxi.DataAccess.Implementation
             Admin adminEntity = _dbKiloTaxiContext.Admins.SingleOrDefault(admin =>
                 admin.Email == EmailOrPhone
             );
-            var adminDto = AdminConverter.ConvertEntityToModel(adminEntity);
+            var adminFormDTO = AdminConverter.ConvertEntityToModel(adminEntity);
             if (adminEntity != null || !BCrypt.Net.BCrypt.Verify(password, adminEntity.Password))
             {
-                return adminDto;
+                return adminFormDTO;
             }
 
             // Convert the entity to a DTO
