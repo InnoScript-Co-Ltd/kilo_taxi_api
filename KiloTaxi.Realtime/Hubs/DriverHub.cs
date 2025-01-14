@@ -1,4 +1,5 @@
-﻿using KiloTaxi.DataAccess.Interface;
+﻿using KiloTaxi.Common.Enums;
+using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using KiloTaxi.Realtime.HubInterfaces;
@@ -142,6 +143,21 @@ namespace KiloTaxi.Realtime.Hubs
             }
         }
 
+        public async Task SendOrderCompleteStatus(int orderId, List<ExtraDemandDTO> extraDemands)
+        {
+            try
+            {
+                var orderStatus = OrderStatus.Completed;
+
+                await _hubApi.Clients.All.ReceiveOrderUpdate(orderId, orderStatus);
+
+                _logHelper.LogDebug($"Order complete status sent for Order ID {orderId}.");
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex, "Error occurred while sending order complete status.");
+            }
+        }
 
         public async Task AcceptOrder(OrderDTO orderDTO)
         {
@@ -159,7 +175,6 @@ namespace KiloTaxi.Realtime.Hubs
             {
                 _logHelper.LogError(ex, ex?.Message);
             }
-
         }
         public async Task ArrivedLocation(OrderDTO orderDTO)
         {

@@ -23,11 +23,13 @@ public class AuthenticationService : IAuthenticationService
     public readonly IConfiguration _configuration;
     public readonly CustomerRepository _customerRepository;
     public readonly DriverRepository _driverRepository;
+        private readonly ITokenBlacklistService _tokenBlacklistService;
     private string _mediaHostUrl;
 
     public AuthenticationService(AdminRepository adminRepository,DbKiloTaxiContext dbContext,
         IConfiguration configuration,CustomerRepository customerRepository,DriverRepository driverRepository,
-        IOptions<MediaSettings> mediaSettings
+        IOptions<MediaSettings> mediaSettings,
+        ITokenBlacklistService tokenBlacklistService
 
         )
     
@@ -38,6 +40,7 @@ public class AuthenticationService : IAuthenticationService
         _customerRepository = customerRepository;
         _driverRepository = driverRepository;
         _mediaHostUrl = mediaSettings.Value.MediaHostUrl;
+        _tokenBlacklistService = tokenBlacklistService;
     }
     
 
@@ -93,6 +96,17 @@ public class AuthenticationService : IAuthenticationService
         });
         return (accessToken, refreshToken,ValidUser.Id);       
     }
+    public async Task LogoutAsync(string token)
+    {
+        // Extract token expiry time using JwtSecurityTokenHandler
+        var jwtTokenHandler = new JwtSecurityTokenHandler();
+        var jwtToken = jwtTokenHandler.ReadJwtToken(token);
+
+        var expiryTime = jwtToken.ValidTo;
+
+        // Add the token to the blacklist with its expiry time
+        await _tokenBlacklistService.AddTokenToBlacklistAsync(token, expiryTime);
+    }
 
     // public bool VarifiedOpt(string token,string otp)
     // {
@@ -143,6 +157,7 @@ public class AuthenticationService : IAuthenticationService
     // }
     
     
+    
     public string GenerateJwtToken(string email,string role)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
@@ -188,7 +203,6 @@ public class AuthenticationService : IAuthenticationService
                 ValidateAudience = true,
                 ValidAudience = jwtSettings["Audience"],
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
                 
             }, out _);
 

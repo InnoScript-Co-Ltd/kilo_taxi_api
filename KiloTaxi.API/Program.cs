@@ -19,6 +19,8 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<AdminRepository>(); // If AdminRepository is not registered, add this too
 builder.Services.AddScoped<CustomerRepository>();
 builder.Services.AddScoped<DriverRepository>();
+builder.Services.AddSingleton<ITokenBlacklistService, TokenBlacklistService>();
+builder.Services.AddMemoryCache();
 
 // Add services to the container.
 // Configure JWT Bearer Authentication
@@ -148,6 +150,7 @@ try
     app.UseAuthentication();
     
     app.UseAuthorization();
+    app.UseMiddleware<TokenBlacklistMiddleware>();
 
     app.MapControllers();
 

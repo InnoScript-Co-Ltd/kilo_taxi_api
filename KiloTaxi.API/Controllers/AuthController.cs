@@ -45,6 +45,35 @@ public class AuthController : ControllerBase
         //return Ok(new { Token = token });
         return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
     }
+    [HttpPost("logout")]
+    public async Task<ResponseDTO<string>> Logout([FromHeader(Name = "Authorization")] string authorizationHeader)
+    {           
+        ResponseDTO<string> response = new ResponseDTO<string>();
+        if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
+        {
+            response.Message = "Invalid authorization header";
+            response.StatusCode = 400;
+            return response;
+        }
+
+        var token = authorizationHeader.Substring("Bearer ".Length).Trim();
+
+        try
+        {
+            // Call the logout service to blacklist the token
+            await _authenticationService.LogoutAsync(token);
+            response.Message = "Logout successful.";
+            response.StatusCode = 200;
+            return response;
+        }
+        catch (Exception ex)
+        {
+            response.Message = ex.Message;
+            response.StatusCode = 500;
+            return response;
+        }
+    }
+
     
     [HttpPost("customerLogin")]
     public async Task<IActionResult> customerLogin([FromBody] AuthDTO authDto)

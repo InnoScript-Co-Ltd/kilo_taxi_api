@@ -8,6 +8,9 @@ public interface IAuthenticationService
 {
    
    Task<(string,string)> AuthenticateAdminAsync(string EmailOrPhone, string password);
+
+   Task LogoutAsync(string token);
+
    
    string GenerateJwtToken(string email,string role);
 
