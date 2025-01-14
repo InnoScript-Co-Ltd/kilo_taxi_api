@@ -5,6 +5,8 @@ using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers;
@@ -29,16 +31,16 @@ public class TopUpTransactionController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<TopUpTransactionPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+    public ActionResult<ResponseDTO<TopUpTransactionPagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
     {
         try
         {
-            var transactions = _topUpTransactionRepository.GetAllTopUpTransactions(pageSortParam);
-            if (!transactions.TopUpTransactions.Any())
+            var responseDTO = _topUpTransactionRepository.GetAllTopUpTransactions(pageSortParam);
+            if (!responseDTO.Payload.TopUpTransactions.Any())
             {
                 return NoContent();
             }
-            return Ok(transactions);
+            return Ok(responseDTO);
         }
         catch (Exception ex)
         {
@@ -49,7 +51,7 @@ public class TopUpTransactionController : ControllerBase
 
 
     [HttpPost]
-    public async Task<ActionResult<TopUpTransactionDTO>> Post(TopUpTransactionDTO topUpTransactionDTO)
+    public async Task<ActionResult<ResponseDTO<TopUpTransactionInfoDTO>>> Post(TopUpTransactionFormDTO topUpTransactionFormDTO)
     {
         try
         {
@@ -58,19 +60,28 @@ public class TopUpTransactionController : ControllerBase
                 return BadRequest(ModelState);
             }
             var fileUploadHelper = new FileUploadHelper(_configuration, _allowedExtensions, _allowedMimeTypes, _maxFileSize);
-            if (!fileUploadHelper.ValidateFile(topUpTransactionDTO.File_TransactionScreenShoot, true, flagDomain, out var resolvedFilePath, out var errorMessage))
+            if (!fileUploadHelper.ValidateFile(topUpTransactionFormDTO.File_TransactionScreenShoot, true, flagDomain, out var resolvedFilePath, out var errorMessage))
             {
                 return BadRequest(errorMessage);
             }
-            topUpTransactionDTO.TransactionScreenShoot = resolvedFilePath;
+            topUpTransactionFormDTO.TransactionScreenShoot = resolvedFilePath;
 
-            var createdTransaction = _topUpTransactionRepository.CreateTopUpTransaction(topUpTransactionDTO);
+            var createdTransaction = _topUpTransactionRepository.CreateTopUpTransaction(topUpTransactionFormDTO);
 
-            if (topUpTransactionDTO.File_TransactionScreenShoot != null && topUpTransactionDTO.File_TransactionScreenShoot.Length > 0)
+            if (topUpTransactionFormDTO.File_TransactionScreenShoot != null && topUpTransactionFormDTO.File_TransactionScreenShoot.Length > 0)
             {
-                string filePath = await fileUploadHelper.SaveFileAsync(topUpTransactionDTO.File_TransactionScreenShoot, flagDomain, topUpTransactionDTO.Id.ToString(), resolvedFilePath);
+                string filePath = await fileUploadHelper.SaveFileAsync(topUpTransactionFormDTO.File_TransactionScreenShoot, flagDomain, topUpTransactionFormDTO.Id.ToString(), resolvedFilePath);
             }
-            return CreatedAtAction(nameof(Get), new { id = createdTransaction.Id }, createdTransaction);
+            
+            var response = new ResponseDTO<TopUpTransactionInfoDTO>
+            {
+                StatusCode = Ok().StatusCode,
+                Message = "Topup Transaction Register Success.",
+                Payload = createdTransaction,
+                TimeStamp = DateTime.Now,
+            };
+
+            return response;
         }
         catch (Exception ex)
         {

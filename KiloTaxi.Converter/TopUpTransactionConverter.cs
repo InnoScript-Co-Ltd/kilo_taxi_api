@@ -3,12 +3,14 @@ using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using System;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class TopUpTransactionConverter
     {
-        public static TopUpTransactionDTO ConvertEntityToModel(TopUpTransaction topUpTransactionEntity)
+        public static TopUpTransactionInfoDTO ConvertEntityToModel(TopUpTransaction topUpTransactionEntity)
         {
             if (topUpTransactionEntity == null)
             {
@@ -16,7 +18,7 @@ namespace KiloTaxi.Converter
                 throw new ArgumentNullException(nameof(topUpTransactionEntity), "Source TopUpTransaction entity cannot be null");
             }
 
-            return new TopUpTransactionDTO
+            return new TopUpTransactionInfoDTO
             {
                 Id = topUpTransactionEntity.Id,
                 Amount = topUpTransactionEntity.Amount,
@@ -29,24 +31,24 @@ namespace KiloTaxi.Converter
             };
         }
         
-        public static void ConvertModelToEntity(TopUpTransactionDTO topUpTransactionDTO, ref TopUpTransaction topUpTransactionEntity)
+        public static void ConvertModelToEntity(TopUpTransactionFormDTO topUpTransactionFormDTO, ref TopUpTransaction topUpTransactionEntity)
         {
             try
             {
-                if (topUpTransactionDTO == null)
+                if (topUpTransactionFormDTO == null)
                 {
-                    LoggerHelper.Instance.LogError(new ArgumentNullException(nameof(topUpTransactionDTO)), "TopUpTransactionDTO model is null");
-                    throw new ArgumentNullException(nameof(topUpTransactionDTO), "Source TopUpTransactionDTO model cannot be null");
+                    LoggerHelper.Instance.LogError(new ArgumentNullException(nameof(topUpTransactionFormDTO)), "TopUpTransactionFormDTO model is null");
+                    throw new ArgumentNullException(nameof(topUpTransactionFormDTO), "Source TopUpTransactionFormDTO model cannot be null");
                 }
 
-                topUpTransactionEntity.Id = topUpTransactionDTO.Id;
-                topUpTransactionEntity.Amount = topUpTransactionDTO.Amount;
-                topUpTransactionEntity.TransactionScreenShoot = topUpTransactionDTO.TransactionScreenShoot;
-                topUpTransactionEntity.PhoneNumber = topUpTransactionDTO.PhoneNumber;
-                topUpTransactionEntity.DigitalPaymentFromPhoneNumber = topUpTransactionDTO.DigitalPaymentFromPhoneNumber;
-                topUpTransactionEntity.DigitalPaymentToPhoneNumber = topUpTransactionDTO.DigitalPaymentToPhoneNumber;
-                topUpTransactionEntity.Status = topUpTransactionDTO.Status.ToString();
-                topUpTransactionEntity.PaymentChannelId = topUpTransactionDTO.PaymentChannelId;
+                topUpTransactionEntity.Id = topUpTransactionFormDTO.Id;
+                topUpTransactionEntity.Amount = topUpTransactionFormDTO.Amount;
+                topUpTransactionEntity.TransactionScreenShoot = topUpTransactionFormDTO.TransactionScreenShoot;
+                topUpTransactionEntity.PhoneNumber = topUpTransactionFormDTO.PhoneNumber;
+                topUpTransactionEntity.DigitalPaymentFromPhoneNumber = topUpTransactionFormDTO.DigitalPaymentFromPhoneNumber;
+                topUpTransactionEntity.DigitalPaymentToPhoneNumber = topUpTransactionFormDTO.DigitalPaymentToPhoneNumber;
+                topUpTransactionEntity.Status = topUpTransactionFormDTO.Status.ToString();
+                topUpTransactionEntity.PaymentChannelId = topUpTransactionFormDTO.PaymentChannelId;
                 
 
             }

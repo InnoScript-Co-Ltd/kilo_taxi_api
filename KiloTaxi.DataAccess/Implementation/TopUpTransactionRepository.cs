@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
@@ -6,6 +7,8 @@ using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.DataAccess.Implementation
 {
@@ -20,12 +23,12 @@ namespace KiloTaxi.DataAccess.Implementation
             _walletTransactionRepository = walletTransactionRepository;
         }
 
-        public TopUpTransactionDTO CreateTopUpTransaction(TopUpTransactionDTO topUpTransactionDTO)
+        public TopUpTransactionInfoDTO CreateTopUpTransaction(TopUpTransactionFormDTO topUpTransactionFormDTO)
         {
             try
             {
                 var walletUserMapping = _dbKiloTaxiContext.WalletUserMappings
-                                      .FirstOrDefault(w => w.UserId == topUpTransactionDTO.UseId);
+                                      .FirstOrDefault(w => w.UserId == topUpTransactionFormDTO.UseId);
 
                 if (walletUserMapping == null)
                 {
@@ -34,12 +37,12 @@ namespace KiloTaxi.DataAccess.Implementation
 
                 var topUpTransactionEntity = new TopUpTransaction();
 
-                TopUpTransactionConverter.ConvertModelToEntity(topUpTransactionDTO, ref topUpTransactionEntity);
+                TopUpTransactionConverter.ConvertModelToEntity(topUpTransactionFormDTO, ref topUpTransactionEntity);
 
                 _dbKiloTaxiContext.TopUpTransactions.Add(topUpTransactionEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                topUpTransactionDTO.Id = topUpTransactionEntity.Id;
+                topUpTransactionFormDTO.Id = topUpTransactionEntity.Id;
 
                 if (topUpTransactionEntity.Status == "Success") 
                 {
@@ -56,12 +59,12 @@ namespace KiloTaxi.DataAccess.Implementation
                 if (!string.IsNullOrEmpty(topUpTransactionEntity.TransactionScreenShoot) &&
                 !topUpTransactionEntity.TransactionScreenShoot.Contains("default.png"))
                 {
-                    topUpTransactionEntity.TransactionScreenShoot = $"screenShoot/{topUpTransactionDTO.Id}{topUpTransactionEntity.TransactionScreenShoot}";
+                    topUpTransactionEntity.TransactionScreenShoot = $"screenShoot/{topUpTransactionFormDTO.Id}{topUpTransactionEntity.TransactionScreenShoot}";
                     _dbKiloTaxiContext.SaveChanges();
                 }
-
-
-                return topUpTransactionDTO;
+                
+                var topUpTransactionInfoDTO = TopUpTransactionConverter.ConvertEntityToModel(topUpTransactionEntity);
+                return topUpTransactionInfoDTO;
             }
             catch (Exception ex)
             {
@@ -70,7 +73,7 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public TopUpTransactionPagingDTO GetAllTopUpTransactions(PageSortParam pageSortParam)
+        public ResponseDTO<TopUpTransactionPagingDTO> GetAllTopUpTransactions(PageSortParam pageSortParam)
         {
             try
             {
@@ -128,12 +131,14 @@ namespace KiloTaxi.DataAccess.Implementation
                     FirstRowOnPage = ((pageSortParam.CurrentPage - 1) * pageSortParam.PageSize) + 1,
                     LastRowOnPage = Math.Min(totalCount, pageSortParam.CurrentPage * pageSortParam.PageSize)
                 };
-
-                return new TopUpTransactionPagingDTO
-                {
-                    Paging = pagingResult,
-                    TopUpTransactions = transactions
-                };
+                
+                ResponseDTO<TopUpTransactionPagingDTO> responseDto = new ResponseDTO<TopUpTransactionPagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "Topup Transactions retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new TopUpTransactionPagingDTO { Paging = pagingResult, TopUpTransactions = transactions };
+                
+                return responseDto;
             }
             catch (Exception ex)
             {
