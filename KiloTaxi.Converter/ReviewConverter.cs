@@ -2,12 +2,14 @@ using System;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class ReviewConverter
     {
-        public static ReviewDTO ConvertEntityToModel(Review reviewEntity)
+        public static ReviewInfoDTO ConvertEntityToModel(Review reviewEntity)
         {
             if (reviewEntity == null)
             {
@@ -21,7 +23,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new ReviewDTO()
+            return new ReviewInfoDTO()
             {
                 Id = reviewEntity.Id,
                 Rating = reviewEntity.Rating,
@@ -33,19 +35,19 @@ namespace KiloTaxi.Converter
             };
         }
 
-        public static void ConvertModelToEntity(ReviewDTO reviewDTO, ref Review reviewEntity)
+        public static void ConvertModelToEntity(ReviewFormDTO reviewFormDTO, ref Review reviewEntity)
         {
             try
             {
-                if (reviewDTO == null)
+                if (reviewFormDTO == null)
                 {
                     LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(reviewDTO)),
-                        "ReviewDTO is null"
+                        new ArgumentNullException(nameof(reviewFormDTO)),
+                        "ReviewFormDTO is null"
                     );
                     throw new ArgumentNullException(
-                        nameof(reviewDTO),
-                        "Source reviewDTO cannot be null"
+                        nameof(reviewFormDTO),
+                        "Source reviewFormDTO cannot be null"
                     );
                 }
 
@@ -61,11 +63,11 @@ namespace KiloTaxi.Converter
                     );
                 }
 
-                reviewEntity.Id = reviewDTO.Id;
-                reviewEntity.Rating = reviewDTO.Rating;
-                reviewEntity.ReviewContent = reviewDTO.ReviewContent;
-                reviewEntity.CustomerId = reviewDTO.CustomerId;
-                reviewEntity.DriverId = reviewDTO.DriverId;
+                reviewEntity.Id = reviewFormDTO.Id;
+                reviewEntity.Rating = reviewFormDTO.Rating;
+                reviewEntity.ReviewContent = reviewFormDTO.ReviewContent;
+                reviewEntity.CustomerId = reviewFormDTO.CustomerId;
+                reviewEntity.DriverId = reviewFormDTO.DriverId;
             }
             catch (Exception ex)
             {

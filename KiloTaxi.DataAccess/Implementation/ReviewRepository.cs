@@ -1,10 +1,13 @@
 using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -18,7 +21,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbContext;
         }
 
-        public ReviewPagingDTO GetAllReview(PageSortParam pageSortParam)
+        public ResponseDTO<ReviewPagingDTO> GetAllReview(PageSortParam pageSortParam)
         {
             try
             {
@@ -86,7 +89,12 @@ namespace KiloTaxi.DataAccess.Implementation
                     ),
                 };
 
-                return new ReviewPagingDTO { Paging = pagingResult, Reviews = reviews };
+                ResponseDTO<ReviewPagingDTO> responseDto = new ResponseDTO<ReviewPagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "reviews retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new ReviewPagingDTO { Paging = pagingResult, Reviews = reviews };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -95,32 +103,33 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public ReviewDTO AddReview(ReviewDTO reviewDTO)
+        public ReviewInfoDTO AddReview(ReviewFormDTO reviewFormDTO)
         {
             try
             {
                 Review reviewEntity = new Review();
-                ReviewConverter.ConvertModelToEntity(reviewDTO, ref reviewEntity);
+                ReviewConverter.ConvertModelToEntity(reviewFormDTO, ref reviewEntity);
 
                 var customer = _dbKiloTaxiContext.Customers.FirstOrDefault(c =>
-                    c.Id == reviewDTO.CustomerId
+                    c.Id == reviewFormDTO.CustomerId
                 );
                 var driver = _dbKiloTaxiContext.Drivers.FirstOrDefault(s =>
-                    s.Id == reviewDTO.DriverId
+                    s.Id == reviewFormDTO.DriverId
                 );
 
                 _dbKiloTaxiContext.Add(reviewEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                reviewDTO.Id = reviewEntity.Id;
-                reviewDTO.CustomerName = customer.Name;
-                reviewDTO.DriverName = driver.Name;
+                reviewFormDTO.Id = reviewEntity.Id;
+                reviewFormDTO.CustomerName = customer.Name;
+                reviewFormDTO.DriverName = driver.Name;
 
                 LoggerHelper.Instance.LogInfo(
                     $"Review added successfully with Id: {reviewEntity.Id}"
                 );
 
-                return reviewDTO;
+                var reviewInfoDTO = ReviewConverter.ConvertEntityToModel(reviewEntity);
+                return reviewInfoDTO;
             }
             catch (Exception ex)
             {
@@ -129,19 +138,19 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public bool UpdateReview(ReviewDTO reviewDTO)
+        public bool UpdateReview(ReviewFormDTO reviewFormDTO)
         {
             try
             {
                 var reviewEntity = _dbKiloTaxiContext.Reviews.FirstOrDefault(review =>
-                    review.Id == reviewDTO.Id
+                    review.Id == reviewFormDTO.Id
                 );
                 if (reviewEntity == null)
                 {
                     return false;
                 }
 
-                ReviewConverter.ConvertModelToEntity(reviewDTO, ref reviewEntity);
+                ReviewConverter.ConvertModelToEntity(reviewFormDTO, ref reviewEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -150,13 +159,13 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating review with Id: {reviewDTO.Id}"
+                    $"Error occurred while updating review with Id: {reviewFormDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public ReviewDTO GetReviewById(int id)
+        public ReviewInfoDTO GetReviewById(int id)
         {
             try
             {
