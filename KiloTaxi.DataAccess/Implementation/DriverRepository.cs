@@ -19,6 +19,7 @@ public class DriverRepository : IDriverRepository
     private readonly DbKiloTaxiContext _dbKiloTaxiContext;
     private string _mediaHostUrl;
     private readonly IWalletUserMappingRepository _walletUserMappingRepository;
+
     public DriverRepository(
         DbKiloTaxiContext dbKiloTaxiContext,
         IOptions<MediaSettings> mediaSettings,
