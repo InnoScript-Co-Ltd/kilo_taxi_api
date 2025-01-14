@@ -2,6 +2,8 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
@@ -21,16 +23,16 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<SmsController>
         [HttpGet]
-        public ActionResult<SmsPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ResponseDTO<SmsPagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                SmsPagingDTO smsPagingDTO = _smsRepository.GetAllSms(pageSortParam);
-                if (!smsPagingDTO.Sms.Any())
+                var responseDto = _smsRepository.GetAllSms(pageSortParam);
+                if (!responseDto.Payload.Sms.Any())
                 {
                     return NoContent();
                 }
-                return Ok(smsPagingDTO);
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -41,7 +43,7 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<SmsController>/5
         [HttpGet("{id}")]
-        public ActionResult<SmsDTO> Get(int id)
+        public ActionResult<ResponseDTO<SmsInfoDTO>> Get(int id)
         {
             try
             {
@@ -55,7 +57,15 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(result);
+                
+                ResponseDTO<SmsInfoDTO> responseDto = new ResponseDTO<SmsInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "sms retrieved successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = result,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -66,17 +76,25 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<SmsController>
         [HttpPost]
-        public ActionResult<SmsDTO> Post([FromBody] SmsDTO smsDTO)
+        public ActionResult<ResponseDTO<SmsInfoDTO>> Post([FromBody] SmsFormDTO smsFormDTO)
         {
             try
             {
-                if (smsDTO == null)
+                if (smsFormDTO == null)
                 {
                     return BadRequest();
                 }
 
-                var createdSms = _smsRepository.CreateSms(smsDTO);
-                return CreatedAtAction(nameof(Get), new { id = createdSms.Id }, createdSms);
+                var createdSms = _smsRepository.CreateSms(smsFormDTO);
+                
+                var response = new ResponseDTO<SmsInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "sms Register Success.",
+                    Payload = createdSms,
+                    TimeStamp = DateTime.Now,
+                };
+                return response;
             }
             catch (Exception ex)
             {
@@ -87,21 +105,28 @@ namespace KiloTaxi.API.Controllers
 
         // PUT api/<SmsController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] SmsDTO smsDTO)
+        public ActionResult<ResponseDTO<SmsInfoDTO>> Put(int id, [FromBody] SmsFormDTO smsFormDTO)
         {
             try
             {
-                if (smsDTO == null || id != smsDTO.Id)
+                if (smsFormDTO == null || id != smsFormDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _smsRepository.UpdateSms(smsDTO);
+                var result = _smsRepository.UpdateSms(smsFormDTO);
                 if (!result)
                 {
                     return NotFound();
                 }
-                return Ok();
+                ResponseDTO<SmsInfoDTO> responseDto = new ResponseDTO<SmsInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "sms Updated Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -112,7 +137,7 @@ namespace KiloTaxi.API.Controllers
 
         // DELETE api/<SmsController>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ResponseDTO<SmsInfoDTO>> Delete(int id)
         {
             try
             {
@@ -128,7 +153,14 @@ namespace KiloTaxi.API.Controllers
                     return NotFound();
                 }
 
-                return NoContent();
+                ResponseDTO<SmsInfoDTO> responseDto = new ResponseDTO<SmsInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "sms Deleted Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
