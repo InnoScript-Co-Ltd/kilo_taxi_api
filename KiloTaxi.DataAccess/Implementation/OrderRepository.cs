@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
@@ -6,6 +7,8 @@ using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -19,13 +22,13 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbKiloTaxiContext;
         }
 
-        public OrderPagingDTO GetAllOrder(PageSortParam pageSortParam)
+        public ResponseDTO<OrderPagingDTO> GetAllOrder(PageSortParam pageSortParam)
         {
             try
             {
-                var query = _dbKiloTaxiContext.Orders
-                    .Include(o => o.Customer)
-                    .Include(o=>o.Driver)
+                var query = _dbKiloTaxiContext
+                    .Orders.Include(o => o.Customer)
+                    .Include(o => o.Driver)
                     .AsQueryable();
                 if (!string.IsNullOrEmpty(pageSortParam.SearchTerm))
                 {
@@ -81,7 +84,13 @@ namespace KiloTaxi.DataAccess.Implementation
                         pageSortParam.CurrentPage * pageSortParam.PageSize
                     ),
                 };
-                return new OrderPagingDTO() { Paging = pagingResult, Orders = orders };
+                // return new OrderPagingDTO() { Paging = pagingResult, Orders = orders };
+                ResponseDTO<OrderPagingDTO> responseDto = new ResponseDTO<OrderPagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "Orders retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new OrderPagingDTO { Paging = pagingResult, Orders = orders };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -90,25 +99,26 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public OrderDTO AddOrder(OrderDTO orderDTO)
+        public OrderInfoDTO AddOrder(OrderFormDTO orderFormDTO)
         {
             try
             {
                 Order orderEntity = new Order();
                 DateTime createDate = DateTime.Now;
-                orderDTO.CreatedDate = createDate;
-                OrderConverter.ConvertModelToEntity(orderDTO, ref orderEntity);
+                orderFormDTO.CreatedDate = createDate;
+                OrderConverter.ConvertModelToEntity(orderFormDTO, ref orderEntity);
 
                 _dbKiloTaxiContext.Add(orderEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                orderDTO.Id = orderEntity.Id;
+                orderFormDTO.Id = orderEntity.Id;
 
                 LoggerHelper.Instance.LogInfo(
                     $"Order added successfully with Id: {orderEntity.Id}"
                 );
+                var orderInfoDTO = OrderConverter.ConvertEntityToModel(orderEntity);
 
-                return orderDTO;
+                return orderInfoDTO;
             }
             catch (Exception ex)
             {
@@ -117,19 +127,19 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public bool UpdateOrder(OrderDTO orderDTO)
+        public bool UpdateOrder(OrderFormDTO orderFormDTO)
         {
             try
             {
                 var orderEntity = _dbKiloTaxiContext.Orders.FirstOrDefault(order =>
-                    order.Id == orderDTO.Id
+                    order.Id == orderFormDTO.Id
                 );
                 if (orderEntity == null)
                 {
                     return false;
                 }
 
-                OrderConverter.ConvertModelToEntity(orderDTO, ref orderEntity);
+                OrderConverter.ConvertModelToEntity(orderFormDTO, ref orderEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -138,13 +148,13 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating order with Id: {orderDTO.Id}"
+                    $"Error occurred while updating order with Id: {orderFormDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public OrderDTO GetOrderById(int id)
+        public OrderInfoDTO GetOrderById(int id)
         {
             try
             {

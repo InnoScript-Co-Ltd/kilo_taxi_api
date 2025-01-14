@@ -3,12 +3,14 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class OrderConverter
     {
-        public static OrderDTO ConvertEntityToModel(Order orderEntity)
+        public static OrderInfoDTO ConvertEntityToModel(Order orderEntity)
         {
             if (orderEntity == null)
             {
@@ -22,7 +24,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new OrderDTO()
+            return new OrderInfoDTO()
             {
                 Id = orderEntity.Id,
                 PickUpLocation = orderEntity.PickUpLocation,
@@ -37,44 +39,42 @@ namespace KiloTaxi.Converter
                 VehicleId = orderEntity.VehicleId,
                 ScheduleBookingId = orderEntity.ScheduleBookingId,
                 EstimatedAmount = orderEntity.EstimatedAmount,
-                customer = orderEntity.Customer,
-                driver = orderEntity.Driver,
                 Status = Enum.Parse<OrderStatus>(orderEntity.Status),
                 CreatedDate = orderEntity.CreatedDate,
             };
         }
 
-        public static void ConvertModelToEntity(OrderDTO orderDTO, ref Order orderEntity)
+        public static void ConvertModelToEntity(OrderFormDTO orderFormDTO, ref Order orderEntity)
         {
             try
             {
-                if (orderDTO == null)
+                if (orderFormDTO == null)
                 {
                     LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(orderDTO)),
+                        new ArgumentNullException(nameof(orderFormDTO)),
                         "OrderDTO is null"
                     );
                     throw new ArgumentNullException(
-                        nameof(orderDTO),
-                        "Source orderDTO cannot be null"
+                        nameof(orderFormDTO),
+                        "Source orderFormDTO cannot be null"
                     );
                 }
 
-                orderEntity.Id = orderDTO.Id;
-                orderEntity.PickUpLocation = orderDTO.PickUpLocation;
-                orderEntity.PickUpLat = orderDTO.PickUpLat;
-                orderEntity.PickUpLong = orderDTO.PickUpLong;
-                orderEntity.DestinationLocation = orderDTO.DestinationLocation;
-                orderEntity.DestinationLat = orderDTO.DestinationLat;
-                orderEntity.DestinationLong = orderDTO.DestinationLong;
-                orderEntity.WalletTransactionId = orderDTO.WalletTransactionId;
-                orderEntity.CustomerId = orderDTO.CustomerId;
-                orderEntity.DriverId = orderDTO.DriverId;
-                orderEntity.VehicleId = orderDTO.VehicleId;
-                orderEntity.ScheduleBookingId = orderDTO.ScheduleBookingId;
-                orderEntity.EstimatedAmount = orderDTO.EstimatedAmount;
-                orderEntity.Status = orderDTO.Status.ToString();
-                orderEntity.CreatedDate = orderDTO.CreatedDate;
+                orderEntity.Id = orderFormDTO.Id;
+                orderEntity.PickUpLocation = orderFormDTO.PickUpLocation;
+                orderEntity.PickUpLat = orderFormDTO.PickUpLat;
+                orderEntity.PickUpLong = orderFormDTO.PickUpLong;
+                orderEntity.DestinationLocation = orderFormDTO.DestinationLocation;
+                orderEntity.DestinationLat = orderFormDTO.DestinationLat;
+                orderEntity.DestinationLong = orderFormDTO.DestinationLong;
+                orderEntity.WalletTransactionId = orderFormDTO.WalletTransactionId;
+                orderEntity.CustomerId = orderFormDTO.CustomerId;
+                orderEntity.DriverId = orderFormDTO.DriverId;
+                orderEntity.VehicleId = orderFormDTO.VehicleId;
+                orderEntity.ScheduleBookingId = orderFormDTO.ScheduleBookingId;
+                orderEntity.EstimatedAmount = orderFormDTO.EstimatedAmount;
+                orderEntity.Status = orderFormDTO.Status.ToString();
+                orderEntity.CreatedDate = orderFormDTO.CreatedDate;
             }
             catch (ArgumentException ex)
             {
