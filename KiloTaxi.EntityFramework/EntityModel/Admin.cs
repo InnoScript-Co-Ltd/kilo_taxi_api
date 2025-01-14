@@ -10,13 +10,12 @@ using Microsoft.EntityFrameworkCore;
 namespace KiloTaxi.EntityFramework.EntityModel
 {
     [Index(nameof(Phone), IsUnique = true)]
-    [Index(nameof(Email), IsUnique = true)] 
+    [Index(nameof(Email), IsUnique = true)]
     public class Admin
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        
 
         [MaxLength(100)]
         public string Name { get; set; }
@@ -25,11 +24,11 @@ namespace KiloTaxi.EntityFramework.EntityModel
 
         [Required]
         public string Email { get; set; }
-        
+
         public DateTime? EmailVerifiedAt { get; set; }
-        
+
         public DateTime? PhoneVerifiedAt { get; set; }
-        
+
         public string Role { get; set; }
         public string Password { get; set; }
 
@@ -38,12 +37,11 @@ namespace KiloTaxi.EntityFramework.EntityModel
         public string Address { get; set; }
 
         public string Status { get; set; }
-        
-        public string? Otp {get;set;}
+
+        public string? Otp { get; set; }
         public string? RefreshToken { get; set; }
-        
+
         [DataType(DataType.Date)]
         public DateTime? RefreshTokenExpiryTime { get; set; }
-        
     }
 }
