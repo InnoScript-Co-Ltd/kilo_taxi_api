@@ -44,4 +44,8 @@
     <None Remove="GlobalExceptionHandler\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Logs\" />
+  </ItemGroup>
+
 </Project>

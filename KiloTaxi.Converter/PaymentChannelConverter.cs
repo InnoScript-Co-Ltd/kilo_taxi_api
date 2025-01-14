@@ -3,12 +3,14 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class PaymentChannelConverter
     {
-        public static PaymentChannelDTO ConvertEntityToModel(
+        public static PaymentChannelInfoDTO ConvertEntityToModel(
             PaymentChannel paymentChannelEntity,
             string mediaHostUrl
         )
@@ -25,7 +27,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new PaymentChannelDTO
+            return new PaymentChannelInfoDTO
             {
                 Id = paymentChannelEntity.Id,
                 ChannelName = paymentChannelEntity.ChannelName,
@@ -38,23 +40,23 @@ namespace KiloTaxi.Converter
         }
 
         public static void ConvertModelToEntity(
-            PaymentChannelDTO paymentChannelDTO,
+            PaymentChannelFormDTO paymentChannelFormDTO,
             ref PaymentChannel paymentChannelEntity
         )
         {
-            if (paymentChannelDTO == null)
-                throw new ArgumentNullException(nameof(paymentChannelDTO));
+            if (paymentChannelFormDTO == null)
+                throw new ArgumentNullException(nameof(paymentChannelFormDTO));
 
             if (paymentChannelEntity == null)
                 throw new ArgumentNullException(nameof(paymentChannelEntity));
 
-            paymentChannelEntity.Id = paymentChannelDTO.Id;
-            paymentChannelEntity.ChannelName = paymentChannelDTO.ChannelName;
-            paymentChannelEntity.Description = paymentChannelDTO.Description;
-            paymentChannelEntity.PaymentType = paymentChannelDTO.PaymentType.ToString();
-            paymentChannelEntity.Icon = paymentChannelDTO.Icon;
-            paymentChannelEntity.Phone = paymentChannelDTO.Phone;
-            paymentChannelEntity.UserName = paymentChannelDTO.UserName;
+            paymentChannelEntity.Id = paymentChannelFormDTO.Id;
+            paymentChannelEntity.ChannelName = paymentChannelFormDTO.ChannelName;
+            paymentChannelEntity.Description = paymentChannelFormDTO.Description;
+            paymentChannelEntity.PaymentType = paymentChannelFormDTO.PaymentType.ToString();
+            paymentChannelEntity.Icon = paymentChannelFormDTO.Icon;
+            paymentChannelEntity.Phone = paymentChannelFormDTO.Phone;
+            paymentChannelEntity.UserName = paymentChannelFormDTO.UserName;
         }
     }
 }

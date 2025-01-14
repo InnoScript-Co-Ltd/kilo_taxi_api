@@ -2,6 +2,8 @@
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers;
@@ -35,19 +37,18 @@ public class PaymentChannelController : ControllerBase
 
     // GET: api/<PaymentChannelController>
     [HttpGet]
-    public ActionResult<IEnumerable<PaymentChannelPagingDTO>> Get(
+    public ActionResult<ResponseDTO<PaymentChannelPagingDTO>> Get(
         [FromQuery] PageSortParam pageSortParam
     )
     {
         try
         {
-            PaymentChannelPagingDTO paymentChannelPagingDTO =
-                _paymentChannelRepository.GetAllPaymentChannels(pageSortParam);
-            if (!paymentChannelPagingDTO.PaymentChannels.Any())
+            var responseDto  = _paymentChannelRepository.GetAllPaymentChannels(pageSortParam);
+            if (!responseDto.Payload.PaymentChannels.Any())
             {
                 return NoContent();
             }
-            return Ok(paymentChannelPagingDTO);
+            return responseDto;
         }
         catch (Exception ex)
         {
@@ -58,7 +59,7 @@ public class PaymentChannelController : ControllerBase
 
     // GET: api/<PaymentChannelController>/5
     [HttpGet("{id}")]
-    public ActionResult<PaymentChannelDTO> Get(int id)
+    public ActionResult<ResponseDTO<PaymentChannelInfoDTO>> Get(int id)
     {
         try
         {
@@ -73,7 +74,14 @@ public class PaymentChannelController : ControllerBase
                 return NotFound();
             }
 
-            return Ok(paymentChannel);
+            ResponseDTO<PaymentChannelInfoDTO> responseDTO = new ResponseDTO<PaymentChannelInfoDTO>
+            {
+                StatusCode = Ok().StatusCode,
+                Message = "Payment Channel retrieved successfully.",
+                Payload = paymentChannel,
+            };
+
+            return Ok(responseDTO);
         }
         catch (Exception ex)
         {
@@ -84,7 +92,7 @@ public class PaymentChannelController : ControllerBase
 
     // POST api/<PaymentChannelController>
     [HttpPost]
-    public async Task<ActionResult<PaymentChannelDTO>> Post(PaymentChannelDTO paymentChannelDTO)
+    public async Task<ActionResult<ResponseDTO<PaymentChannelInfoDTO>>> Post(PaymentChannelFormDTO paymentChannelFormDTO)
     {
         try
         {
@@ -101,7 +109,7 @@ public class PaymentChannelController : ControllerBase
             );
             var filesToProcess = new List<(IFormFile? File, string FilePathProperty)>
             {
-                (paymentChannelDTO.File_Icon, nameof(paymentChannelDTO.Icon)),
+                (paymentChannelFormDTO.File_Icon, nameof(paymentChannelFormDTO.Icon)),
             };
 
             foreach (var (file, filePathProperty) in filesToProcess)
@@ -120,13 +128,13 @@ public class PaymentChannelController : ControllerBase
                 }
 
                 var fileName = "_" + filePathProperty + resolvedFilePath;
-                typeof(PaymentChannelDTO)
+                typeof(PaymentChannelFormDTO)
                     .GetProperty(filePathProperty)
-                    ?.SetValue(paymentChannelDTO, fileName);
+                    ?.SetValue(paymentChannelFormDTO, fileName);
             }
 
             var createdPaymentChannel = _paymentChannelRepository.CreatePaymentChannel(
-                paymentChannelDTO
+                paymentChannelFormDTO
             );
 
             foreach (var (file, filePathProperty) in filesToProcess)
@@ -148,17 +156,21 @@ public class PaymentChannelController : ControllerBase
                     await fileUploadHelper.SaveFileAsync(
                         file,
                         flagDomain,
-                        paymentChannelDTO.Id.ToString() + "_" + filePathProperty,
+                        paymentChannelFormDTO.Id.ToString() + "_" + filePathProperty,
                         resolvedFilePath
                     );
                 }
             }
+            
+            var response = new ResponseDTO<PaymentChannelInfoDTO>
+            {
+                StatusCode = Ok().StatusCode,
+                Message = "Payment Channel Register Success.",
+                Payload = createdPaymentChannel,
+                TimeStamp = DateTime.Now,
+            };
 
-            return CreatedAtAction(
-                nameof(Get),
-                new { id = createdPaymentChannel.Id },
-                createdPaymentChannel
-            );
+            return response;
         }
         catch (Exception ex)
         {
@@ -169,11 +181,11 @@ public class PaymentChannelController : ControllerBase
 
     // PUT api/<PaymentChannelController>/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put([FromRoute] int id, PaymentChannelDTO paymentChannelDTO)
+    public async Task<ActionResult<ResponseDTO<PaymentChannelInfoDTO>>> Put([FromRoute] int id, PaymentChannelFormDTO paymentChannelFormDTO)
     {
         try
         {
-            if (id != paymentChannelDTO.Id)
+            if (id != paymentChannelFormDTO.Id)
             {
                 return BadRequest();
             }
@@ -186,7 +198,7 @@ public class PaymentChannelController : ControllerBase
             );
             var filesToProcess = new List<(IFormFile file, string filePathProperty)>
             {
-                (paymentChannelDTO.File_Icon, nameof(paymentChannelDTO.Icon)),
+                (paymentChannelFormDTO.File_Icon, nameof(paymentChannelFormDTO.Icon)),
             };
 
             // Validate and update file paths
@@ -207,15 +219,15 @@ public class PaymentChannelController : ControllerBase
                         return BadRequest(errorMessage);
                     }
                     var fileName = "_" + filePathProperty + resolvedFilePath;
-                    typeof(PaymentChannelDTO)
+                    typeof(PaymentChannelFormDTO)
                         .GetProperty(filePathProperty)
-                        ?.SetValue(paymentChannelDTO, fileName);
+                        ?.SetValue(paymentChannelFormDTO, fileName);
                 }
             }
 
             // Update the payment channel in the repository
 
-            var isUpdated = _paymentChannelRepository.UpdatePaymentChannel(paymentChannelDTO);
+            var isUpdated = _paymentChannelRepository.UpdatePaymentChannel(paymentChannelFormDTO);
             if (!isUpdated)
             {
                 return NotFound();
@@ -227,12 +239,19 @@ public class PaymentChannelController : ControllerBase
                 if (file != null && file.Length > 0)
                 {
                     var fileExtension = Path.GetExtension(file.FileName);
-                    var fileName = paymentChannelDTO.Id.ToString() + "_" + filePathProperty;
+                    var fileName = paymentChannelFormDTO.Id.ToString() + "_" + filePathProperty;
                     await fileUploadHelper.SaveFileAsync(file, flagDomain, fileName, fileExtension);
                 }
             }
 
-            return Ok("Payment Channel updated successfully.");
+            ResponseDTO<PaymentChannelInfoDTO> responseDto = new ResponseDTO<PaymentChannelInfoDTO>
+            {
+                StatusCode = 200,
+                Message = "Payment Channel updated successfully.",
+                Payload = null,
+            };
+
+            return Ok(responseDto);
         }
         catch (Exception ex)
         {
@@ -243,7 +262,7 @@ public class PaymentChannelController : ControllerBase
 
     // DELETE api/<PaymentChannelController>/5
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public ActionResult<ResponseDTO<PaymentChannelInfoDTO>> Delete(int id)
     {
         try
         {
@@ -277,7 +296,14 @@ public class PaymentChannelController : ControllerBase
                 return StatusCode(500, "An error occurred while deleting the payment channel.");
             }
 
-            return Ok($"Payment channel with ID {id} has been successfully deleted.");
+            ResponseDTO<PaymentChannelInfoDTO> responseDTO = new ResponseDTO<PaymentChannelInfoDTO>
+            {
+                StatusCode = 200,
+                Message = $"Payment channel deleted successfully.",
+                Payload = null,
+            };
+
+            return Ok(responseDTO);
         }
         catch (Exception ex)
         {

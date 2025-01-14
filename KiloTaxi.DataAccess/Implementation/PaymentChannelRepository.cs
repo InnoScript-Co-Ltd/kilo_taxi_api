@@ -1,10 +1,13 @@
 ﻿using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation;
@@ -19,20 +22,20 @@ public class PaymentChannelRepository : IPaymentChannelRepository
         _dbContext = dbContext;
     }
 
-    public PaymentChannelDTO CreatePaymentChannel(PaymentChannelDTO paymentChannelDTO)
+    public PaymentChannelInfoDTO CreatePaymentChannel(PaymentChannelFormDTO paymentChannelFormDTO)
     {
         try
         {
-            var paymentChannelEntity = new PaymentChannel();
+            PaymentChannel paymentChannelEntity = new PaymentChannel();
             PaymentChannelConverter.ConvertModelToEntity(
-                paymentChannelDTO,
+                paymentChannelFormDTO,
                 ref paymentChannelEntity
             );
 
             _dbContext.PaymentChannels.Add(paymentChannelEntity);
             _dbContext.SaveChanges();
 
-            paymentChannelDTO.Id = paymentChannelEntity.Id;
+            paymentChannelFormDTO.Id = paymentChannelEntity.Id;
 
             var filePaths = new List<(string PropertyName, string FilePath)>
             {
@@ -46,7 +49,7 @@ public class PaymentChannelRepository : IPaymentChannelRepository
                     {
                         case nameof(paymentChannelEntity.Icon):
                             paymentChannelEntity.Icon =
-                                $"payment-channel/{paymentChannelDTO.Id}{filePath}";
+                                $"payment-channel/{paymentChannelFormDTO.Id}{filePath}";
                             break;
 
                         default:
@@ -57,7 +60,7 @@ public class PaymentChannelRepository : IPaymentChannelRepository
 
             _dbContext.SaveChanges();
 
-            paymentChannelDTO = PaymentChannelConverter.ConvertEntityToModel(
+            var paymentChannelInfoDTO = PaymentChannelConverter.ConvertEntityToModel(
                 paymentChannelEntity,
                 _mediaHostUrl
             );
@@ -66,7 +69,7 @@ public class PaymentChannelRepository : IPaymentChannelRepository
                 $"Payment Channel Channel successfully with Id: {paymentChannelEntity.Id}"
             );
 
-            return paymentChannelDTO;
+            return paymentChannelInfoDTO;
         }
         catch (Exception ex)
         {
@@ -75,51 +78,51 @@ public class PaymentChannelRepository : IPaymentChannelRepository
         }
     }
 
-    public bool UpdatePaymentChannel(PaymentChannelDTO paymentChannelDTO)
+    public bool UpdatePaymentChannel(PaymentChannelFormDTO paymentChannelFormDTO)
     {
         try
         {
             var paymentChannelEntity = _dbContext.PaymentChannels.FirstOrDefault(pc =>
-                pc.Id == paymentChannelDTO.Id
+                pc.Id == paymentChannelFormDTO.Id
             );
             if (paymentChannelEntity == null)
                 return false;
 
             // List of image properties to update
             var imageProperties = new List<(
-                string paymentChannelDTOProperty,
+                string paymentChannelFormDTOProperty,
                 string paymentChannelEntityFile
             )>
             {
-                (nameof(paymentChannelDTO.Icon), paymentChannelEntity.Icon),
+                (nameof(paymentChannelFormDTO.Icon), paymentChannelEntity.Icon),
             };
 
             // Loop through image properties and update paths if necessary
-            foreach (var (paymentChannelDTOProperty, paymentChannelEntityFile) in imageProperties)
+            foreach (var (paymentChannelFormDTOProperty, paymentChannelEntityFile) in imageProperties)
             {
-                var dtoValue = typeof(PaymentChannelDTO)
-                    .GetProperty(paymentChannelDTOProperty)
-                    ?.GetValue(paymentChannelDTO)
+                var dtoValue = typeof(PaymentChannelFormDTO)
+                    .GetProperty(paymentChannelFormDTOProperty)
+                    ?.GetValue(paymentChannelFormDTO)
                     ?.ToString();
 
                 if (string.IsNullOrEmpty(dtoValue))
                 {
-                    typeof(PaymentChannelDTO)
-                        .GetProperty(paymentChannelDTOProperty)
-                        ?.SetValue(paymentChannelDTO, paymentChannelEntityFile);
+                    typeof(PaymentChannelFormDTO)
+                        .GetProperty(paymentChannelFormDTOProperty)
+                        ?.SetValue(paymentChannelFormDTO, paymentChannelEntityFile);
                 }
                 else if (dtoValue != paymentChannelEntityFile)
                 {
-                    typeof(PaymentChannelDTO)
-                        .GetProperty(paymentChannelDTOProperty)
+                    typeof(PaymentChannelFormDTO)
+                        .GetProperty(paymentChannelFormDTOProperty)
                         ?.SetValue(
-                            paymentChannelDTO,
-                            $"payment-channel/{paymentChannelDTO.Id}{dtoValue}"
+                            paymentChannelFormDTO,
+                            $"payment-channel/{paymentChannelFormDTO.Id}{dtoValue}"
                         );
                 }
             }
             PaymentChannelConverter.ConvertModelToEntity(
-                paymentChannelDTO,
+                paymentChannelFormDTO,
                 ref paymentChannelEntity
             );
             _dbContext.SaveChanges();
@@ -132,7 +135,7 @@ public class PaymentChannelRepository : IPaymentChannelRepository
         }
     }
 
-    public PaymentChannelDTO GetPaymentChannelById(int id)
+    public PaymentChannelInfoDTO GetPaymentChannelById(int id)
     {
         try
         {
@@ -143,12 +146,12 @@ public class PaymentChannelRepository : IPaymentChannelRepository
                 return null;
             }
 
-            var paymentChannelDTO = PaymentChannelConverter.ConvertEntityToModel(
+            var paymentChannelInfoDTO = PaymentChannelConverter.ConvertEntityToModel(
                 paymentChannelEntity,
                 _mediaHostUrl
             );
 
-            return paymentChannelDTO;
+            return paymentChannelInfoDTO;
         }
         catch (Exception ex)
         {
@@ -160,7 +163,7 @@ public class PaymentChannelRepository : IPaymentChannelRepository
         }
     }
 
-    public PaymentChannelPagingDTO GetAllPaymentChannels(PageSortParam pageSortParam)
+    public ResponseDTO<PaymentChannelPagingDTO> GetAllPaymentChannels(PageSortParam pageSortParam)
     {
         try
         {
@@ -226,12 +229,13 @@ public class PaymentChannelRepository : IPaymentChannelRepository
                     pageSortParam.CurrentPage * pageSortParam.PageSize
                 ),
             };
-
-            return new PaymentChannelPagingDTO
-            {
-                Paging = pagingResult,
-                PaymentChannels = paymentChannels,
-            };
+            
+            ResponseDTO<PaymentChannelPagingDTO> responseDto = new ResponseDTO<PaymentChannelPagingDTO>();
+            responseDto.StatusCode = (int)HttpStatusCode.OK;
+            responseDto.Message = "Payment channels retrieved successfully";
+            responseDto.TimeStamp = DateTime.Now;
+            responseDto.Payload = new PaymentChannelPagingDTO { Paging = pagingResult, PaymentChannels = paymentChannels };
+            return responseDto;
         }
         catch (Exception ex)
         {
