@@ -1,10 +1,13 @@
 using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -18,7 +21,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbContext;
         }
 
-        public ExtraDemandPagingDTO GetAllExtraDemand(PageSortParam pageSortParam)
+        public ResponseDTO<ExtraDemandPagingDTO> GetAllExtraDemand(PageSortParam pageSortParam)
         {
             try
             {
@@ -82,7 +85,12 @@ namespace KiloTaxi.DataAccess.Implementation
                     ),
                 };
 
-                return new ExtraDemandPagingDTO { Paging = pagingResult, ExtraDemands = extraDemands };
+                ResponseDTO<ExtraDemandPagingDTO> responseDto = new ResponseDTO<ExtraDemandPagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "extra demands retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new ExtraDemandPagingDTO { Paging = pagingResult, ExtraDemands = extraDemands };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -94,23 +102,24 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public ExtraDemandDTO CreateExtraDemand(ExtraDemandDTO extraDemandDTO)
+        public ExtraDemandInfoDTO CreateExtraDemand(ExtraDemandFormDTO extraDemandFormDTO)
         {
             try
             {
                 ExtraDemand extraDemandEntity = new ExtraDemand();
-                ExtraDemandConverter.ConvertModelToEntity(extraDemandDTO, ref extraDemandEntity);
+                ExtraDemandConverter.ConvertModelToEntity(extraDemandFormDTO, ref extraDemandEntity);
                 
                 _dbKiloTaxiContext.Add(extraDemandEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                extraDemandDTO.Id = extraDemandEntity.Id;
+                extraDemandFormDTO.Id = extraDemandEntity.Id;
 
                 LoggerHelper.Instance.LogInfo(
                     $"ExtraDemand added successfully with Id: {extraDemandEntity.Id}"
                 );
 
-                return extraDemandDTO;
+                var extraDemandInfoDTO = ExtraDemandConverter.ConvertEntityToModel(extraDemandEntity);
+                return extraDemandInfoDTO;
             }
             catch (Exception ex)
             {
@@ -119,19 +128,19 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public bool UpdateExtraDemand(ExtraDemandDTO extraDemandDTO)
+        public bool UpdateExtraDemand(ExtraDemandFormDTO extraDemandFormDTO)
         {
             try
             {
                 var extraDemandEntity = _dbKiloTaxiContext.ExtraDemands.FirstOrDefault(extraDemand =>
-                    extraDemand.Id == extraDemandDTO.Id
+                    extraDemand.Id == extraDemandFormDTO.Id
                 );
                 if (extraDemandEntity == null)
                 {
                     return false;
                 }
 
-                ExtraDemandConverter.ConvertModelToEntity(extraDemandDTO, ref extraDemandEntity);
+                ExtraDemandConverter.ConvertModelToEntity(extraDemandFormDTO, ref extraDemandEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -140,13 +149,13 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating extraDemand with Id: {extraDemandDTO.Id}"
+                    $"Error occurred while updating extraDemand with Id: {extraDemandFormDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public ExtraDemandDTO GetExtraDemandById(int id)
+        public ExtraDemandInfoDTO GetExtraDemandById(int id)
         {
             try
             {

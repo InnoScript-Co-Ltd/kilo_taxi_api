@@ -1,6 +1,8 @@
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
@@ -20,18 +22,18 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<ExtraDemandController>
         [HttpGet]
-        public ActionResult<ExtraDemandPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ResponseDTO<ExtraDemandPagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                ExtraDemandPagingDTO extraDemandPagingDTO = _extraDemandRepository.GetAllExtraDemand(
+                var responseDto = _extraDemandRepository.GetAllExtraDemand(
                     pageSortParam
                 );
-                if (!extraDemandPagingDTO.ExtraDemands.Any())
+                if (!responseDto.Payload.ExtraDemands.Any())
                 {
                     return NoContent();
                 }
-                return Ok(extraDemandPagingDTO);
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -42,7 +44,7 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<ExtraDemandController>/5
         [HttpGet("{id}")]
-        public ActionResult<ExtraDemandDTO> Get(int id)
+        public ActionResult<ExtraDemandInfoDTO> Get(int id)
         {
             try
             {
@@ -56,7 +58,14 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(result);
+                ResponseDTO<ExtraDemandInfoDTO> responseDto = new ResponseDTO<ExtraDemandInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "extra demands retrieved successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = result,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -67,21 +76,25 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<ExtraDemandController>
         [HttpPost]
-        public ActionResult<ExtraDemandDTO> Post([FromBody] ExtraDemandDTO extraDemandDTO)
+        public ActionResult<ResponseDTO<ExtraDemandInfoDTO>> Post([FromBody] ExtraDemandFormDTO extraDemandFormDTO)
         {
             try
             {
-                if (extraDemandDTO == null)
+                if (extraDemandFormDTO == null)
                 {
                     return BadRequest();
                 }
 
-                var createdExtraDemand = _extraDemandRepository.CreateExtraDemand(extraDemandDTO);
-                return CreatedAtAction(
-                    nameof(Get),
-                    new { id = createdExtraDemand.Id },
-                    createdExtraDemand
-                );
+                var createdExtraDemand = _extraDemandRepository.CreateExtraDemand(extraDemandFormDTO);
+                
+                var response = new ResponseDTO<ExtraDemandInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "extra demand Register Success.",
+                    TimeStamp = DateTime.Now,
+                    Payload = createdExtraDemand,
+                };
+                return response;
             }
             catch (Exception ex)
             {
@@ -92,21 +105,29 @@ namespace KiloTaxi.API.Controllers
 
         // PUT api/<ExtraDemandController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] ExtraDemandDTO extraDemandDTO)
+        public ActionResult<ResponseDTO<ExtraDemandInfoDTO>> Put(int id, [FromBody] ExtraDemandFormDTO extraDemandFormDTO)
         {
             try
             {
-                if (extraDemandDTO == null || id != extraDemandDTO.Id)
+                if (extraDemandFormDTO == null || id != extraDemandFormDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _extraDemandRepository.UpdateExtraDemand(extraDemandDTO);
+                var result = _extraDemandRepository.UpdateExtraDemand(extraDemandFormDTO);
                 if (!result)
                 {
                     return NotFound();
                 }
-                return Ok();
+                
+                ResponseDTO<ExtraDemandInfoDTO> responseDto = new ResponseDTO<ExtraDemandInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "extra demand Updated Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -117,7 +138,7 @@ namespace KiloTaxi.API.Controllers
 
         // DELETE api/<ExtraDemandController>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ResponseDTO<ExtraDemandInfoDTO>> Delete(int id)
         {
             try
             {
@@ -133,7 +154,14 @@ namespace KiloTaxi.API.Controllers
                     return NotFound();
                 }
 
-                return NoContent();
+                ResponseDTO<ExtraDemandInfoDTO> responseDto = new ResponseDTO<ExtraDemandInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "extra demand Deleted Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
