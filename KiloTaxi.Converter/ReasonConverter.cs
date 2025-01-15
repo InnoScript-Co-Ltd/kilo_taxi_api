@@ -3,12 +3,14 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class ReasonConverter
     {
-        public static ReasonDTO ConvertEntityToModel(Reason reasonEntity)
+        public static ReasonInfoDTO ConvertEntityToModel(Reason reasonEntity)
         {
             if (reasonEntity == null)
             {
@@ -22,7 +24,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new ReasonDTO()
+            return new ReasonInfoDTO()
             {
                 Id = reasonEntity.Id,
                 Name = reasonEntity.Name,
@@ -31,18 +33,18 @@ namespace KiloTaxi.Converter
             };
         }
 
-        public static void ConvertModelToEntity(ReasonDTO reasonDTO, ref Reason reasonEntity)
+        public static void ConvertModelToEntity(ReasonFormDTO reasonFormDTO, ref Reason reasonEntity)
         {
             try
             {
-                if (reasonDTO == null)
+                if (reasonFormDTO == null)
                 {
                     LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(reasonDTO)),
+                        new ArgumentNullException(nameof(reasonFormDTO)),
                         "reasonDTO is null"
                     );
                     throw new ArgumentNullException(
-                        nameof(reasonDTO),
+                        nameof(reasonFormDTO),
                         "Source reasonDTO cannot be null"
                     );
                 }
@@ -59,9 +61,9 @@ namespace KiloTaxi.Converter
                     );
                 }
 
-                reasonEntity.Id = reasonDTO.Id;
-                reasonEntity.Name = reasonDTO.Name;
-                reasonEntity.Status = reasonDTO.Status.ToString();
+                reasonEntity.Id = reasonFormDTO.Id;
+                reasonEntity.Name = reasonFormDTO.Name;
+                reasonEntity.Status = reasonFormDTO.Status.ToString();
             }
             catch (Exception ex)
             {
