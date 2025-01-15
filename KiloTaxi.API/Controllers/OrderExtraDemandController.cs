@@ -22,18 +22,18 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<OrderExtraDemandController>
         [HttpGet]
-        public ActionResult<OrderExtraDemandPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ResponseDTO<OrderExtraDemandPagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                OrderExtraDemandPagingDTO orderExtraDemandPagingDTO = _orderExtraDemandRepository.GetAllOrderExtraDemand(
+                var responseDto = _orderExtraDemandRepository.GetAllOrderExtraDemand(
                     pageSortParam
                 );
-                if (!orderExtraDemandPagingDTO.OrderExtraDemands.Any())
+                if (!responseDto.Payload.OrderExtraDemands.Any())
                 {
                     return NoContent();
                 }
-                return Ok(orderExtraDemandPagingDTO);
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -44,7 +44,7 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<OrderExtraDemandController>/5
         [HttpGet("{id}")]
-        public ActionResult<OrderExtraDemandDTO> Get(int id)
+        public ActionResult<OrderExtraDemandInfoDTO> Get(int id)
         {
             try
             {
@@ -58,7 +58,14 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(result);
+                ResponseDTO<OrderExtraDemandInfoDTO> responseDto = new ResponseDTO<OrderExtraDemandInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "order extra demand Deleted Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -95,7 +102,7 @@ namespace KiloTaxi.API.Controllers
 
         // PUT api/<OrderExtraDemandController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] OrderExtraDemandDTO orderExtraDemandDTO)
+        public ActionResult<ResponseDTO<OrderExtraDemandDTO>> Put(int id, [FromBody] OrderExtraDemandDTO orderExtraDemandDTO)
         {
             try
             {
@@ -109,7 +116,15 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                return Ok();
+                
+                ResponseDTO<OrderExtraDemandDTO> responseDto = new ResponseDTO<OrderExtraDemandDTO>
+                {
+                    StatusCode = 200,
+                    Message = "order extra demand Updated Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -120,7 +135,7 @@ namespace KiloTaxi.API.Controllers
 
         // DELETE api/<OrderExtraDemandController>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ResponseDTO<OrderExtraDemandInfoDTO>> Delete(int id)
         {
             try
             {
@@ -136,7 +151,14 @@ namespace KiloTaxi.API.Controllers
                     return NotFound();
                 }
 
-                return NoContent();
+                ResponseDTO<OrderExtraDemandInfoDTO> responseDto = new ResponseDTO<OrderExtraDemandInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "order extra demand Info Deleted Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
