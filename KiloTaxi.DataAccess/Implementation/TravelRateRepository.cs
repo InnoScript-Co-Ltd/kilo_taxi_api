@@ -1,10 +1,13 @@
 ﻿using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation;
@@ -18,19 +21,20 @@ public class TravelRateRepository : ITravelRateRepository
         _DbKiloTaxiContext = DbKiloContext;
     }
     
-    public TravelRateDTO AddTravelRate(TravelRateDTO travelRateDto)
+    public TravelRateInfoDTO AddTravelRate(TravelRateFormDTO travelRateFormDto)
     {
         try
         {
             TravelRate travelRateEntity = new TravelRate();
-            TravelRateConverter.ConvertModelToEntity(travelRateDto, ref travelRateEntity);
+            TravelRateConverter.ConvertModelToEntity(travelRateFormDto, ref travelRateEntity);
             _DbKiloTaxiContext.Add(travelRateEntity);
             _DbKiloTaxiContext.SaveChanges();
-            travelRateDto.Id = travelRateEntity.Id;
+            travelRateFormDto.Id = travelRateEntity.Id;
                 
             LoggerHelper.Instance.LogInfo($"TravelRate added successfully with Id: {travelRateEntity.Id}");
 
-            return travelRateDto;
+            var travelRateInfoDTO = TravelRateConverter.ConvertEntityToModel(travelRateEntity);
+            return travelRateInfoDTO;
 
         }
         catch (Exception ex)
@@ -40,30 +44,30 @@ public class TravelRateRepository : ITravelRateRepository
         }
     }
 
-    public bool UpdateTravelRate(TravelRateDTO travelRateDto)
+    public bool UpdateTravelRate(TravelRateFormDTO travelRateFormDto)
     {
         bool result = false;
         try
         {
-            TravelRate travelRateEntity = _DbKiloTaxiContext.TravelRates.FirstOrDefault(x => x.Id == travelRateDto.Id);
+            TravelRate travelRateEntity = _DbKiloTaxiContext.TravelRates.FirstOrDefault(x => x.Id == travelRateFormDto.Id);
             if (travelRateEntity == null)
             {
                 return result;
             }
-            TravelRateConverter.ConvertModelToEntity(travelRateDto, ref travelRateEntity);
+            TravelRateConverter.ConvertModelToEntity(travelRateFormDto, ref travelRateEntity);
             _DbKiloTaxiContext.SaveChanges();
             result = true;
 
         }
         catch (Exception ex)
         {
-            LoggerHelper.Instance.LogError(ex, $"Error occurred while updating country with Id: {travelRateDto.Id}");
+            LoggerHelper.Instance.LogError(ex, $"Error occurred while updating country with Id: {travelRateFormDto.Id}");
             throw;
         }
         return result;
     }
 
-    public TravelRatePagingDTO GetAllTravelRate(PageSortParam pageSortParam)
+    public ResponseDTO<TravelRatePagingDTO> GetAllTravelRate(PageSortParam pageSortParam)
     {
         try
             {
@@ -117,12 +121,12 @@ public class TravelRateRepository : ITravelRateRepository
                     LastRowOnPage = Math.Min(pageSortParam.CurrentPage * pageSortParam.PageSize, totalCount)
                 };
 
-                // Return the paginated result with cities
-                return new TravelRatePagingDTO
-                {
-                    Paging = pagingResult,
-                    TravelRates = travelRates,
-                };
+                ResponseDTO<TravelRatePagingDTO> responseDto = new ResponseDTO<TravelRatePagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "travel rates retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new TravelRatePagingDTO() { Paging = pagingResult, TravelRates = travelRates };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -153,7 +157,7 @@ public class TravelRateRepository : ITravelRateRepository
         return result;
     }
 
-    public TravelRateDTO GetTravelRate(int id)
+    public TravelRateInfoDTO GetTravelRate(int id)
     {
         try
         {
