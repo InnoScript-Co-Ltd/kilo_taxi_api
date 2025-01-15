@@ -1,16 +1,18 @@
 ﻿using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.DataAccess.Interface;
 
 public interface ISosRepository
 {
-    SosDTO CreateSos(SosDTO sosDTO);
+    SosInfoDTO CreateSos(SosFormDTO sosFormDTO);
 
-    SosPagingDTO  GetAllSosList(PageSortParam pageSortParam);
+    ResponseDTO<SosPagingDTO> GetAllSosList(PageSortParam pageSortParam);
     
-    bool UpdateSos(SosDTO sosDTO);
+    bool UpdateSos(SosFormDTO sosFormDTO);
     
-    SosDTO GetSosById(int id);
+    SosInfoDTO GetSosById(int id);
 
     bool DeleteSos(int id);
 }
