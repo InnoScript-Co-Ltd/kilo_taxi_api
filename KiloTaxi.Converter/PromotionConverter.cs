@@ -5,12 +5,14 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class PromotionConverter
     {
-        public static PromotionDTO ConvertEntityToModel(Promotion promotionEntity)
+        public static PromotionInfoDTO ConvertEntityToModel(Promotion promotionEntity)
         {
             if (promotionEntity == null)
             {
@@ -24,7 +26,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new PromotionDTO()
+            return new PromotionInfoDTO()
             {
                 Id = promotionEntity.Id,
                 PromoCode = promotionEntity.PromoCode,
@@ -44,21 +46,21 @@ namespace KiloTaxi.Converter
         }
 
         public static void ConvertModelToEntity(
-            PromotionDTO promotionDTO,
+            PromotionFormDTO promotionFormDTO,
             ref Promotion promotionEntity
         )
         {
             try
             {
-                if (promotionDTO == null)
+                if (promotionFormDTO == null)
                 {
                     LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(promotionDTO)),
-                        "PromotionDTO is null"
+                        new ArgumentNullException(nameof(promotionFormDTO)),
+                        "PromotionFormDTO is null"
                     );
                     throw new ArgumentNullException(
-                        nameof(promotionDTO),
-                        "Source promotionDTO cannot be null"
+                        nameof(promotionFormDTO),
+                        "Source promotionFormDTO cannot be null"
                     );
                 }
 
@@ -74,24 +76,24 @@ namespace KiloTaxi.Converter
                     );
                 }
 
-                promotionEntity.Id = promotionDTO.Id;
-                promotionEntity.PromoCode = promotionDTO.PromoCode;
-                promotionEntity.CreatedDate = promotionDTO.CreatedDate;
-                promotionEntity.ExpiredDate = promotionDTO.ExpiredDate;
-                promotionEntity.Quantity = promotionDTO.Quantity;
-                promotionEntity.Description = promotionDTO.Description;
-                promotionEntity.Unit = promotionDTO.Unit;
-                promotionEntity.PromotionType = promotionDTO.PromotionType.ToString();
-                promotionEntity.Status = promotionDTO.Status.ToString();
-                promotionEntity.ApplicableTo = promotionDTO.ApplicableTo.ToString();
+                promotionEntity.Id = promotionFormDTO.Id;
+                promotionEntity.PromoCode = promotionFormDTO.PromoCode;
+                promotionEntity.CreatedDate = promotionFormDTO.CreatedDate;
+                promotionEntity.ExpiredDate = promotionFormDTO.ExpiredDate;
+                promotionEntity.Quantity = promotionFormDTO.Quantity;
+                promotionEntity.Description = promotionFormDTO.Description;
+                promotionEntity.Unit = promotionFormDTO.Unit;
+                promotionEntity.PromotionType = promotionFormDTO.PromotionType.ToString();
+                promotionEntity.Status = promotionFormDTO.Status.ToString();
+                promotionEntity.ApplicableTo = promotionFormDTO.ApplicableTo.ToString();
 
-                if (promotionDTO.CustomerIds != null)
+                if (promotionFormDTO.CustomerIds != null)
                 {
-                    promotionEntity.PromotionUsers = promotionDTO
+                    promotionEntity.PromotionUsers = promotionFormDTO
                         .CustomerIds.Select(customerId => new PromotionUser
                         {
                             CustomerId = customerId,
-                            PromotionId = promotionDTO.Id,
+                            PromotionId = promotionFormDTO.Id,
                         })
                         .ToList();
                 }
