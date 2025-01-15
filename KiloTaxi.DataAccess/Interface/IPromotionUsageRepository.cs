@@ -1,13 +1,15 @@
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.DataAccess.Interface;
 
 public interface IPromotionUsageRepository
 {
-    PromotionUsagePagingDTO GetAllPromotionUsage(PageSortParam pageSortParam);
+    ResponseDTO<PromotionUsagePagingDTO> GetAllPromotionUsage(PageSortParam pageSortParam);
 
-    PromotionUsageDTO AddPromotionUsage(PromotionUsageDTO promotionDTO);
-    bool UpdatePromotionUsage(PromotionUsageDTO promotionDTO);
-    PromotionUsageDTO GetPromotionUsageById(int id);
+    PromotionUsageInfoDTO AddPromotionUsage(PromotionUsageFormDTO promotionUsageFormDTO);
+    bool UpdatePromotionUsage(PromotionUsageFormDTO promotionUsageFormDTO);
+    PromotionUsageInfoDTO GetPromotionUsageById(int id);
     bool DeletePromotionUsage(int id);
 }

@@ -3,12 +3,14 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class PromotionUsageConverter
     {
-        public static PromotionUsageDTO ConvertEntityToModel(PromotionUsage promotionUsageEntity)
+        public static PromotionUsageInfoDTO ConvertEntityToModel(PromotionUsage promotionUsageEntity)
         {
             if (promotionUsageEntity == null)
             {
@@ -22,7 +24,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new PromotionUsageDTO()
+            return new PromotionUsageInfoDTO()
             {
                 Id = promotionUsageEntity.Id,
                 DiscountApplied = promotionUsageEntity.DiscountApplied,
@@ -33,21 +35,21 @@ namespace KiloTaxi.Converter
         }
 
         public static void ConvertModelToEntity(
-            PromotionUsageDTO promotionUsageDTO,
+            PromotionUsageFormDTO promotionUsageFormDTO,
             ref PromotionUsage promotionUsageEntity
         )
         {
             try
             {
-                if (promotionUsageDTO == null)
+                if (promotionUsageFormDTO == null)
                 {
                     LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(promotionUsageDTO)),
-                        "promotionUsageDTO is null"
+                        new ArgumentNullException(nameof(promotionUsageFormDTO)),
+                        "promotionUsageFormDTO is null"
                     );
                     throw new ArgumentNullException(
-                        nameof(promotionUsageDTO),
-                        "Source promotionUsageDTO cannot be null"
+                        nameof(promotionUsageFormDTO),
+                        "Source promotionUsageFormDTO cannot be null"
                     );
                 }
 
@@ -63,11 +65,11 @@ namespace KiloTaxi.Converter
                     );
                 }
 
-                promotionUsageEntity.Id = promotionUsageDTO.Id;
-                promotionUsageEntity.DiscountApplied = promotionUsageDTO.DiscountApplied;
-                promotionUsageEntity.WalletTransactionId = promotionUsageDTO.WalletTransactionId;
-                promotionUsageEntity.PromotionId = promotionUsageDTO.PromotionId;
-                promotionUsageEntity.CustomerId = promotionUsageDTO.CustomerId;
+                promotionUsageEntity.Id = promotionUsageFormDTO.Id;
+                promotionUsageEntity.DiscountApplied = promotionUsageFormDTO.DiscountApplied;
+                promotionUsageEntity.WalletTransactionId = promotionUsageFormDTO.WalletTransactionId;
+                promotionUsageEntity.PromotionId = promotionUsageFormDTO.PromotionId;
+                promotionUsageEntity.CustomerId = promotionUsageFormDTO.CustomerId;
             }
             catch (Exception ex)
             {
