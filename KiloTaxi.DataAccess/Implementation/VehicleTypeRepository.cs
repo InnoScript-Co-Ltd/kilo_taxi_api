@@ -1,10 +1,13 @@
 using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -18,7 +21,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbContext;
         }
 
-        public VehicleTypePagingDTO GetAllVehicleTypes(PageSortParam pageSortParam)
+        public ResponseDTO<VehicleTypePagingDTO> GetAllVehicleTypes(PageSortParam pageSortParam)
         {
             try
             {
@@ -83,12 +86,13 @@ namespace KiloTaxi.DataAccess.Implementation
                         pageSortParam.CurrentPage * pageSortParam.PageSize
                     ),
                 };
-
-                return new VehicleTypePagingDTO
-                {
-                    Paging = pagingResult,
-                    VehicleTypes = vehicleType,
-                };
+                
+                ResponseDTO<VehicleTypePagingDTO> responseDto = new ResponseDTO<VehicleTypePagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "vehicle types retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new VehicleTypePagingDTO { Paging = pagingResult, VehicleTypes = vehicleType };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -100,23 +104,24 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public VehicleTypeDTO AddVehicleType(VehicleTypeDTO vehicleTypeDTO)
+        public VehicleTypeInfoDTO AddVehicleType(VehicleTypeFormDTO vehicleTypeFormDTO)
         {
             try
             {
                 VehicleType vehicleTypeEntity = new VehicleType();
-                VehicleTypeConverter.ConvertModelToEntity(vehicleTypeDTO, ref vehicleTypeEntity);
+                VehicleTypeConverter.ConvertModelToEntity(vehicleTypeFormDTO, ref vehicleTypeEntity);
 
                 _dbKiloTaxiContext.Add(vehicleTypeEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                vehicleTypeDTO.Id = vehicleTypeEntity.Id;
+                vehicleTypeFormDTO.Id = vehicleTypeEntity.Id;
 
                 LoggerHelper.Instance.LogInfo(
                     $"VehicleType added successfully with Id: {vehicleTypeEntity.Id}"
                 );
 
-                return vehicleTypeDTO;
+                var vehicleTypeInfoDTO = VehicleTypeConverter.ConvertEntityToModel(vehicleTypeEntity);
+                return vehicleTypeInfoDTO;
             }
             catch (Exception ex)
             {
@@ -125,12 +130,12 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public bool UpdateVehicleType(VehicleTypeDTO vehicleTypeDTO)
+        public bool UpdateVehicleType(VehicleTypeFormDTO vehicleTypeFormDTO)
         {
             try
             {
                 var vehicleTypeEntity = _dbKiloTaxiContext.VehicleTypes.FirstOrDefault(s =>
-                    s.Id == vehicleTypeDTO.Id
+                    s.Id == vehicleTypeFormDTO.Id
                 );
 
                 if (vehicleTypeEntity == null)
@@ -138,7 +143,7 @@ namespace KiloTaxi.DataAccess.Implementation
                     return false;
                 }
 
-                VehicleTypeConverter.ConvertModelToEntity(vehicleTypeDTO, ref vehicleTypeEntity);
+                VehicleTypeConverter.ConvertModelToEntity(vehicleTypeFormDTO, ref vehicleTypeEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -147,13 +152,13 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating vehicleType with Id: {vehicleTypeDTO.Id}"
+                    $"Error occurred while updating vehicleType with Id: {vehicleTypeFormDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public VehicleTypeDTO GetVehicleTypeById(int id)
+        public VehicleTypeInfoDTO GetVehicleTypeById(int id)
         {
             try
             {
