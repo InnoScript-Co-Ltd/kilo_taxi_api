@@ -74,7 +74,7 @@ public class ApiClientHub : IDisposable
                 );
 
                 // Create an instance of OrderRouteDTO
-                var orderRouteDTO = new OrderRouteDTO
+                var orderRouteFormDTO = new OrderRouteFormDTO()
                 {
                     OrderId = int.Parse(tripLocation.OrderId),
                     Lat = tripLocation.Lat,
@@ -87,7 +87,7 @@ public class ApiClientHub : IDisposable
                 var tripRepository =
                     scope.ServiceProvider.GetRequiredService<IOrderRouteRepository>();
 
-                var createdOrderRoute = tripRepository.CreateOrderRoute(orderRouteDTO);
+                var createdOrderRoute = tripRepository.CreateOrderRoute(orderRouteFormDTO);
 
                 if (createdOrderRoute != null)
                 {

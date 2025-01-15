@@ -1,10 +1,13 @@
 using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -18,7 +21,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbContext;
         }
 
-        public OrderRoutePagingDTO GetAllOrderRoute(PageSortParam pageSortParam)
+        public ResponseDTO<OrderRoutePagingDTO> GetAllOrderRoute(PageSortParam pageSortParam)
         {
             try
             {
@@ -82,7 +85,12 @@ namespace KiloTaxi.DataAccess.Implementation
                     ),
                 };
 
-                return new OrderRoutePagingDTO { Paging = pagingResult, OrderRoutes = orderRoutes };
+                ResponseDTO<OrderRoutePagingDTO> responseDto = new ResponseDTO<OrderRoutePagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "order routes retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new OrderRoutePagingDTO { Paging = pagingResult, OrderRoutes = orderRoutes };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -94,27 +102,28 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public OrderRouteDTO CreateOrderRoute(OrderRouteDTO orderRouteDTO)
+        public OrderRouteInfoDTO CreateOrderRoute(OrderRouteFormDTO orderRouteFormDTO)
         {
             try
             {
                 OrderRoute orderRouteEntity = new OrderRoute();
-                OrderRouteConverter.ConvertModelToEntity(orderRouteDTO, ref orderRouteEntity);
+                OrderRouteConverter.ConvertModelToEntity(orderRouteFormDTO, ref orderRouteEntity);
 
                 var order = _dbKiloTaxiContext.Orders.FirstOrDefault(s =>
-                    s.Id == orderRouteDTO.OrderId
+                    s.Id == orderRouteFormDTO.OrderId
                 );
 
                 _dbKiloTaxiContext.Add(orderRouteEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                orderRouteDTO.Id = orderRouteEntity.Id;
+                orderRouteFormDTO.Id = orderRouteEntity.Id;
 
                 LoggerHelper.Instance.LogInfo(
                     $"OrderRoute added successfully with Id: {orderRouteEntity.Id}"
                 );
 
-                return orderRouteDTO;
+                var orderRouteInfoDTO = OrderRouteConverter.ConvertEntityToModel(orderRouteEntity);
+                return orderRouteInfoDTO;
             }
             catch (Exception ex)
             {
@@ -123,19 +132,19 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public bool UpdateOrderRoute(OrderRouteDTO orderRouteDTO)
+        public bool UpdateOrderRoute(OrderRouteFormDTO orderRouteFormDTO)
         {
             try
             {
                 var orderRouteEntity = _dbKiloTaxiContext.OrderRoutes.FirstOrDefault(orderRoute =>
-                    orderRoute.Id == orderRouteDTO.Id
+                    orderRoute.Id == orderRouteFormDTO.Id
                 );
                 if (orderRouteEntity == null)
                 {
                     return false;
                 }
 
-                OrderRouteConverter.ConvertModelToEntity(orderRouteDTO, ref orderRouteEntity);
+                OrderRouteConverter.ConvertModelToEntity(orderRouteFormDTO, ref orderRouteEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -144,13 +153,13 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating orderRoute with Id: {orderRouteDTO.Id}"
+                    $"Error occurred while updating orderRoute with Id: {orderRouteFormDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public OrderRouteDTO GetOrderRouteById(int id)
+        public OrderRouteInfoDTO GetOrderRouteById(int id)
         {
             try
             {
