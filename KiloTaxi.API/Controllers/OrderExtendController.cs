@@ -1,6 +1,8 @@
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
@@ -20,18 +22,18 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<OrderExtendController>
         [HttpGet]
-        public ActionResult<OrderExtendPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ResponseDTO<OrderExtendPagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                OrderExtendPagingDTO orderExtendPagingDTO = _orderExtendRepository.GetAllOrderExtend(
+                var responseDto = _orderExtendRepository.GetAllOrderExtend(
                     pageSortParam
                 );
-                if (!orderExtendPagingDTO.OrderExtends.Any())
+                if (!responseDto.Payload.OrderExtends.Any())
                 {
                     return NoContent();
                 }
-                return Ok(orderExtendPagingDTO);
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -42,7 +44,7 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<OrderExtendController>/5
         [HttpGet("{id}")]
-        public ActionResult<OrderExtendDTO> Get(int id)
+        public ActionResult<ResponseDTO<OrderExtendInfoDTO>> Get(int id)
         {
             try
             {
@@ -56,7 +58,15 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(result);
+                
+                ResponseDTO<OrderExtendInfoDTO> responseDto = new ResponseDTO<OrderExtendInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "order extend retrieved successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = result,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -67,21 +77,25 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<OrderExtendController>
         [HttpPost]
-        public ActionResult<OrderExtendDTO> Post([FromBody] OrderExtendDTO orderExtendDTO)
+        public ActionResult<ResponseDTO<OrderExtendInfoDTO>> Post([FromBody] OrderExtendFormDTO orderExtendFormDTO)
         {
             try
             {
-                if (orderExtendDTO == null)
+                if (orderExtendFormDTO == null)
                 {
                     return BadRequest();
                 }
 
-                var createdOrderExtend = _orderExtendRepository.CreateOrderExtend(orderExtendDTO);
-                return CreatedAtAction(
-                    nameof(Get),
-                    new { id = createdOrderExtend.Id },
-                    createdOrderExtend
-                );
+                var createdOrderExtend = _orderExtendRepository.CreateOrderExtend(orderExtendFormDTO);
+                
+                var response = new ResponseDTO<OrderExtendInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "order extend Register Success.",
+                    TimeStamp = DateTime.Now,
+                    Payload = createdOrderExtend,
+                };
+                return response;
             }
             catch (Exception ex)
             {
@@ -92,21 +106,29 @@ namespace KiloTaxi.API.Controllers
 
         // PUT api/<OrderExtendController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] OrderExtendDTO orderExtendDTO)
+        public ActionResult<ResponseDTO<OrderExtendInfoDTO>> Put(int id, [FromBody] OrderExtendFormDTO orderExtendFormDTO)
         {
             try
             {
-                if (orderExtendDTO == null || id != orderExtendDTO.Id)
+                if (orderExtendFormDTO == null || id != orderExtendFormDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _orderExtendRepository.UpdateOrderExtend(orderExtendDTO);
+                var result = _orderExtendRepository.UpdateOrderExtend(orderExtendFormDTO);
                 if (!result)
                 {
                     return NotFound();
                 }
-                return Ok();
+                
+                ResponseDTO<OrderExtendInfoDTO> responseDto = new ResponseDTO<OrderExtendInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "order extenc Updated Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -117,7 +139,7 @@ namespace KiloTaxi.API.Controllers
 
         // DELETE api/<OrderExtendController>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ResponseDTO<OrderExtendInfoDTO>> Delete(int id)
         {
             try
             {
@@ -133,7 +155,14 @@ namespace KiloTaxi.API.Controllers
                     return NotFound();
                 }
 
-                return NoContent();
+                ResponseDTO<OrderExtendInfoDTO> responseDto = new ResponseDTO<OrderExtendInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "order extend Deleted Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
