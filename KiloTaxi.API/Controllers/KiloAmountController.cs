@@ -8,30 +8,32 @@ namespace KiloTaxi.API.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class SosController : ControllerBase
+public class KiloAmountController : ControllerBase
 {
     LoggerHelper _logHelper;
-    private readonly ISosRepository _sosRepository;
+    private readonly IKiloAmountRepository _kiloAmountRepository;
 
-    public SosController(ISosRepository sosRepository)
+    public KiloAmountController(IKiloAmountRepository kiloAmountRepository)
     {
         _logHelper = LoggerHelper.Instance;
-        _sosRepository = sosRepository;
+        _kiloAmountRepository = kiloAmountRepository;
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<SosPagingDTO>> GetSosList(
+    public ActionResult<IEnumerable<KiloAmountPagingDTO>> GetKiloAmountList(
         [FromQuery] PageSortParam pageSortParam
     )
     {
         try
         {
-            SosPagingDTO sosPagingDto = _sosRepository.GetAllSosList(pageSortParam);
-            if (!sosPagingDto.Sos.Any())
+            KiloAmountPagingDTO kiloAmountPagingDto = _kiloAmountRepository.GetAllKiloAmountList(
+                pageSortParam
+            );
+            if (!kiloAmountPagingDto.KiloAmounts.Any())
             {
                 return NoContent();
             }
-            return Ok(sosPagingDto);
+            return Ok(kiloAmountPagingDto);
         }
         catch (Exception ex)
         {
@@ -41,22 +43,22 @@ public class SosController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<SosDTO> Get(int id)
+    public ActionResult<KiloAmountDTO> Get(int id)
     {
         try
         {
             if (id == 0)
             {
-                return BadRequest("Invalid Sos ID.");
+                return BadRequest("Invalid KiloAmount ID.");
             }
 
-            var sos = _sosRepository.GetSosById(id);
-            if (sos == null)
+            var kiloAmount = _kiloAmountRepository.GetKiloAmountById(id);
+            if (kiloAmount == null)
             {
                 return NotFound();
             }
 
-            return Ok(sos);
+            return Ok(kiloAmount);
         }
         catch (Exception ex)
         {
@@ -66,7 +68,7 @@ public class SosController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<SosDTO> Create([FromBody] SosDTO sosDTO)
+    public ActionResult<KiloAmountDTO> Create([FromBody] KiloAmountDTO kiloAmountDTO)
     {
         try
         {
@@ -75,9 +77,13 @@ public class SosController : ControllerBase
                 return BadRequest(ModelState);
             }
 
-            var createdSos = _sosRepository.CreateSos(sosDTO);
+            var createdKiloAmount = _kiloAmountRepository.CreateKiloAmount(kiloAmountDTO);
 
-            return CreatedAtAction(nameof(Get), new { id = createdSos.Id }, createdSos);
+            return CreatedAtAction(
+                nameof(Get),
+                new { id = createdKiloAmount.Id },
+                createdKiloAmount
+            );
         }
         catch (Exception ex)
         {
@@ -87,13 +93,13 @@ public class SosController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public ActionResult Put([FromRoute] int id, SosDTO sosDTO)
+    public ActionResult Put([FromRoute] int id, KiloAmountDTO kiloAmountDTO)
     {
         try
         {
-            if (id != sosDTO.Id)
+            if (id != kiloAmountDTO.Id)
             {
-                return BadRequest("Sos ID mismatch.");
+                return BadRequest("KiloAmount ID mismatch.");
             }
 
             if (!ModelState.IsValid)
@@ -101,13 +107,13 @@ public class SosController : ControllerBase
                 return BadRequest(ModelState);
             }
 
-            var isUpdated = _sosRepository.UpdateSos(sosDTO);
+            var isUpdated = _kiloAmountRepository.UpdateKiloAmount(kiloAmountDTO);
             if (!isUpdated)
             {
                 return NotFound();
             }
 
-            return Ok("Sos updated successfully.");
+            return Ok("KiloAmount updated successfully.");
         }
         catch (Exception ex)
         {
@@ -121,13 +127,13 @@ public class SosController : ControllerBase
     {
         try
         {
-            var sos = _sosRepository.GetSosById(id);
-            if (sos == null)
+            var kiloAmount = _kiloAmountRepository.GetKiloAmountById(id);
+            if (kiloAmount == null)
             {
                 return NotFound();
             }
 
-            var isDeleted = _sosRepository.DeleteSos(id);
+            var isDeleted = _kiloAmountRepository.DeleteKiloAmount(id);
             if (!isDeleted)
             {
                 return NotFound();

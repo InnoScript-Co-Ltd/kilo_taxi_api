@@ -9,33 +9,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation;
 
-public class SosRepository : ISosRepository
+public class KiloAmountRepository : IKiloAmountRepository
 {
     private readonly DbKiloTaxiContext _dbKiloTaxiContext;
 
-    public SosRepository(DbKiloTaxiContext dbKiloTaxiContext)
+    public KiloAmountRepository(DbKiloTaxiContext dbKiloTaxiContext)
     {
         _dbKiloTaxiContext = dbKiloTaxiContext;
     }
 
-    public SosPagingDTO GetAllSosList(PageSortParam pageSortParam)
+    public KiloAmountPagingDTO GetAllKiloAmountList(PageSortParam pageSortParam)
     {
         try
         {
-            var query = _dbKiloTaxiContext.Sos.Include(s => s.Reason).AsQueryable();
-            if (!string.IsNullOrEmpty(pageSortParam.SearchTerm))
-            {
-                query = query.Where(p =>
-                    p.Address.Contains(pageSortParam.SearchTerm)
-                    || p.Status.Contains(pageSortParam.SearchTerm)
-                    || p.UserType.Contains(pageSortParam.SearchTerm)
-                );
-            }
+            var query = _dbKiloTaxiContext.KiloAmounts.AsQueryable();
 
             int totalCount = query.Count();
             if (!string.IsNullOrEmpty(pageSortParam.SortField))
             {
-                var param = Expression.Parameter(typeof(Sos), "p");
+                var param = Expression.Parameter(typeof(KiloAmount), "p");
                 var property = Expression.Property(param, pageSortParam.SortField);
                 var sortExpression = Expression.Lambda(property, param);
 
@@ -44,13 +36,13 @@ public class SosRepository : ISosRepository
                 var orderByMethod = typeof(Queryable)
                     .GetMethods()
                     .Single(m => m.Name == sortMethod && m.GetParameters().Length == 2)
-                    .MakeGenericMethod(typeof(Sos), property.Type);
+                    .MakeGenericMethod(typeof(KiloAmount), property.Type);
                 query =
-                    (IQueryable<Sos>)(
+                    (IQueryable<KiloAmount>)(
                         orderByMethod.Invoke(
                             _dbKiloTaxiContext,
                             new object[] { query, sortExpression }
-                        ) ?? Enumerable.Empty<Sos>().AsQueryable()
+                        ) ?? Enumerable.Empty<KiloAmount>().AsQueryable()
                     );
             }
 
@@ -61,7 +53,9 @@ public class SosRepository : ISosRepository
                     .Take(pageSortParam.PageSize);
             }
 
-            var sos = query.Select(sos => SosConverter.ConvertEntityToModel(sos)).ToList();
+            var kiloAmount = query
+                .Select(kiloAmount => KiloAmountConverter.ConvertEntityToModel(kiloAmount))
+                .ToList();
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSortParam.PageSize);
             var pagingResult = new PagingResult
             {
@@ -79,83 +73,91 @@ public class SosRepository : ISosRepository
                     pageSortParam.CurrentPage * pageSortParam.PageSize
                 ),
             };
-            return new SosPagingDTO() { Paging = pagingResult, Sos = sos };
+            return new KiloAmountPagingDTO() { Paging = pagingResult, KiloAmounts = kiloAmount };
         }
         catch (Exception ex)
         {
-            LoggerHelper.Instance.LogError(ex, "Error occurred while fetching all sos.");
+            LoggerHelper.Instance.LogError(ex, "Error occurred while fetching all kiloAmount.");
             throw;
         }
     }
 
-    public SosDTO GetSosById(int id)
+    public KiloAmountDTO GetKiloAmountById(int id)
     {
         try
         {
-            var sosEntity = _dbKiloTaxiContext.Sos.FirstOrDefault(s => s.Id == id);
-            return SosConverter.ConvertEntityToModel(sosEntity);
+            var kiloAmountEntity = _dbKiloTaxiContext.KiloAmounts.FirstOrDefault(s => s.Id == id);
+            return KiloAmountConverter.ConvertEntityToModel(kiloAmountEntity);
         }
         catch (Exception ex)
         {
-            LoggerHelper.Instance.LogError(ex, $"Error occurred while fetching sos with Id: {id}");
+            LoggerHelper.Instance.LogError(
+                ex,
+                $"Error occurred while fetching kiloAmount with Id: {id}"
+            );
             throw;
         }
     }
 
-    public SosDTO CreateSos(SosDTO sosDTO)
+    public KiloAmountDTO CreateKiloAmount(KiloAmountDTO kiloAmountDTO)
     {
         try
         {
-            var sosEntity = new Sos();
+            var kiloAmountEntity = new KiloAmount();
 
-            SosConverter.ConvertModelToEntity(sosDTO, ref sosEntity);
+            KiloAmountConverter.ConvertModelToEntity(kiloAmountDTO, ref kiloAmountEntity);
 
-            _dbKiloTaxiContext.Sos.Add(sosEntity);
+            _dbKiloTaxiContext.KiloAmounts.Add(kiloAmountEntity);
             _dbKiloTaxiContext.SaveChanges();
 
-            sosDTO.Id = sosEntity.Id;
-            return sosDTO;
+            kiloAmountDTO.Id = kiloAmountEntity.Id;
+            return kiloAmountDTO;
         }
         catch (Exception ex)
         {
-            LoggerHelper.Instance.LogError(ex, "Error occurred while creating sos.");
+            LoggerHelper.Instance.LogError(ex, "Error occurred while creating kiloAmount.");
             throw;
         }
     }
 
-    public bool UpdateSos(SosDTO sosDTO)
+    public bool UpdateKiloAmount(KiloAmountDTO kiloAmountDTO)
     {
         try
         {
-            var sosEntity = _dbKiloTaxiContext.Sos.FirstOrDefault(s => s.Id == sosDTO.Id);
-            if (sosEntity == null)
+            var kiloAmountEntity = _dbKiloTaxiContext.KiloAmounts.FirstOrDefault(s =>
+                s.Id == kiloAmountDTO.Id
+            );
+            if (kiloAmountEntity == null)
                 return false;
-            SosConverter.ConvertModelToEntity(sosDTO, ref sosEntity);
+            KiloAmountConverter.ConvertModelToEntity(kiloAmountDTO, ref kiloAmountEntity);
             _dbKiloTaxiContext.SaveChanges();
             return true;
         }
         catch (Exception ex)
         {
-            LoggerHelper.Instance.LogError(ex, "Error occurred while updating sos.");
+            LoggerHelper.Instance.LogError(ex, "Error occurred while updating kiloAmount.");
             throw;
         }
     }
 
-    public bool DeleteSos(int id)
+    public bool DeleteKiloAmount(int id)
     {
         try
         {
-            var sosEntity = _dbKiloTaxiContext.Sos.FirstOrDefault(s => s.Id == id);
-            if (sosEntity == null)
+            var kiloAmountEntity = _dbKiloTaxiContext.KiloAmounts.FirstOrDefault(s => s.Id == id);
+            if (kiloAmountEntity == null)
                 return false;
 
-            _dbKiloTaxiContext.Sos.Remove(sosEntity);
+            _dbKiloTaxiContext.KiloAmounts.Remove(kiloAmountEntity);
             _dbKiloTaxiContext.SaveChanges();
             return true;
         }
         catch (Exception ex)
         {
-            LoggerHelper.Instance.LogError(ex, $"Error occurred while deleting sos with Id: {id}");
+            LoggerHelper.Instance.LogError(
+                ex,
+                $"Error occurred while deleting kiloAmount with Id: {id}"
+            );
             throw;
         }
     }

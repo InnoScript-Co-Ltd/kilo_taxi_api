@@ -60,11 +60,11 @@ namespace KiloTaxi.EntityFramework
         public DbSet<ExtraDemand> ExtraDemands { get; set; }
 
         public DbSet<OrderExtraDemand> OrderExtraDemands { get; set; }
-        
+
         public DbSet<WaitingDefault> WaitingDefaults { get; set; }
-        
+
         public DbSet<WaitingTime> WaitingTImes { get; set; }
-        
+
         public DbSet<KiloAmount> KiloAmounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -100,7 +100,6 @@ namespace KiloTaxi.EntityFramework
             modelBuilder.Entity<WaitingDefault>().ToTable("WaitingDefault");
             modelBuilder.Entity<WaitingTime>().ToTable("WaitingTime");
             modelBuilder.Entity<KiloAmount>().ToTable("KiloAmount");
-
         }
     }
 }
