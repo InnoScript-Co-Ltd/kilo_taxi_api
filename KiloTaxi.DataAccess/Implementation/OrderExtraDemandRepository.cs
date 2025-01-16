@@ -94,10 +94,10 @@ namespace KiloTaxi.DataAccess.Implementation
                 List<OrderExtraDemandDTO> orderExtraDemandDTOs = new List<OrderExtraDemandDTO>();
                 foreach (var orderExtraDemandDTO in orderExtraDemandDTOList){
                 OrderExtraDemandConverter.ConvertModelToEntity(orderExtraDemandDTO, ref orderExtraDemandEntity);
-                
                 _dbKiloTaxiContext.Add(orderExtraDemandEntity);
                 _dbKiloTaxiContext.SaveChanges();
-
+                var extraDemand = _dbKiloTaxiContext.ExtraDemands.FirstOrDefault(e => e.Id == orderExtraDemandEntity.ExtraDemandId);
+                orderExtraDemandDTO.ExtraDemandDto =ExtraDemandConverter.ConvertEntityToModel(extraDemand);
                 orderExtraDemandDTO.Id = orderExtraDemandEntity.Id;
                 orderExtraDemandDTOs.Add(orderExtraDemandDTO);
                 }

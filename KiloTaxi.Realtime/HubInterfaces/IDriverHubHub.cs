@@ -1,5 +1,7 @@
 ﻿using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Realtime.HubInterfaces
 {
@@ -9,8 +11,9 @@ namespace KiloTaxi.Realtime.HubInterfaces
         Task SendSos(SosDTO sosDto);
         Task SendTripLocation(TripLocation tripLocation);
         Task SendDriverAvalilityStatus(string AvailityStatus);
-        Task SendTripBegin(OrderDTO orderDto);
-        Task AcceptOrder(OrderDTO orderDTO);
-        Task ArrivedLocation(OrderDTO orderDTO);
+        Task SendTripBegin(OrderInfoDTO orderDto);
+        Task AcceptOrder(OrderInfoDTO orderDTO);
+        Task ArrivedLocation(OrderInfoDTO orderDTO);
+        Task SendTripFinish(OrderFormDTO orderDTO,List<OrderExtraDemandDTO> orderExtraDemandDtos);
     }
 }

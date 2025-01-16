@@ -1,4 +1,5 @@
 ﻿using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Realtime.HubInterfaces;
@@ -10,10 +11,7 @@ public interface ICustomerClient
     Task ReceiveDriverArrivedLocation(OrderDTO orderDTO, DriverInfoDTO driverInfoDTO);
 
     Task ReceiveTripComplete(
-        string pickupLocation,
-        string destinationLocation,
-        decimal actualTotalPrice,
-        decimal promoCodeDiscount,
-        List<ExtraDemandDTO> extraDemands
+        OrderFormDTO orderDTO, PromotionUsageDTO promotionUsageDTO,
+        List<OrderExtraDemandDTO> orderExtraDemandDtos
     );
 }

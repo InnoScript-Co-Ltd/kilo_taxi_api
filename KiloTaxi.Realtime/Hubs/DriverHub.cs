@@ -2,6 +2,8 @@
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using KiloTaxi.Realtime.HubInterfaces;
 using KiloTaxi.Realtime.Services;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
@@ -159,7 +161,7 @@ namespace KiloTaxi.Realtime.Hubs
             }
         }
 
-        public async Task AcceptOrder(OrderDTO orderDTO)
+        public async Task AcceptOrder(OrderInfoDTO orderDTO)
         {
             try
             {
@@ -176,7 +178,7 @@ namespace KiloTaxi.Realtime.Hubs
                 _logHelper.LogError(ex, ex?.Message);
             }
         }
-        public async Task ArrivedLocation(OrderDTO orderDTO)
+        public async Task ArrivedLocation(OrderInfoDTO orderDTO)
         {
             try
             {
@@ -189,11 +191,26 @@ namespace KiloTaxi.Realtime.Hubs
             }
 
         }
-        public async Task SendTripBegin(OrderDTO orderDTO)
+        public async Task SendTripBegin(OrderInfoDTO orderDTO)
         {
             try
             {
                 await _hubApi.Clients.All.TripBegin(orderDTO);
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex, ex?.Message);
+            }
+
+        }
+        
+        public async Task SendTripFinish(OrderFormDTO orderDTO,List<OrderExtraDemandDTO> orderExtraDemands)
+        {
+            try
+            {
+                Console.WriteLine("SendTripFinish");
+                
+                await _hubApi.Clients.All.SendFinishOrder(orderDTO,orderExtraDemands);
             }
             catch (Exception ex)
             {

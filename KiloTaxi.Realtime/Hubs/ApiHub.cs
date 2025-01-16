@@ -7,6 +7,7 @@ using KiloTaxi.Realtime.Services;
 using Microsoft.AspNetCore.SignalR;
 using System.Net.Http;
 using System.Text.Json;
+using KiloTaxi.Model.DTO.Request;
 
 namespace KiloTaxi.Realtime.Hubs;
 
@@ -128,7 +129,7 @@ public class ApiHub : Hub<IApiClient>, IApiHub
         {
             throw new ArgumentNullException(nameof(orderDTO), "OrderDTO cannot be null.");
         }
-
+        
         if (driverDTO == null)
         {
             throw new ArgumentNullException(nameof(driverDTO), "DriverDTO cannot be null.");
@@ -150,32 +151,25 @@ public class ApiHub : Hub<IApiClient>, IApiHub
         }
         await _hubCustomer.Clients.Client(customerConnectionId).ReceiveTripBegin(orderDTO);
     }
-   
-
-
-
-    public async Task NotifyCustomerTripComplete(OrderDTO order, List<ExtraDemandDTO> extraDemands)
+    
+    public async Task NotifyCustomerTripComplete(OrderFormDTO orderDTO, PromotionUsageDTO promotionUsageDTO,
+        List<OrderExtraDemandDTO> orderExtraDemandDtos)
     {
         try
         {
             var customerConnectionId = _customerConnectionManager.GetConnectionId(
-                order.CustomerId.ToString()
+                orderDTO.CustomerId.ToString()
             );
             if (!string.IsNullOrEmpty(customerConnectionId))
             {
                 await _hubCustomer
                     .Clients.Client(customerConnectionId)
-                    .ReceiveTripComplete(
-                        order.PickUpLocation,
-                        order.DestinationLocation,
-                        order.TotalAmount ?? 0m, // Use 0m as the default value if TotalAmount is null
-                        0,
-                        extraDemands
-                    );
+                    .ReceiveTripComplete(orderDTO, promotionUsageDTO, orderExtraDemandDtos);
+                        
             }
             else
             {
-                _logHelper.LogDebug($"Customer with ID {order.CustomerId} is not connected.");
+                _logHelper.LogDebug($"Customer with ID {orderDTO.CustomerId} is not connected.");
             }
         }
         catch (Exception ex)

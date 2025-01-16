@@ -206,7 +206,19 @@ namespace KiloTaxi.API.Controllers
 
                 // Register the admin
                 var createdOrder = _orderRepository.AddOrder(orderFormDTO);
-
+                OrderDTO orderDto = new OrderDTO();
+                orderDto.Id = createdOrder.Id;
+                orderDto.CustomerId = createdOrder.CustomerId;
+                orderDto.DriverId = createdOrder.DriverId;
+                orderDto.Status=createdOrder.Status;
+                orderDto.PickUpLocation = createdOrder.PickUpLocation;
+                orderDto.PickUpLat =createdOrder.PickUpLat;
+                orderDto.PickUpLong = createdOrder.PickUpLong;
+                orderDto.DestinationLocation = createdOrder.DestinationLocation;
+                orderDto.DestinationLat = createdOrder.DestinationLat;
+                orderDto.DestinationLong = createdOrder.DestinationLong;
+                orderDto.EstimatedAmount  = createdOrder.EstimatedAmount;  
+                _apiClientHub.SendOrderAsync(orderDto, _driverRepository);
                 // Prepare response
                 var response = new ResponseDTO<OrderInfoDTO>
                 {
@@ -215,7 +227,7 @@ namespace KiloTaxi.API.Controllers
                     Payload = createdOrder,
                     TimeStamp = DateTime.Now,
                 };
-
+            
                 return response;
             }
             catch (Exception ex)

@@ -53,15 +53,14 @@ public class AuthenticationService : IAuthenticationService
 
         var accessToken = GenerateJwtToken(ValidUser.Email, ValidUser.Role);
         var refreshToken = GenerateRefreshToken();
-        ValidUser.RefreshToken = refreshToken;
-        ValidUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
-        _adminRepository.UpdateAdmin(
-            new AdminFormDTO()
-            {
-                RefreshToken = refreshToken,
-                RefreshTokenExpiryTime = DateTime.Now.AddDays(7),
-            }
+        var adminEntity = _dbContext.Admins.FirstOrDefault(admin =>
+            admin.Id == ValidUser.Id
         );
+        adminEntity.RefreshToken = refreshToken;
+        adminEntity.RefreshTokenExpiryTime=DateTime.Now.AddDays(7);
+        
+        _dbContext.SaveChanges();
+
         return (accessToken, refreshToken);
     }
 
@@ -81,13 +80,13 @@ public class AuthenticationService : IAuthenticationService
         }
         var accessToken = GenerateJwtToken(ValidUser.Phone, ValidUser.Role);
         var refreshToken = GenerateRefreshToken();
-        _customerRepository.UpdateCustomer(
-            new CustomerFormDTO()
-            {
-                RefreshToken = refreshToken,
-                RefreshTokenExpiryTime = DateTime.Now.AddDays(7),
-            }
-        );
+        var customerEntity = _dbContext.Customers.FirstOrDefault(customer =>
+                customer.Id == ValidUser.Id
+            );
+        customerEntity.RefreshToken = refreshToken;
+        customerEntity.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+        _dbContext.SaveChanges();
+       
         return (accessToken, refreshToken, ValidUser.Id);
     }
 
@@ -104,14 +103,13 @@ public class AuthenticationService : IAuthenticationService
         }
         var accessToken = GenerateJwtToken(ValidUser.Phone, ValidUser.Role);
         var refreshToken = GenerateRefreshToken();
-
-        _driverRepository.UpdateDriver(
-            new DriverUpdateFormDTO()
-            {
-                RefreshToken = refreshToken,
-                RefreshTokenExpiryTime = DateTime.Now.AddDays(7),
-            }
+        var driverEntity = _dbContext.Drivers.FirstOrDefault(driver =>
+            driver.Id == driver.Id
         );
+        driverEntity.RefreshToken = refreshToken;
+        driverEntity.RefreshTokenExpiryTime=DateTime.Now.AddDays(7);
+        _dbContext.SaveChanges();
+        
         return (accessToken, refreshToken, ValidUser.Id);
     }
     public async Task LogoutAsync(string token)
@@ -171,7 +169,7 @@ public class AuthenticationService : IAuthenticationService
                 ValidIssuer = jwtSettings["Issuer"],
                 ValidateAudience = true,
                 ValidAudience = jwtSettings["Audience"],
-                ValidateLifetime = true,
+                ValidateLifetime = false, 
                 
             }, out _);
             return principal;
@@ -193,7 +191,7 @@ public class AuthenticationService : IAuthenticationService
                 if (
                     admin == null
                     || admin.RefreshToken != request.RefreshToken
-                    || admin.RefreshTokenExpiryTime < DateTime.UtcNow
+                    || admin.RefreshTokenExpiryTime < DateTime.Now
                 )
                 {
                     return (null, null);
@@ -202,14 +200,7 @@ public class AuthenticationService : IAuthenticationService
                 newRefreshToken = GenerateRefreshToken();
                 admin.RefreshToken = newRefreshToken;
                 admin.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-                var adminDto = AdminConverter.ConvertEntityToModel(admin);
-                _adminRepository.UpdateAdmin(
-                    new AdminFormDTO()
-                    {
-                        RefreshToken = newRefreshToken,
-                        RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
-                    }
-                );
+                _dbContext.SaveChanges();
                 break;
 
             case "Customer":
@@ -217,20 +208,17 @@ public class AuthenticationService : IAuthenticationService
                 if (
                     customer == null
                     || customer.RefreshToken != request.RefreshToken
-                    || customer.RefreshTokenExpiryTime < DateTime.UtcNow
+                    || customer.RefreshTokenExpiryTime < DateTime.Now
                 )
                 {
                     return (null, null);
                 }
                 newAccessToken = GenerateJwtToken(customer.Email, customer.Role);
                 newRefreshToken = GenerateRefreshToken();
-                _customerRepository.UpdateCustomer(
-                    new CustomerFormDTO()
-                    {
-                        RefreshToken = newRefreshToken,
-                        RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
-                    }
-                );
+                customer.RefreshToken = newRefreshToken;
+                customer.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+                _dbContext.SaveChanges();
+
                 break;
 
             case "Driver":
@@ -238,7 +226,7 @@ public class AuthenticationService : IAuthenticationService
                 if (
                     driver == null
                     || driver.RefreshToken != request.RefreshToken
-                    || driver.RefreshTokenExpiryTime < DateTime.UtcNow
+                    || driver.RefreshTokenExpiryTime < DateTime.Now
                 )
                 {
                     return (null, null);
@@ -246,14 +234,8 @@ public class AuthenticationService : IAuthenticationService
                 newAccessToken = GenerateJwtToken(driver.Email, driver.Role);
                 newRefreshToken = GenerateRefreshToken();
                 driver.RefreshToken = newRefreshToken;
-                driver.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-                _driverRepository.UpdateDriver(
-                    new DriverUpdateFormDTO()
-                    {
-                        RefreshToken = newRefreshToken,
-                        RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
-                    }
-                );
+                driver.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+                _dbContext.SaveChanges();
                 break;
         }
         return (newAccessToken, newRefreshToken);

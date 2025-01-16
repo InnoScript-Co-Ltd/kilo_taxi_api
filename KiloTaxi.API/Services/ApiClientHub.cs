@@ -155,6 +155,34 @@ public class ApiClientHub : IDisposable
                 }
             }
         );
+        _hubConnection.On<OrderFormDTO,List<OrderExtraDemandDTO>>(
+            "SendFinishOrder",
+            async (orderFormDTO, orderExtraDemandDTO) =>
+            {
+                Console.WriteLine("SendFinishOrder1");
+
+                using var scope = _serviceProvider.CreateScope();
+                var orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
+                var orderExtraDemandRepository = scope.ServiceProvider.GetRequiredService<IOrderExtraDemandRepository>();
+                var promotionUsageRepository = scope.ServiceProvider.GetRequiredService<IPromotionUsageRepository>();
+                Console.WriteLine("SendFinishOrder2");
+
+                var promotionUsageDto= promotionUsageRepository.findByCustomerId(orderFormDTO.CustomerId);
+                orderFormDTO.Status = Common.Enums.OrderStatus.Completed;
+                orderRepository.UpdateOrder(orderFormDTO);
+                var savedOrderExtraDemand= orderExtraDemandRepository.CreateOrderExtraDemand(orderExtraDemandDTO);
+                if (_hubConnection.State == HubConnectionState.Connected)
+                {
+                    await _hubConnection.InvokeAsync(
+                        "NotifyCustomerTripComplete",
+                        orderFormDTO,
+                        promotionUsageDto,
+                        savedOrderExtraDemand
+                    );
+                }
+            }
+        );
+        
         _serviceProvider = serviceProvider;
     }
 

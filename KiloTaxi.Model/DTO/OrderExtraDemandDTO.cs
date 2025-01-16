@@ -1,4 +1,6 @@
-﻿namespace KiloTaxi.Model.DTO;
+﻿using KiloTaxi.EntityFramework.EntityModel;
+
+namespace KiloTaxi.Model.DTO;
 
 public class OrderExtraDemandDTO
 {
@@ -9,5 +11,8 @@ public class OrderExtraDemandDTO
     public int ExtraDemandId { get; set; }
     
     public int Unit { get; set; }
+    
+    public ExtraDemandDTO ExtraDemandDto { get; set; }
+    
 
 }

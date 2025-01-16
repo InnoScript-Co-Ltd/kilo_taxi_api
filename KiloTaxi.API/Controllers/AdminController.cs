@@ -39,132 +39,6 @@ namespace KiloTaxi.API.Controllers
 
         //GET: api/<AdminController>
         [HttpGet]
-        public ActionResult<ResponseDTO<AdminPagingDTO>> Get(
-            [FromQuery] PageSortParam pageSortParam
-        )
-        {
-            try
-            {
-                var responseDto = _adminRepository.GetAllAdmin(pageSortParam);
-                if (!responseDto.Payload.Admins.Any())
-                {
-                    return NoContent();
-                }
-                return responseDto;
-            }
-            catch (Exception ex)
-            {
-                _logHelper.LogError(ex);
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
-        }
-
-        [HttpGet("{id}")]
-        public ActionResult<AdminInfoDTO> Get(int id)
-        {
-            try
-            {
-                _logHelper.LogInfo("test info log");
-                if (id == 0)
-                {
-                    return BadRequest();
-                }
-                var result = _adminRepository.GetAdminById(id);
-                if (result == null)
-                {
-                    return NotFound();
-                }
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logHelper.LogError(ex);
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
-        }
-
-        // POST api/<AdminController>
-        [HttpPost]
-        [AllowAnonymous]
-        // public ActionResult<AdminDTO> Post(AdminDTO adminDTO)
-        // {
-        //     try
-        //     {
-        //         if (adminDTO == null)
-        //         {
-        //             return BadRequest();
-        //         }
-        //         var existEmailAdmin = _dbKiloTaxiContext.Admins.FirstOrDefault(admin =>
-        //             admin.Email == adminDTO.Email
-        //         );
-        //         if (existEmailAdmin != null)
-        //         {
-        //             return Conflict();
-        //         }
-
-        //         var createdAdmin = _adminRepository.AddAdmin(adminDTO);
-        //         return CreatedAtAction(nameof(Get), new { id = createdAdmin.Id }, createdAdmin);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         _logHelper.LogError(ex);
-        //         return StatusCode(500, "An error occurred while processing your request.");
-        //     }
-        // }
-
-        [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] AdminFormDTO adminFormDTO)
-        {
-            try
-            {
-                if (adminFormDTO == null || id != adminFormDTO.Id)
-                {
-                    return BadRequest();
-                }
-
-                var result = _adminRepository.UpdateAdmin(adminFormDTO);
-
-                if (!result)
-                {
-                    return NotFound();
-                }
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logHelper.LogError(ex);
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
-        }
-
-        // DELETE api/<AdminController>/5
-        [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
-        {
-            try
-            {
-                var admin = _adminRepository.GetAdminById(id);
-                if (admin == null)
-                {
-                    return NotFound();
-                }
-
-                var result = _adminRepository.DeleteAdmin(id);
-                if (!result)
-                {
-                    return NotFound();
-                }
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logHelper.LogError(ex);
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
-        }
-
-        [HttpGet("GetAllAdmin")]
         public ActionResult<ResponseDTO<AdminPagingDTO>> GetAllAdmin(
             [FromQuery] PageSortParam pageSortParam
         )
@@ -195,7 +69,7 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        [HttpPost("AdminRegister")]
+        [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult<ResponseDTO<AdminInfoDTO>>> AdminRegister(
             AdminFormDTO adminFormDTO
@@ -236,7 +110,7 @@ namespace KiloTaxi.API.Controllers
                 // Prepare response
                 var response = new ResponseDTO<AdminInfoDTO>
                 {
-                    StatusCode = Ok().StatusCode,
+                    StatusCode = 201,
                     Message = "Admin Register Success.",
                     Payload = registerAdmin,
                     TimeStamp = DateTime.Now,
@@ -251,7 +125,7 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        [HttpGet("GetAdminById/{id}")]
+        [HttpGet("{id}")]
         public ActionResult<ResponseDTO<AdminInfoDTO>> GetAdminById(int id)
         {
             try
@@ -287,7 +161,7 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        [HttpPut("UpdateAdmin/{id}")]
+        [HttpPut("{id}")]
         public async Task<ActionResult<ResponseDTO<AdminInfoDTO>>> UpdateAdmin(
             [FromRoute] int id,
             AdminFormDTO adminFormDTO
@@ -324,7 +198,7 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        [HttpDelete("DeleteAdmin/{id}")]
+        [HttpDelete("{id}")]
         public ActionResult<ResponseDTO<AdminInfoDTO>> DeleteAdmin([FromRoute] int id)
         {
             try
@@ -344,7 +218,7 @@ namespace KiloTaxi.API.Controllers
                 // Return a response with a success message
                 ResponseDTO<AdminInfoDTO> responseDto = new ResponseDTO<AdminInfoDTO>
                 {
-                    StatusCode = 200, // OK status
+                    StatusCode = 204, // OK status
                     Message = "Admin Info Deleted Successfully.",
                     Payload =
                         null // No payload since we are deleting the admin

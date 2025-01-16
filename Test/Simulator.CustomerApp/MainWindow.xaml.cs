@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using KiloTaxi.Model.DTO.Request;
 
 namespace Simulator.CustomerApp
 {
@@ -198,6 +199,25 @@ namespace Simulator.CustomerApp
 
                 });
             });
+            connection.On("ReceiveTripComplete", async (OrderFormDTO orderDTO,PromotionUsageDTO promotionUsageDto,List<OrderExtraDemandDTO> orderExtraDemandDtos) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    foreach (var orderExtraDemandDTO in orderExtraDemandDtos)
+                    {
+                        var jsonSerializedModelOrderDTO = JsonSerializer.Serialize(orderDTO);
+                        var jsonSerializedModelPromotionUsageDTO = JsonSerializer.Serialize(promotionUsageDto);
+                    
+                        lblLogs.Text += Environment.NewLine + $"Order Finish :{orderExtraDemandDTO.ExtraDemandDto.Title}     {orderExtraDemandDTO.ExtraDemandDto.Amount} " +
+                                        $"{orderExtraDemandDTO.Unit} " +
+                                        $"{orderDTO.EstimatedAmount}";
+                          
+                    }
+                    
+
+                });
+            });
+            
         }
 
        

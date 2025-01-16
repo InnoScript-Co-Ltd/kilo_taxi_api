@@ -45,29 +45,7 @@ namespace KiloTaxi.API.Controllers
             _configuration = configuration;
             _dbKiloTaxiContext = dbContext;
         }
-
-        // GET: api/<CustomerController>
-        [HttpGet]
-        public ActionResult<ResponseDTO<CustomerPagingDTO>> Get(
-            [FromQuery] PageSortParam pageSortParam
-        )
-        {
-            try
-            {
-                var responseDto = _customerRepository.GetAllCustomer(pageSortParam);
-                if (!responseDto.Payload.Customers.Any())
-                {
-                    return NoContent();
-                }
-                return responseDto;
-            }
-            catch (Exception ex)
-            {
-                _logHelper.LogError(ex);
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
-        }
-
+        
         // GET: api/<CustomerController>/5
         [HttpGet("{id}")]
         public ActionResult<ResponseDTO<CustomerInfoDTO>> Get(int id)
@@ -109,15 +87,15 @@ namespace KiloTaxi.API.Controllers
         // POST api/<CustomerController>
         [HttpPost]
         public async Task<ActionResult<ResponseDTO<CustomerInfoDTO>>> Post(
-            CustomerFormDTO customerDTO
+        CustomerFormDTO customerDTO
         )
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+                // if (!ModelState.IsValid)
+                // {
+                //     return BadRequest(ModelState);
+                // }
                 var existEmailCustomer = _dbKiloTaxiContext.Customers.FirstOrDefault(customer =>
                     customer.Email == customerDTO.Email
                 );
@@ -354,7 +332,7 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        [HttpGet("GetAllCustomer")]
+        [HttpGet]
         public ActionResult<ResponseDTO<CustomerPagingDTO>> GetAllCustomer(
             [FromQuery] PageSortParam pageSortParam
         )
@@ -401,218 +379,6 @@ namespace KiloTaxi.API.Controllers
             HttpContext.Session.SetString("UnVerifiedUser" + customerFormDto.Phone, unVerifiedUser);
             response.Payload = null;
             return response;
-        }
-
-        [HttpGet("GetCustomerById/{id}")]
-        public ActionResult<ResponseDTO<CustomerInfoDTO>> GetCustomerById(int id)
-        {
-            try
-            {
-                if (id == 0)
-                {
-                    return BadRequest("Invalid customer ID.");
-                }
-
-                // Fetch the customer from the repository
-                var result = _customerRepository.GetCustomerById(id);
-                if (result == null)
-                {
-                    return NotFound();
-                }
-
-                // Create the response DTO and return the result
-                ResponseDTO<CustomerInfoDTO> responseDto = new ResponseDTO<CustomerInfoDTO>
-                {
-                    StatusCode = Ok().StatusCode,
-                    Message = "Customer retrieved successfully.",
-                    Payload =
-                        result // Assuming 'result' is a CustomerInfoDTO
-                    ,
-                };
-
-                return Ok(responseDto);
-            }
-            catch (Exception ex)
-            {
-                _logHelper.LogError(ex);
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
-        }
-
-        [HttpPut("UpdateCustomer/{id}")]
-        public async Task<ActionResult<ResponseDTO<CustomerInfoDTO>>> UpdateCustomer(
-            [FromRoute] int id,
-            CustomerFormDTO customerDTO
-        )
-        {
-            try
-            {
-                if (id != customerDTO.Id)
-                {
-                    return BadRequest("Customer ID mismatch.");
-                }
-
-                // Check if the phone and email are unique
-                var existPhoneCustomer = _dbKiloTaxiContext.Customers.FirstOrDefault(customer =>
-                    customer.Phone == customerDTO.Phone
-                );
-
-                var existEmailCustomer = _dbKiloTaxiContext.Customers.FirstOrDefault(customer =>
-                    customer.Email == customerDTO.Email
-                );
-
-                if (existPhoneCustomer != null && existPhoneCustomer.Id != customerDTO.Id)
-                {
-                    return Conflict(
-                        new { Message = "Another user already has this phone number." }
-                    );
-                }
-
-                if (existEmailCustomer != null && existEmailCustomer.Id != customerDTO.Id)
-                {
-                    return Conflict(
-                        new { Message = "Another user already has this email address." }
-                    );
-                }
-
-                var fileUploadHelper = new FileUploadHelper(
-                    _configuration,
-                    _allowedExtensions,
-                    _allowedMimeTypes,
-                    _maxFileSize
-                );
-                var filesToProcess = new List<(IFormFile file, string filePathProperty)>
-                {
-                    (customerDTO.File_Profile, nameof(customerDTO.Profile)),
-                    // (customerDTO.File_NrcImageFront, nameof(customerDTO.NrcImageFront)),
-                    // (customerDTO.File_NrcImageBack, nameof(customerDTO.NrcImageBack)),
-                };
-
-                foreach (var (file, filePathProperty) in filesToProcess)
-                {
-                    if (file != null && file.Length > 0)
-                    {
-                        if (
-                            !fileUploadHelper.ValidateFile(
-                                file,
-                                true,
-                                flagDomain,
-                                out var resolvedFilePath,
-                                out var errorMessage
-                            )
-                        )
-                        {
-                            return BadRequest(errorMessage);
-                        }
-                        var fileName = "_" + filePathProperty + resolvedFilePath;
-                        typeof(CustomerFormDTO)
-                            .GetProperty(filePathProperty)
-                            ?.SetValue(customerDTO, fileName);
-                    }
-                }
-
-                customerDTO.Password = BCrypt.Net.BCrypt.HashPassword(customerDTO.Password);
-
-                var isUpdated = _customerRepository.UpdateCustomer(customerDTO);
-                if (!isUpdated)
-                {
-                    return NotFound();
-                }
-
-                foreach (var (file, filePathProperty) in filesToProcess)
-                {
-                    if (file != null && file.Length > 0)
-                    {
-                        var fileExtension = Path.GetExtension(file.FileName);
-                        var fileName = customerDTO.Id.ToString() + "_" + filePathProperty;
-                        await fileUploadHelper.SaveFileAsync(
-                            file,
-                            flagDomain,
-                            fileName,
-                            fileExtension
-                        );
-                    }
-                }
-
-                ResponseDTO<CustomerInfoDTO> responseDto = new ResponseDTO<CustomerInfoDTO>
-                {
-                    StatusCode = 200, // OK status
-                    Message = "Customer Info Updated Successfully.",
-                    Payload =
-                        null // No payload since we're just updating the customer
-                    ,
-                };
-
-                return Ok(responseDto);
-            }
-            catch (Exception ex)
-            {
-                _logHelper.LogError(ex);
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
-        }
-
-        [HttpGet("DeleteCustomer/{id}")]
-        public ActionResult<ResponseDTO<CustomerInfoDTO>> DeleteCustomer([FromRoute] int id)
-        {
-            try
-            {
-                var deleteEntity = _customerRepository.GetCustomerById(id);
-                if (deleteEntity == null)
-                {
-                    return NotFound();
-                }
-
-                var filePaths = new List<string?>
-                {
-                    // deleteEntity.NrcImageFront,
-                    // deleteEntity.NrcImageBack,
-                    deleteEntity.Profile,
-                };
-
-                foreach (var filePath in filePaths)
-                {
-                    if (!filePath.Contains("default.png"))
-                    {
-                        var resolvedFilePath = Path.Combine(
-                                _configuration["MediaFilePath"],
-                                flagDomain,
-                                filePath.Replace(
-                                    $"{_configuration["MediaHostUrl"]}{flagDomain}/",
-                                    ""
-                                )
-                            )
-                            .Replace('\\', '/');
-                        if (System.IO.File.Exists(resolvedFilePath))
-                        {
-                            System.IO.File.Delete(resolvedFilePath);
-                        }
-                    }
-                }
-
-                var result = _customerRepository.DeleteCustomer(deleteEntity.Id);
-                if (!result)
-                {
-                    return NotFound();
-                }
-
-                // Return a response with a success message
-                ResponseDTO<CustomerInfoDTO> responseDto = new ResponseDTO<CustomerInfoDTO>
-                {
-                    StatusCode = 200, // OK status
-                    Message = "Customer Info Deleted Successfully.",
-                    Payload =
-                        null // No payload since we are deleting the customer
-                    ,
-                };
-
-                return Ok(responseDto);
-            }
-            catch (Exception ex)
-            {
-                _logHelper.LogError(ex);
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
         }
     }
 }

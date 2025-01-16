@@ -10,4 +10,6 @@ public interface IPromotionUsageRepository
     bool UpdatePromotionUsage(PromotionUsageDTO promotionDTO);
     PromotionUsageDTO GetPromotionUsageById(int id);
     bool DeletePromotionUsage(int id);
+    
+    PromotionUsageDTO findByCustomerId(int customerId);
 }

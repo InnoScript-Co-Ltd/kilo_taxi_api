@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using KiloTaxi.Common.Enums;
+using KiloTaxi.Model.DTO.Request;
 
 namespace Simulator.DriverApp
 {
@@ -165,8 +166,24 @@ namespace Simulator.DriverApp
         {
             if (currentOrderDto != null)
             {
-                var jsonSerializedModel = JsonSerializer.Serialize(currentOrderDto);
-                await  connection.InvokeAsync("SendTripFinish", currentOrderDto);
+                List<OrderExtraDemandDTO> orderExtraDemandDTOs = new List<OrderExtraDemandDTO>
+                {
+                    new OrderExtraDemandDTO{OrderId = currentOrderDto.Id,Unit = 2,ExtraDemandId = 1},
+                    new OrderExtraDemandDTO{OrderId = currentOrderDto.Id,Unit = 2,ExtraDemandId = 2},
+                };
+                OrderFormDTO orderFormDto = new OrderFormDTO();
+                orderFormDto.Id = currentOrderDto.Id;
+                orderFormDto.CustomerId = currentOrderDto.CustomerId;
+                orderFormDto.PickUpLocation = currentOrderDto.PickUpLocation;
+                orderFormDto.PickUpLat  = currentOrderDto.PickUpLat;
+                orderFormDto.PickUpLong  = currentOrderDto.PickUpLong;
+                orderFormDto.DriverId = currentOrderDto.DriverId;
+                orderFormDto.DestinationLocation = currentOrderDto.DestinationLocation;
+                orderFormDto.DestinationLat = currentOrderDto.DestinationLat;
+                orderFormDto.DestinationLong = currentOrderDto.DestinationLong;
+                orderFormDto.EstimatedAmount = currentOrderDto.EstimatedAmount;
+                orderFormDto.Status = currentOrderDto.Status;
+                await  connection.InvokeAsync("SendTripFinish", orderFormDto, orderExtraDemandDTOs);
             }
             else
             {

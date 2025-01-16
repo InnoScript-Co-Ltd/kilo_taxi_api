@@ -203,5 +203,16 @@ namespace KiloTaxi.DataAccess.Implementation
                 throw;
             }
         }
+       public PromotionUsageDTO findByCustomerId(int customerId)
+       {
+           var promotionUsage=_dbKiloTaxiContext.PromotionUsages.FirstOrDefault(p=>p.CustomerId==customerId);
+           if (promotionUsage == null)
+           {
+               return null;
+           }
+
+           PromotionUsageDTO promotionUsageDTO = PromotionUsageConverter.ConvertEntityToModel(promotionUsage);
+           return promotionUsageDTO;
+       }
     }
 }
