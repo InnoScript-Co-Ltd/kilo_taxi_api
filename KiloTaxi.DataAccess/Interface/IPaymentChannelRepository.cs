@@ -1,16 +1,18 @@
 ﻿using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.DataAccess.Interface;
 
 public interface IPaymentChannelRepository
 {
-    PaymentChannelDTO CreatePaymentChannel(PaymentChannelDTO paymentChannelDTO);
+    PaymentChannelInfoDTO CreatePaymentChannel(PaymentChannelFormDTO paymentChannelFormDTO);
 
-    bool UpdatePaymentChannel(PaymentChannelDTO paymentChannelDTO);
+    bool UpdatePaymentChannel(PaymentChannelFormDTO paymentChannelFormDTO);
 
-    PaymentChannelDTO GetPaymentChannelById(int id);
+    PaymentChannelInfoDTO GetPaymentChannelById(int id);
 
-    PaymentChannelPagingDTO GetAllPaymentChannels(PageSortParam pageSortParam);
+    ResponseDTO<PaymentChannelPagingDTO> GetAllPaymentChannels(PageSortParam pageSortParam);
 
     bool DeletePaymentChannel(int id);
 }

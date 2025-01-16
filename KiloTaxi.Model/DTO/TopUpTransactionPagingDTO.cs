@@ -9,6 +9,6 @@ namespace KiloTaxi.Model.DTO
     public class TopUpTransactionPagingDTO
     {
         public PagingResult Paging { get; set; }
-        public IEnumerable<TopUpTransactionDTO> TopUpTransactions { get; set; }
+        public IEnumerable<TopUpTransactionInfoDTO> TopUpTransactions { get; set; }
     }
 }
