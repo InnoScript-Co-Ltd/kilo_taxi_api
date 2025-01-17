@@ -1,6 +1,8 @@
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
@@ -20,17 +22,17 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<ScheduleBookingController>
         [HttpGet]
-        public ActionResult<ScheduleBookingPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ResponseDTO<ScheduleBookingPagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                ScheduleBookingPagingDTO scheduleBookingPagingDTO =
+                var responseDto =
                     _scheduleBookingRepository.GetAllScheduleBooking(pageSortParam);
-                if (!scheduleBookingPagingDTO.ScheduleBookings.Any())
+                if (!responseDto.Payload.ScheduleBookings.Any())
                 {
                     return NoContent();
                 }
-                return Ok(scheduleBookingPagingDTO);
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -41,7 +43,7 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<ScheduleBookingController>/5
         [HttpGet("{id}")]
-        public ActionResult<ScheduleBookingDTO> Get(int id)
+        public ActionResult<ResponseDTO<ScheduleBookingInfoDTO>> Get(int id)
         {
             try
             {
@@ -55,7 +57,15 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(result);
+                
+                ResponseDTO<ScheduleBookingInfoDTO> responseDto = new ResponseDTO<ScheduleBookingInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "schedule booking retrieved successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = result,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -66,25 +76,29 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<ScheduleBookingController>
         [HttpPost]
-        public ActionResult<ScheduleBookingDTO> Post(
-            [FromBody] ScheduleBookingDTO scheduleBookingDTO
+        public ActionResult<ResponseDTO<ScheduleBookingInfoDTO>> Post(
+            [FromBody] ScheduleBookingFormDTO scheduleBookingFormDTO
         )
         {
             try
             {
-                if (scheduleBookingDTO == null)
+                if (scheduleBookingFormDTO == null)
                 {
                     return BadRequest();
                 }
 
                 var createdScheduleBooking = _scheduleBookingRepository.AddScheduleBooking(
-                    scheduleBookingDTO
+                    scheduleBookingFormDTO
                 );
-                return CreatedAtAction(
-                    nameof(Get),
-                    new { id = createdScheduleBooking.Id },
-                    createdScheduleBooking
-                );
+                
+                var response = new ResponseDTO<ScheduleBookingInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "schedule booking Register Success.",
+                    TimeStamp = DateTime.Now,
+                    Payload = createdScheduleBooking,
+                };
+                return response;
             }
             catch (Exception ex)
             {
@@ -95,21 +109,29 @@ namespace KiloTaxi.API.Controllers
 
         // PUT api/<ScheduleBookingController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] ScheduleBookingDTO scheduleBookingDTO)
+        public ActionResult<ResponseDTO<ScheduleBookingInfoDTO>> Put(int id, [FromBody] ScheduleBookingFormDTO scheduleBookingFormDTO)
         {
             try
             {
-                if (scheduleBookingDTO == null || id != scheduleBookingDTO.Id)
+                if (scheduleBookingFormDTO == null || id != scheduleBookingFormDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _scheduleBookingRepository.UpdateScheduleBooking(scheduleBookingDTO);
+                var result = _scheduleBookingRepository.UpdateScheduleBooking(scheduleBookingFormDTO);
                 if (!result)
                 {
                     return NotFound();
                 }
-                return Ok();
+                
+                ResponseDTO<ScheduleBookingInfoDTO> responseDto = new ResponseDTO<ScheduleBookingInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "schedule booking Updated Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -120,7 +142,7 @@ namespace KiloTaxi.API.Controllers
 
         // DELETE api/<ScheduleBookingController>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ResponseDTO<ScheduleBookingInfoDTO>> Delete(int id)
         {
             try
             {
@@ -136,7 +158,14 @@ namespace KiloTaxi.API.Controllers
                     return NotFound();
                 }
 
-                return NoContent();
+                ResponseDTO<ScheduleBookingInfoDTO> responseDto = new ResponseDTO<ScheduleBookingInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "schedule booking Deleted Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {

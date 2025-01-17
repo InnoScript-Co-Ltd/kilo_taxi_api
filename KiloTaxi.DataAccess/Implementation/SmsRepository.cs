@@ -1,10 +1,13 @@
 using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -18,7 +21,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbContext;
         }
 
-        public SmsPagingDTO GetAllSms(PageSortParam pageSortParam)
+        public ResponseDTO<SmsPagingDTO> GetAllSms(PageSortParam pageSortParam)
         {
             try
             {
@@ -87,7 +90,12 @@ namespace KiloTaxi.DataAccess.Implementation
                     ),
                 };
 
-                return new SmsPagingDTO { Paging = pagingResult, Sms = sms };
+                ResponseDTO<SmsPagingDTO> responseDto = new ResponseDTO<SmsPagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "sms retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new SmsPagingDTO { Paging = pagingResult, Sms = sms };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -96,32 +104,34 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public SmsDTO CreateSms(SmsDTO smsDTO)
+        public SmsInfoDTO CreateSms(SmsFormDTO smsFormDTO)
         {
             try
             {
                 Sms smsEntity = new Sms();
-                SmsConverter.ConvertModelToEntity(smsDTO, ref smsEntity);
+                SmsConverter.ConvertModelToEntity(smsFormDTO, ref smsEntity);
 
-                var admin = _dbKiloTaxiContext.Admins.FirstOrDefault(c => c.Id == smsDTO.AdminId);
+                var admin = _dbKiloTaxiContext.Admins.FirstOrDefault(c => c.Id == smsFormDTO.AdminId);
                 var customer = _dbKiloTaxiContext.Customers.FirstOrDefault(c =>
-                    c.Id == smsDTO.CustomerId
+                    c.Id == smsFormDTO.CustomerId
                 );
                 var driver = _dbKiloTaxiContext.Drivers.FirstOrDefault(s =>
-                    s.Id == smsDTO.DriverId
+                    s.Id == smsFormDTO.DriverId
                 );
 
                 _dbKiloTaxiContext.Add(smsEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                smsDTO.Id = smsEntity.Id;
-                smsDTO.AdminName = admin.Name;
-                smsDTO.CustomerName = customer.Name;
-                smsDTO.DriverName = driver.Name;
+                smsFormDTO.Id = smsEntity.Id;
+                smsFormDTO.AdminName = admin.Name;
+                smsFormDTO.CustomerName = customer.Name;
+                smsFormDTO.DriverName = driver.Name;
 
                 LoggerHelper.Instance.LogInfo($"Sms added successfully with Id: {smsEntity.Id}");
 
-                return smsDTO;
+                var smsInfoDTO = SmsConverter.ConvertEntityToModel(smsEntity);
+
+                return smsInfoDTO;
             }
             catch (Exception ex)
             {
@@ -130,18 +140,18 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public bool UpdateSms(SmsDTO smsDTO)
+        public bool UpdateSms(SmsFormDTO smsFormDTO)
         {
             try
             {
-                var smsEntity = _dbKiloTaxiContext.Sms.FirstOrDefault(s => s.Id == smsDTO.Id);
+                var smsEntity = _dbKiloTaxiContext.Sms.FirstOrDefault(s => s.Id == smsFormDTO.Id);
 
                 if (smsEntity == null)
                 {
                     return false;
                 }
 
-                SmsConverter.ConvertModelToEntity(smsDTO, ref smsEntity);
+                SmsConverter.ConvertModelToEntity(smsFormDTO, ref smsEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -150,13 +160,13 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating sms with Id: {smsDTO.Id}"
+                    $"Error occurred while updating sms with Id: {smsFormDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public SmsDTO GetSmsById(int id)
+        public SmsInfoDTO GetSmsById(int id)
         {
             try
             {

@@ -1,13 +1,15 @@
 ﻿using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.DataAccess.Interface;
 
 public interface ITravelRateRepository
 {
-    TravelRateDTO AddTravelRate(TravelRateDTO travelRateDto);
-    bool UpdateTravelRate(TravelRateDTO travelRateDto);
-    TravelRatePagingDTO GetAllTravelRate(PageSortParam pageSortParam);
+    TravelRateInfoDTO AddTravelRate(TravelRateFormDTO travelRateFormDto);
+    bool UpdateTravelRate(TravelRateFormDTO travelRateFormDto);
+    ResponseDTO<TravelRatePagingDTO> GetAllTravelRate(PageSortParam pageSortParam);
     bool DeleteTravelRate(int id);
-    TravelRateDTO GetTravelRate(int id);
+    TravelRateInfoDTO GetTravelRate(int id);
 }

@@ -1,12 +1,14 @@
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.DataAccess.Interface;
 
 public interface IReasonRepository
 {
-    ReasonPagingDTO GetAllReason(PageSortParam pageSortParam);
-    ReasonDTO CreateReason(ReasonDTO reasonDTO);
-    bool UpdateReason(ReasonDTO reasonDTO);
-    ReasonDTO GetReasonById(int id);
+    ResponseDTO<ReasonPagingDTO> GetAllReason(PageSortParam pageSortParam);
+    ReasonInfoDTO CreateReason(ReasonFormDTO reasonFormDTO);
+    bool UpdateReason(ReasonFormDTO reasonFormDTO);
+    ReasonInfoDTO GetReasonById(int id);
     bool DeleteReason(int id);
 }

@@ -2,6 +2,7 @@
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,16 +24,16 @@ public class WalletController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<WalletPagingDTO>> GetAll([FromQuery] PageSortParam pageSortParam)
+    public ActionResult<ResponseDTO<WalletPagingDTO>> GetAll([FromQuery] PageSortParam pageSortParam)
     {
         try
         {
-            WalletPagingDTO walletPagingDTO = _walletRepository.GetAllWallets(pageSortParam);
-            if (!walletPagingDTO.Wallets.Any())
+            var responseDto = _walletRepository.GetAllWallets(pageSortParam);
+            if (!responseDto.Payload.Wallets.Any())
             {
                 return NoContent();
             }
-            return Ok(walletPagingDTO);
+            return Ok(responseDto);
         }
         catch (Exception ex)
         {
@@ -42,7 +43,7 @@ public class WalletController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<WalletDTO> Get(int id)
+    public ActionResult<ResponseDTO<WalletInfoDTO>> Get(int id)
     {
         try
         {
@@ -56,8 +57,15 @@ public class WalletController : ControllerBase
             {
                 return NotFound();
             }
+            
+            ResponseDTO<WalletInfoDTO> responseDto = new ResponseDTO<WalletInfoDTO>
+            {
+                StatusCode = Ok().StatusCode,
+                Message = "wallet retrieved successfully.",
+                Payload = wallet,
+            };
 
-            return Ok(wallet);
+            return Ok(responseDto);
         }
         catch (Exception ex)
         {
@@ -67,7 +75,7 @@ public class WalletController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<WalletDTO> Create([FromBody] WalletDTO walletDTO)
+    public ActionResult<ResponseDTO<WalletInfoDTO>> Create([FromBody] WalletFormDTO walletFormDTO)
     {
         try
         {
@@ -76,9 +84,16 @@ public class WalletController : ControllerBase
                 return BadRequest(ModelState);
             }
 
-            var createdWallet = _walletRepository.CreateWallet(walletDTO);
-
-            return CreatedAtAction(nameof(Get), new { id = createdWallet.Id }, createdWallet);
+            var createdWallet = _walletRepository.CreateWallet(walletFormDTO);
+            
+            var response = new ResponseDTO<WalletInfoDTO>
+            {
+                StatusCode = Ok().StatusCode,
+                Message = "wallet Register Success.",
+                Payload = createdWallet,
+                TimeStamp = DateTime.Now,
+            };
+            return response;
         }
         catch (Exception ex)
         {
@@ -88,11 +103,11 @@ public class WalletController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] WalletDTO walletDTO)
+    public ActionResult<ResponseDTO<WalletInfoDTO>> Update(int id, [FromBody] WalletFormDTO walletFormDTO)
     {
         try
         {
-            if (id != walletDTO.Id)
+            if (id != walletFormDTO.Id)
             {
                 return BadRequest("Wallet ID mismatch.");
             }
@@ -102,13 +117,19 @@ public class WalletController : ControllerBase
                 return BadRequest(ModelState);
             }
 
-            var isUpdated = _walletRepository.UpdateWallet(walletDTO);
+            var isUpdated = _walletRepository.UpdateWallet(walletFormDTO);
             if (!isUpdated)
             {
                 return NotFound();
             }
 
-            return Ok("Wallet updated successfully.");
+            ResponseDTO<WalletInfoDTO> responseDto = new ResponseDTO<WalletInfoDTO>
+            {
+                StatusCode = 200,
+                Message = "Wallet Updated Successfully.",
+                Payload = null,
+            };
+            return Ok(responseDto);
         }
         catch (Exception ex)
         {
@@ -118,7 +139,7 @@ public class WalletController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public ActionResult<ResponseDTO<WalletDTO>> Delete(int id)
+    public ActionResult<ResponseDTO<OrderInfoDTO>> Delete(int id)
     {
         try
         {
@@ -133,11 +154,15 @@ public class WalletController : ControllerBase
             {
                 return StatusCode(500, "An error occurred while deleting the payment channel.");
             }
-            ResponseDTO<WalletDTO> responseDto = new ResponseDTO<WalletDTO>();
-            responseDto.StatusCode = 204;
-            responseDto.Message = "Wallet deleted";
-            responseDto.TimeStamp = DateTime.Now;
-            return responseDto;
+
+            ResponseDTO<WalletInfoDTO> responseDto = new ResponseDTO<WalletInfoDTO>
+            {
+                StatusCode = 200,
+                Message = "wallet Deleted Successfully.",
+                Payload = null,
+            };
+
+            return Ok(responseDto);
         }
         catch (Exception ex)
         {

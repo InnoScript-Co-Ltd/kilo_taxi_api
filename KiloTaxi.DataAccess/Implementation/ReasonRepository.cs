@@ -1,10 +1,13 @@
 using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -18,7 +21,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbContext;
         }
 
-        public ReasonPagingDTO GetAllReason(PageSortParam pageSortParam)
+        public ResponseDTO<ReasonPagingDTO> GetAllReason(PageSortParam pageSortParam)
         {
             try
         {
@@ -78,7 +81,13 @@ namespace KiloTaxi.DataAccess.Implementation
                     pageSortParam.CurrentPage * pageSortParam.PageSize
                 ),
             };
-            return new ReasonPagingDTO() { Paging = pagingResult, Reasons = reason };
+            
+            ResponseDTO<ReasonPagingDTO> responseDto = new ResponseDTO<ReasonPagingDTO>();
+            responseDto.StatusCode = (int)HttpStatusCode.OK;
+            responseDto.Message = "reasons retrieved successfully";
+            responseDto.TimeStamp = DateTime.Now;
+            responseDto.Payload = new ReasonPagingDTO { Paging = pagingResult, Reasons = reason };
+            return responseDto;
         }
             catch (Exception ex)
             {
@@ -87,23 +96,24 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public ReasonDTO CreateReason(ReasonDTO reasonDTO)
+        public ReasonInfoDTO CreateReason(ReasonFormDTO reasonFormDTO)
         {
             try
             {
                 Reason reasonEntity = new Reason();
-                ReasonConverter.ConvertModelToEntity(reasonDTO, ref reasonEntity);
+                ReasonConverter.ConvertModelToEntity(reasonFormDTO, ref reasonEntity);
 
                 _dbKiloTaxiContext.Add(reasonEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                reasonDTO.Id = reasonEntity.Id;
+                reasonFormDTO.Id = reasonEntity.Id;
 
                 LoggerHelper.Instance.LogInfo(
                     $"Reason added successfully with Id: {reasonEntity.Id}"
                 );
 
-                return reasonDTO;
+                var reasonInforDTO = ReasonConverter.ConvertEntityToModel(reasonEntity);
+                return reasonInforDTO;
             }
             catch (Exception ex)
             {
@@ -112,19 +122,19 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public bool UpdateReason(ReasonDTO reasonDTO)
+        public bool UpdateReason(ReasonFormDTO reasonFormDTO)
         {
             try
             {
                 var reasonEntity = _dbKiloTaxiContext.Reasons.FirstOrDefault(r =>
-                    r.Id == reasonDTO.Id
+                    r.Id == reasonFormDTO.Id
                 );
                 if (reasonEntity == null)
                 {
                     return false;
                 }
 
-                ReasonConverter.ConvertModelToEntity(reasonDTO, ref reasonEntity);
+                ReasonConverter.ConvertModelToEntity(reasonFormDTO, ref reasonEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -133,13 +143,13 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating reason with Id: {reasonDTO.Id}"
+                    $"Error occurred while updating reason with Id: {reasonFormDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public ReasonDTO GetReasonById(int id)
+        public ReasonInfoDTO GetReasonById(int id)
         {
             try
             {

@@ -3,12 +3,13 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
 
 namespace KiloTaxi.Converter
 {
     public static class SmsConverter
     {
-        public static SmsDTO ConvertEntityToModel(Sms smsEntity)
+        public static SmsInfoDTO ConvertEntityToModel(Sms smsEntity)
         {
             if (smsEntity == null)
             {
@@ -22,7 +23,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new SmsDTO()
+            return new SmsInfoDTO()
             {
                 Id = smsEntity.Id,
                 Name = smsEntity.Name,
@@ -39,17 +40,17 @@ namespace KiloTaxi.Converter
             };
         }
 
-        public static void ConvertModelToEntity(SmsDTO smsDTO, ref Sms smsEntity)
+        public static void ConvertModelToEntity(SmsFormDTO smsFormDTO, ref Sms smsEntity)
         {
             try
             {
-                if (smsDTO == null)
+                if (smsFormDTO == null)
                 {
                     LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(smsDTO)),
-                        "smsDTO is null"
+                        new ArgumentNullException(nameof(smsFormDTO)),
+                        "smsFormDTO is null"
                     );
-                    throw new ArgumentNullException(nameof(smsDTO), "Source smsDTO cannot be null");
+                    throw new ArgumentNullException(nameof(smsFormDTO), "Source smsDTO cannot be null");
                 }
 
                 if (smsEntity == null)
@@ -64,15 +65,15 @@ namespace KiloTaxi.Converter
                     );
                 }
 
-                smsEntity.Id = smsDTO.Id;
-                smsEntity.Name = smsDTO.Name;
-                smsEntity.MobileNumber = smsDTO.MobileNumber;
-                smsEntity.Title = smsDTO.Title;
-                smsEntity.Message = smsDTO.Message;
-                smsEntity.Status = smsDTO.Status.ToString();
-                smsEntity.AdminId = smsDTO.AdminId;
-                smsEntity.CustomerId = smsDTO.CustomerId;
-                smsEntity.DriverId = smsDTO.DriverId;
+                smsEntity.Id = smsFormDTO.Id;
+                smsEntity.Name = smsFormDTO.Name;
+                smsEntity.MobileNumber = smsFormDTO.MobileNumber;
+                smsEntity.Title = smsFormDTO.Title;
+                smsEntity.Message = smsFormDTO.Message;
+                smsEntity.Status = smsFormDTO.Status.ToString();
+                smsEntity.AdminId = smsFormDTO.AdminId;
+                smsEntity.CustomerId = smsFormDTO.CustomerId;
+                smsEntity.DriverId = smsFormDTO.DriverId;
             }
             catch (Exception ex)
             {

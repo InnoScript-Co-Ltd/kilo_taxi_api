@@ -208,7 +208,7 @@ namespace Simulator.CustomerApp
 
                 });
             });
-            connection.On("ReceiveTripComplete", async (OrderFormDTO orderDTO,PromotionUsageDTO promotionUsageDto,List<OrderExtraDemandDTO> orderExtraDemandDtos) =>
+            connection.On("ReceiveTripComplete", async (OrderFormDTO orderDTO,PromotionUsageInfoDTO promotionUsageDto,List<OrderExtraDemandDTO> orderExtraDemandDtos) =>
             {
                 Dispatcher.Invoke(() =>
                 {

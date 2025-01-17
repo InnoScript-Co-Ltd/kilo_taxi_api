@@ -6,13 +6,13 @@ namespace KiloTaxi.DataAccess.Interface;
 
 public interface IPaymentChannelRepository
 {
+    ResponseDTO<PaymentChannelPagingDTO> GetAllPaymentChannels(PageSortParam pageSortParam);
+
     PaymentChannelInfoDTO CreatePaymentChannel(PaymentChannelFormDTO paymentChannelFormDTO);
 
     bool UpdatePaymentChannel(PaymentChannelFormDTO paymentChannelFormDTO);
 
     PaymentChannelInfoDTO GetPaymentChannelById(int id);
-
-    ResponseDTO<PaymentChannelPagingDTO> GetAllPaymentChannels(PageSortParam pageSortParam);
-
+    
     bool DeletePaymentChannel(int id);
 }

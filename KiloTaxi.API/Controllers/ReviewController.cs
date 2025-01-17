@@ -1,6 +1,7 @@
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,16 +22,16 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<ReviewController>
         [HttpGet]
-        public ActionResult<ReviewPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ResponseDTO<ReviewPagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                ReviewPagingDTO reviewPagingDTO = _reviewRepository.GetAllReview(pageSortParam);
-                if (!reviewPagingDTO.Reviews.Any())
+                var responseDTO = _reviewRepository.GetAllReview(pageSortParam);
+                if (!responseDTO.Payload.Reviews.Any())
                 {
                     return NoContent();
                 }
-                return Ok(reviewPagingDTO);
+                return Ok(responseDTO);
             }
             catch (Exception ex)
             {
@@ -41,7 +42,7 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<ReviewController>/5
         [HttpGet("{id}")]
-        public ActionResult<ReviewDTO> Get(int id)
+        public ActionResult<ResponseDTO<ReviewInfoDTO>> Get(int id)
         {
             try
             {
@@ -55,7 +56,14 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(result);
+                ResponseDTO<ReviewInfoDTO> responseDto = new ResponseDTO<ReviewInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "review retrieved successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = result,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -66,17 +74,25 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<ReviewController>
         [HttpPost]
-        public ActionResult<ReviewDTO> Post([FromBody] ReviewDTO reviewDTO)
+        public ActionResult<ResponseDTO<ReviewInfoDTO>> Post([FromBody] ReviewFormDTO reviewFormDTO)
         {
             try
             {
-                if (reviewDTO == null)
+                if (reviewFormDTO == null)
                 {
                     return BadRequest();
                 }
 
-                var createdReview = _reviewRepository.AddReview(reviewDTO);
-                return CreatedAtAction(nameof(Get), new { id = createdReview.Id }, createdReview);
+                var createdReview = _reviewRepository.AddReview(reviewFormDTO);
+                
+                var response = new ResponseDTO<ReviewInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "review Register Success.",
+                    Payload = createdReview,
+                    TimeStamp = DateTime.Now,
+                };
+                return response;
             }
             catch (Exception ex)
             {
@@ -87,21 +103,28 @@ namespace KiloTaxi.API.Controllers
 
         // PUT api/<ReviewController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] ReviewDTO reviewDTO)
+        public ActionResult<ResponseDTO<ReviewInfoDTO>> Put(int id, [FromBody] ReviewFormDTO reviewFormDTO)
         {
             try
             {
-                if (reviewDTO == null || id != reviewDTO.Id)
+                if (reviewFormDTO == null || id != reviewFormDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _reviewRepository.UpdateReview(reviewDTO);
+                var result = _reviewRepository.UpdateReview(reviewFormDTO);
                 if (!result)
                 {
                     return NotFound();
                 }
-                return Ok();
+                ResponseDTO<ReviewInfoDTO> responseDto = new ResponseDTO<ReviewInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "review Updated Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -112,7 +135,7 @@ namespace KiloTaxi.API.Controllers
 
         // DELETE api/<ReviewController>/5
         [HttpDelete("{id}")]
-        public ActionResult<ResponseDTO<ReviewDTO>> Delete(int id)
+        public ActionResult<ResponseDTO<ReviewInfoDTO>> Delete(int id)
         {
             try
             {
@@ -127,11 +150,15 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                ResponseDTO<ReviewDTO> responseDto = new ResponseDTO<ReviewDTO>();
-                responseDto.StatusCode = 204;
-                responseDto.Message = "Review deleted";
-                responseDto.TimeStamp = DateTime.Now;
-                return responseDto;
+
+                ResponseDTO<ReviewInfoDTO> responseDto = new ResponseDTO<ReviewInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "review Deleted Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {

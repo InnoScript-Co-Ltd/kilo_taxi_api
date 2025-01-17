@@ -1,6 +1,7 @@
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,16 +22,16 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<ReasonController>
         [HttpGet]
-        public ActionResult<ReasonPagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ResponseDTO<ReasonPagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                ReasonPagingDTO reasonPagingDTO = _reasonRepository.GetAllReason(pageSortParam);
-                if (!reasonPagingDTO.Reasons.Any())
+                var responseDto = _reasonRepository.GetAllReason(pageSortParam);
+                if (!responseDto.Payload.Reasons.Any())
                 {
                     return NoContent();
                 }
-                return Ok(reasonPagingDTO);
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -41,7 +42,7 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<ReasonController>/5
         [HttpGet("{id}")]
-        public ActionResult<ReasonDTO> Get(int id)
+        public ActionResult<ResponseDTO<ReasonInfoDTO>> Get(int id)
         {
             try
             {
@@ -55,7 +56,14 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(result);
+                
+                ResponseDTO<ReasonInfoDTO> responseDto = new ResponseDTO<ReasonInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "reason retrieved successfully.",
+                    Payload = result,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -66,17 +74,25 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<ReasonController>
         [HttpPost]
-        public ActionResult<ReasonDTO> Post([FromBody] ReasonDTO reasonDTO)
+        public ActionResult<ResponseDTO<ReasonInfoDTO>> Post([FromBody] ReasonFormDTO reasonFormDTO)
         {
             try
             {
-                if (reasonDTO == null)
+                if (reasonFormDTO == null)
                 {
                     return BadRequest();
                 }
 
-                var createdReason = _reasonRepository.CreateReason(reasonDTO);
-                return CreatedAtAction(nameof(Get), new { id = createdReason.Id }, createdReason);
+                var createdReason = _reasonRepository.CreateReason(reasonFormDTO);
+                
+                var response = new ResponseDTO<ReasonInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "Reason Register Success.",
+                    Payload = createdReason,
+                    TimeStamp = DateTime.Now,
+                };
+                return response;
             }
             catch (Exception ex)
             {
@@ -87,21 +103,28 @@ namespace KiloTaxi.API.Controllers
 
         // PUT api/<ReasonController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] ReasonDTO reasonDTO)
+        public ActionResult<ResponseDTO<ReasonInfoDTO>> Put(int id, [FromBody] ReasonFormDTO reasonFormDTO)
         {
             try
             {
-                if (reasonDTO == null || id != reasonDTO.Id)
+                if (reasonFormDTO == null || id != reasonFormDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _reasonRepository.UpdateReason(reasonDTO);
+                var result = _reasonRepository.UpdateReason(reasonFormDTO);
                 if (!result)
                 {
                     return NotFound();
                 }
-                return Ok();
+                
+                ResponseDTO<ReasonInfoDTO> responseDto = new ResponseDTO<ReasonInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Reason Updated Successfully.",
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -112,7 +135,7 @@ namespace KiloTaxi.API.Controllers
 
         // DELETE api/<ReasonController>/5
         [HttpDelete("{id}")]
-        public ActionResult<ResponseDTO<ReasonDTO>> Delete(int id)
+        public ActionResult<ResponseDTO<ReasonInfoDTO>> Delete(int id)
         {
             try
             {
@@ -127,11 +150,14 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                ResponseDTO<ReasonDTO> responseDto = new ResponseDTO<ReasonDTO>();
-                responseDto.StatusCode = 204;
-                responseDto.Message = "Reason deleted";
-                responseDto.TimeStamp = DateTime.Now;
-                return responseDto;
+
+                ResponseDTO<ReasonInfoDTO> responseDto = new ResponseDTO<ReasonInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Reason Deleted Successfully.",
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {

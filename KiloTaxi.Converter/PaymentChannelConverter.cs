@@ -19,11 +19,11 @@ namespace KiloTaxi.Converter
             {
                 LoggerHelper.Instance.LogError(
                     new ArgumentNullException(nameof(paymentChannelEntity)),
-                    "Payment Channel entity is null"
+                    "Payment Channel Entity is null"
                 );
                 throw new ArgumentNullException(
                     nameof(paymentChannelEntity),
-                    "Source PaymentChannel entity cannot be null"
+                    "Source paymentChannelEntity cannot be null"
                 );
             }
 
@@ -40,40 +40,23 @@ namespace KiloTaxi.Converter
         }
 
         public static void ConvertModelToEntity(
-            PaymentChannelFormDTO paymentChannelFormDto,
+            PaymentChannelFormDTO paymentChannelFormDTO,
             ref PaymentChannel paymentChannelEntity
         )
         {
-            try
-            {
-                if (paymentChannelFormDto == null)
-                {
-                    LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(paymentChannelFormDto)),
-                        "PaymentChannelDTO model is null"
-                    );
-                    throw new ArgumentNullException(
-                        nameof(paymentChannelFormDto),
-                        "Source PaymentChannelDTO model cannot be null"
-                    );
-                }
+            if (paymentChannelFormDTO == null)
+                throw new ArgumentNullException(nameof(paymentChannelFormDTO));
 
-                paymentChannelEntity.Id = paymentChannelFormDto.Id;
-                paymentChannelEntity.ChannelName = paymentChannelFormDto.ChannelName;
-                paymentChannelEntity.Description = paymentChannelFormDto.Description;
-                paymentChannelEntity.PaymentType = paymentChannelFormDto.PaymentType.ToString();
-                paymentChannelEntity.Icon = paymentChannelFormDto.Icon;
-                paymentChannelEntity.Phone = paymentChannelFormDto.Phone;
-                paymentChannelEntity.UserName = paymentChannelFormDto.UserName;
-            }
-            catch (Exception ex)
-            {
-                LoggerHelper.Instance.LogError(
-                    ex,
-                    "Unexpected error during model-to-entity conversion"
-                );
-                throw;
-            }
+            if (paymentChannelEntity == null)
+                throw new ArgumentNullException(nameof(paymentChannelEntity));
+
+            paymentChannelEntity.Id = paymentChannelFormDTO.Id;
+            paymentChannelEntity.ChannelName = paymentChannelFormDTO.ChannelName;
+            paymentChannelEntity.Description = paymentChannelFormDTO.Description;
+            paymentChannelEntity.PaymentType = paymentChannelFormDTO.PaymentType.ToString();
+            paymentChannelEntity.Icon = paymentChannelFormDTO.Icon;
+            paymentChannelEntity.Phone = paymentChannelFormDTO.Phone;
+            paymentChannelEntity.UserName = paymentChannelFormDTO.UserName;
         }
     }
 }

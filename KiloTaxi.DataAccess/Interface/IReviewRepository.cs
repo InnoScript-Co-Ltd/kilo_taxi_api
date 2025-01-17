@@ -1,13 +1,15 @@
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.DataAccess.Interface;
 
 public interface IReviewRepository
 {
-    ReviewPagingDTO GetAllReview(PageSortParam pageSortParam);
+    ResponseDTO<ReviewPagingDTO> GetAllReview(PageSortParam pageSortParam);
 
-    ReviewDTO AddReview(ReviewDTO reviewDTO);
-    bool UpdateReview(ReviewDTO reviewDTO);
-    ReviewDTO GetReviewById(int id);
+    ReviewInfoDTO AddReview(ReviewFormDTO reviewFormDTO);
+    bool UpdateReview(ReviewFormDTO reviewFormDTO);
+    ReviewInfoDTO GetReviewById(int id);
     bool DeleteReview(int id);
 }

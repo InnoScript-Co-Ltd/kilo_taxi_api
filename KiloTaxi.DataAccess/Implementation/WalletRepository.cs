@@ -1,10 +1,13 @@
 ﻿using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.DataAccess.Implementation;
 
@@ -17,20 +20,22 @@ public class WalletRepository : IWalletRepository
         _dbContext = dbContext;
     }
 
-    public WalletDTO CreateWallet(WalletDTO walletDTO)
+    public WalletInfoDTO CreateWallet(WalletFormDTO walletFormDTO)
     {
         try
         {
             var walletEntity = new Wallet();
             DateTime createdDate = DateTime.Now;
-            walletDTO.CreateDate = createdDate;
-            WalletConverter.ConvertModelToEntity(walletDTO, ref walletEntity);
+            walletFormDTO.CreateDate = createdDate;
+            WalletConverter.ConvertModelToEntity(walletFormDTO, ref walletEntity);
 
             _dbContext.Wallets.Add(walletEntity);
             _dbContext.SaveChanges();
 
-            walletDTO.Id = walletEntity.Id;
-            return walletDTO;
+            walletFormDTO.Id = walletEntity.Id;
+            
+            var walletInfoDTO = WalletConverter.ConvertEntityToModel(walletEntity);
+            return walletInfoDTO;
         }
         catch (Exception ex)
         {
@@ -39,16 +44,16 @@ public class WalletRepository : IWalletRepository
         }
     }
 
-    public bool UpdateWallet(WalletDTO walletDTO)
+    public bool UpdateWallet(WalletFormDTO walletFormDTO)
     {
         try
         {
-            var walletEntity = _dbContext.Wallets.FirstOrDefault(w => w.Id == walletDTO.Id);
+            var walletEntity = _dbContext.Wallets.FirstOrDefault(w => w.Id == walletFormDTO.Id);
             if (walletEntity == null) return false;
-            walletDTO.CreateDate = walletEntity.CreatedDate;
+            walletFormDTO.CreateDate = walletEntity.CreatedDate;
             DateTime updateDate = DateTime.Now;
-            walletDTO.UpdateDate = updateDate;
-            WalletConverter.ConvertModelToEntity(walletDTO, ref walletEntity);
+            walletFormDTO.UpdateDate = updateDate;
+            WalletConverter.ConvertModelToEntity(walletFormDTO, ref walletEntity);
             _dbContext.SaveChanges();
             return true;
         }
@@ -59,7 +64,7 @@ public class WalletRepository : IWalletRepository
         }
     }
 
-    public WalletDTO GetWalletById(int id)
+    public WalletInfoDTO GetWalletById(int id)
     {
         try
         {
@@ -73,7 +78,7 @@ public class WalletRepository : IWalletRepository
         }
     }
 
-    public WalletPagingDTO GetAllWallets(PageSortParam pageSortParam)
+    public ResponseDTO<WalletPagingDTO> GetAllWallets(PageSortParam pageSortParam)
     {
       try
         {
@@ -133,7 +138,13 @@ public class WalletRepository : IWalletRepository
                     pageSortParam.CurrentPage * pageSortParam.PageSize
                 ),
             };
-            return new WalletPagingDTO() { Paging = pagingResult, Wallets = wallets };
+            
+            ResponseDTO<WalletPagingDTO> responseDTO = new ResponseDTO<WalletPagingDTO>();
+            responseDTO.StatusCode = (int)HttpStatusCode.OK;
+            responseDTO.Message = "Orders retrieved successfully";
+            responseDTO.TimeStamp = DateTime.Now;
+            responseDTO.Payload = new WalletPagingDTO { Paging = pagingResult, Wallets = wallets };
+            return responseDTO;
         }
         catch (Exception ex)
         {

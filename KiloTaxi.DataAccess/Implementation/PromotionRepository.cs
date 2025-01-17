@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
@@ -6,6 +7,8 @@ using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -19,7 +22,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbContext;
         }
 
-        public PromotionPagingDTO GetAllPromotion(PageSortParam pageSortParam)
+        public ResponseDTO<PromotionPagingDTO> GetAllPromotion(PageSortParam pageSortParam)
         {
             try
             {
@@ -88,7 +91,12 @@ namespace KiloTaxi.DataAccess.Implementation
                     ),
                 };
 
-                return new PromotionPagingDTO { Paging = pagingResult, Promotions = promotions };
+                ResponseDTO<PromotionPagingDTO> responseDto = new ResponseDTO<PromotionPagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "promotions retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new PromotionPagingDTO { Paging = pagingResult, Promotions = promotions };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -97,25 +105,25 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public PromotionDTO AddPromotion(PromotionDTO promotionDTO)
+        public PromotionInfoDTO AddPromotion(PromotionFormDTO promotionFormDTO)
         {
             try
             {
-                promotionDTO.CustomerIds = promotionDTO.CustomerIds?.Distinct().ToList();
+                promotionFormDTO.CustomerIds = promotionFormDTO.CustomerIds?.Distinct().ToList();
 
                 Promotion promotionEntity = new Promotion();
-                PromotionConverter.ConvertModelToEntity(promotionDTO, ref promotionEntity);
+                PromotionConverter.ConvertModelToEntity(promotionFormDTO, ref promotionEntity);
 
                 promotionEntity.PromotionUsers.Clear();
 
                 // Validate and add PromotionUsers
-                if (promotionDTO.CustomerIds != null && promotionDTO.CustomerIds.Any())
+                if (promotionFormDTO.CustomerIds != null && promotionFormDTO.CustomerIds.Any())
                 {
                     var customers = _dbKiloTaxiContext
-                        .Customers.Where(c => promotionDTO.CustomerIds.Contains(c.Id))
+                        .Customers.Where(c => promotionFormDTO.CustomerIds.Contains(c.Id))
                         .ToList();
 
-                    if (customers.Count != promotionDTO.CustomerIds.Count)
+                    if (customers.Count != promotionFormDTO.CustomerIds.Count)
                     {
                         throw new ArgumentException("One or more customer IDs are invalid.");
                     }
@@ -135,18 +143,19 @@ namespace KiloTaxi.DataAccess.Implementation
                 _dbKiloTaxiContext.Add(promotionEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                promotionDTO.CustomerNames = _dbKiloTaxiContext
-                    .Customers.Where(c => promotionDTO.CustomerIds.Contains(c.Id))
+                promotionFormDTO.CustomerNames = _dbKiloTaxiContext
+                    .Customers.Where(c => promotionFormDTO.CustomerIds.Contains(c.Id))
                     .Select(c => c.Name)
                     .ToList();
 
-                promotionDTO.Id = promotionEntity.Id;
+                promotionFormDTO.Id = promotionEntity.Id;
 
                 LoggerHelper.Instance.LogInfo(
                     $"Promotion added successfully with Id: {promotionEntity.Id}"
                 );
 
-                return promotionDTO;
+                var promotionInfoDTO = PromotionConverter.ConvertEntityToModel(promotionEntity);
+                return promotionInfoDTO;
             }
             catch (Exception ex)
             {
@@ -155,28 +164,28 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public bool UpdatePromotion(PromotionDTO promotionDTO)
+        public bool UpdatePromotion(PromotionFormDTO promotionFormDTO)
         {
             try
             {
                 var promotionEntity = _dbKiloTaxiContext
                     .Promotions.Include(p => p.PromotionUsers)
-                    .FirstOrDefault(promotion => promotion.Id == promotionDTO.Id);
+                    .FirstOrDefault(promotion => promotion.Id == promotionFormDTO.Id);
 
                 if (promotionEntity == null)
                 {
                     return false;
                 }
 
-                PromotionConverter.ConvertModelToEntity(promotionDTO, ref promotionEntity);
+                PromotionConverter.ConvertModelToEntity(promotionFormDTO, ref promotionEntity);
 
-                if (promotionDTO.CustomerIds != null)
+                if (promotionFormDTO.CustomerIds != null)
                 {
                     var validCustomers = _dbKiloTaxiContext
-                        .Customers.Where(c => promotionDTO.CustomerIds.Contains(c.Id))
+                        .Customers.Where(c => promotionFormDTO.CustomerIds.Contains(c.Id))
                         .ToList();
 
-                    if (validCustomers.Count != promotionDTO.CustomerIds.Count)
+                    if (validCustomers.Count != promotionFormDTO.CustomerIds.Count)
                     {
                         throw new ArgumentException("One or more customer IDs are invalid.");
                     }
@@ -203,13 +212,13 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating promotion with Id: {promotionDTO.Id}"
+                    $"Error occurred while updating promotion with Id: {promotionFormDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public PromotionDTO GetPromotionById(int id)
+        public PromotionInfoDTO GetPromotionById(int id)
         {
             try
             {

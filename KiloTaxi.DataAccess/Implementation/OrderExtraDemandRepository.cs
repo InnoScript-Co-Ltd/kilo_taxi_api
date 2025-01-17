@@ -1,10 +1,13 @@
 using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -18,7 +21,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbContext;
         }
 
-        public OrderExtraDemandPagingDTO GetAllOrderExtraDemand(PageSortParam pageSortParam)
+        public ResponseDTO<OrderExtraDemandPagingDTO> GetAllOrderExtraDemand(PageSortParam pageSortParam)
         {
             try
             {
@@ -74,7 +77,12 @@ namespace KiloTaxi.DataAccess.Implementation
                     ),
                 };
 
-                return new OrderExtraDemandPagingDTO { Paging = pagingResult, OrderExtraDemands = orderExtraDemands };
+                ResponseDTO<OrderExtraDemandPagingDTO> responseDto = new ResponseDTO<OrderExtraDemandPagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "order extra demands retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new OrderExtraDemandPagingDTO { Paging = pagingResult, OrderExtraDemands = orderExtraDemands };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -141,7 +149,7 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public OrderExtraDemandDTO GetOrderExtraDemandById(int id)
+        public OrderExtraDemandInfoDTO GetOrderExtraDemandById(int id)
         {
             try
             {

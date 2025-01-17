@@ -161,7 +161,7 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        [HttpGet("GetAllOrders")]
+        [HttpGet]
         public ActionResult<ResponseDTO<OrderPagingDTO>> GetAllOrders(
             [FromQuery] PageSortParam pageSortParam
         )
@@ -191,7 +191,7 @@ namespace KiloTaxi.API.Controllers
             }
         }
 
-        [HttpPost("CreateOrder")]
+        [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult<ResponseDTO<OrderInfoDTO>>> CreateOrder(
             OrderFormDTO orderFormDTO
@@ -238,7 +238,7 @@ namespace KiloTaxi.API.Controllers
         }
 
         // Get order by ID
-        [HttpGet("GetOrderById/{id}")]
+        [HttpGet("{id}")]
         public ActionResult<ResponseDTO<OrderInfoDTO>> GetOrderById(int id)
         {
             try
@@ -271,7 +271,7 @@ namespace KiloTaxi.API.Controllers
         }
 
         // Update order
-        [HttpPut("UpdateOrder/{id}")]
+        [HttpPut("{id}")]
         public async Task<ActionResult<ResponseDTO<OrderInfoDTO>>> UpdateOrder(
             [FromRoute] int id,
             OrderFormDTO orderFormDTO
@@ -310,7 +310,7 @@ namespace KiloTaxi.API.Controllers
         }
 
         // Delete order
-        [HttpDelete("DeleteOrder/{id}")]
+        [HttpDelete("{id}")]
         public ActionResult<ResponseDTO<OrderInfoDTO>> DeleteOrder([FromRoute] int id)
         {
             try
@@ -323,7 +323,7 @@ namespace KiloTaxi.API.Controllers
 
                 ResponseDTO<OrderInfoDTO> responseDto = new ResponseDTO<OrderInfoDTO>
                 {
-                    StatusCode = 200,
+                    StatusCode = 204,
                     Message = "Order Info Deleted Successfully.",
                     Payload =
                         null // No payload since we are deleting the order
