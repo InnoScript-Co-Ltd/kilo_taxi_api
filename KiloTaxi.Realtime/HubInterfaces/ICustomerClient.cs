@@ -9,7 +9,7 @@ public interface ICustomerClient
     Task ReceiveDriverInfo(OrderDTO orderDTO, DriverInfoDTO driverDTO);
     Task  ReceiveTripBegin(OrderDTO orderDTO);
     Task ReceiveDriverArrivedLocation(OrderDTO orderDTO, DriverInfoDTO driverInfoDTO);
-
+    Task ReceiveDriverLocation(VehicleLocation vehicleLocation);
     Task ReceiveTripComplete(
         OrderFormDTO orderDTO, PromotionUsageDTO promotionUsageDTO,
         List<OrderExtraDemandDTO> orderExtraDemandDtos

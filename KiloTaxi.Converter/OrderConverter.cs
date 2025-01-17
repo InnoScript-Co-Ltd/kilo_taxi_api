@@ -1,15 +1,19 @@
 using System;
+using KiloTaxi.Common.ConfigurationSettings;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
 using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
+using Microsoft.Extensions.Options;
 
 namespace KiloTaxi.Converter
 {
     public static class OrderConverter
     {
+        private static string _mediaHostUrl="http://localhost/kilotaxi.media/";
+        
         public static OrderInfoDTO ConvertEntityToModel(Order orderEntity)
         {
             if (orderEntity == null)
@@ -34,6 +38,8 @@ namespace KiloTaxi.Converter
                 DestinationLat = orderEntity.DestinationLat,
                 DestinationLong = orderEntity.DestinationLong,
                 WalletTransactionId = orderEntity.WalletTransactionId,
+                Customer =CustomerConverter.ConvertEntityToModel(orderEntity.Customer,_mediaHostUrl),
+                Driver = DriverConverter.ConvertEntityToModel(orderEntity.Driver,_mediaHostUrl),
                 CustomerId = orderEntity.CustomerId,
                 DriverId = orderEntity.DriverId,
                 VehicleId = orderEntity.VehicleId,

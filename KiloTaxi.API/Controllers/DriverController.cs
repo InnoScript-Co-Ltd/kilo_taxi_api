@@ -350,6 +350,7 @@ public class DriverController : ControllerBase
                 return BadRequest();
             }
 
+            driverUpdateFormDto.Password = BCrypt.Net.BCrypt.HashPassword(driverUpdateFormDto.Password);
             var fileUploadHelper = new FileUploadHelper(
                 _configuration,
                 _allowedExtensions,

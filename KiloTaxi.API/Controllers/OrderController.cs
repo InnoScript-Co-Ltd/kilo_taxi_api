@@ -310,7 +310,7 @@ namespace KiloTaxi.API.Controllers
         }
 
         // Delete order
-        [HttpGet("DeleteOrder/{id}")]
+        [HttpDelete("DeleteOrder/{id}")]
         public ActionResult<ResponseDTO<OrderInfoDTO>> DeleteOrder([FromRoute] int id)
         {
             try

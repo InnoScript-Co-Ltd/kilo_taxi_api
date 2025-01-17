@@ -46,13 +46,13 @@ namespace KiloTaxi.API.Controllers
             try
             {
                 var responseDto = _adminRepository.GetAllAdmin(pageSortParam);
-
+                Console.WriteLine(responseDto.StatusCode);
                 if (responseDto?.Payload?.Admins == null || !responseDto.Payload.Admins.Any())
                 {
                     return NoContent();
                 }
 
-                return Ok(responseDto);
+                return responseDto;
             }
             catch (Exception ex)
             {

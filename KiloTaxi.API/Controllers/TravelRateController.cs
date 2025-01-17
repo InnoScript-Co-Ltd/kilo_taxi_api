@@ -1,6 +1,7 @@
 ﻿using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers;
@@ -112,7 +113,7 @@ namespace KiloTaxi.API.Controllers;
         }
 
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ResponseDTO<TravelRateDTO>> Delete(int id)
         {
             try
             {
@@ -121,8 +122,11 @@ namespace KiloTaxi.API.Controllers;
                 {
                     return NotFound();
                 }
-
-                return NoContent();
+                ResponseDTO<TravelRateDTO> responseDto = new ResponseDTO<TravelRateDTO>();
+                responseDto.StatusCode = 204;
+                responseDto.Message = "TravelRate deleted";
+                responseDto.TimeStamp = DateTime.Now;
+                return responseDto;
             }
             catch(Exception ex)
             {

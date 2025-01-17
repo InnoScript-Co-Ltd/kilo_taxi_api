@@ -2,6 +2,7 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
@@ -112,7 +113,7 @@ namespace KiloTaxi.API.Controllers
 
         // DELETE api/<SmsController>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ResponseDTO<SmsDTO>> Delete(int id)
         {
             try
             {
@@ -127,8 +128,11 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-
-                return NoContent();
+                ResponseDTO<SmsDTO> responseDto = new ResponseDTO<SmsDTO>();
+                responseDto.StatusCode = 204;
+                responseDto.Message = "Reason deleted";
+                responseDto.TimeStamp = DateTime.Now;
+                return responseDto;
             }
             catch (Exception ex)
             {

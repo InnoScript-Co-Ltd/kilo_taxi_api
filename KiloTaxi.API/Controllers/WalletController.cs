@@ -2,6 +2,7 @@
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers;
@@ -117,7 +118,7 @@ public class WalletController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public ActionResult<ResponseDTO<WalletDTO>> Delete(int id)
     {
         try
         {
@@ -132,8 +133,11 @@ public class WalletController : ControllerBase
             {
                 return StatusCode(500, "An error occurred while deleting the payment channel.");
             }
-
-            return Ok($"Payment channel with ID {id} has been successfully deleted.");
+            ResponseDTO<WalletDTO> responseDto = new ResponseDTO<WalletDTO>();
+            responseDto.StatusCode = 204;
+            responseDto.Message = "Wallet deleted";
+            responseDto.TimeStamp = DateTime.Now;
+            return responseDto;
         }
         catch (Exception ex)
         {

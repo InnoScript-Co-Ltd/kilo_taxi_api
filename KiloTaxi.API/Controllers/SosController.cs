@@ -1,6 +1,7 @@
 ﻿using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -113,7 +114,7 @@ public class SosController : ControllerBase
     }
     
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public ActionResult<ResponseDTO<SosDTO>> Delete(int id)
     {
         try
         {
@@ -128,8 +129,11 @@ public class SosController : ControllerBase
             {
                 return NotFound();
             }
-
-            return NoContent();
+            ResponseDTO<SosDTO> responseDto = new ResponseDTO<SosDTO>();
+            responseDto.StatusCode = 204;
+            responseDto.Message = "Sos deleted";
+            responseDto.TimeStamp = DateTime.Now;
+            return responseDto;
         }
         catch (Exception ex)
         {

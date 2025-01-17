@@ -35,271 +35,7 @@ public class PaymentChannelController : ControllerBase
         _paymentChannelRepository = paymentChannelRepository;
         _configuration = configuration;
     }
-
-    // GET: api/<PaymentChannelController>
     [HttpGet]
-    public ActionResult<ResponseDTO<PaymentChannelPagingDTO>> Get(
-        [FromQuery] PageSortParam pageSortParam
-    )
-    {
-        try
-        {
-            var responseDto = _paymentChannelRepository.GetAllPaymentChannels(pageSortParam);
-            if (!responseDto.Payload.PaymentChannels.Any())
-            {
-                return NoContent();
-            }
-            return responseDto;
-        }
-        catch (Exception ex)
-        {
-            _logHelper.LogError(ex, "Error occurred while fetching payment channels.");
-            return StatusCode(500, "An error occurred while processing your request.");
-        }
-    }
-
-    // GET: api/<PaymentChannelController>/5
-    [HttpGet("{id}")]
-    public ActionResult<PaymentChannelInfoDTO> Get(int id)
-    {
-        try
-        {
-            if (id == 0)
-            {
-                return BadRequest("Invalid Payment Channel ID.");
-            }
-
-            var paymentChannel = _paymentChannelRepository.GetPaymentChannelById(id);
-            if (paymentChannel == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(paymentChannel);
-        }
-        catch (Exception ex)
-        {
-            _logHelper.LogError(ex);
-            return StatusCode(500, "An error occurred while processing your request.");
-        }
-    }
-
-    // POST api/<PaymentChannelController>
-    // [HttpPost]
-    // public async Task<ActionResult<PaymentChannelDTO>> Post(PaymentChannelDTO paymentChannelDTO)
-    // {
-    //     try
-    //     {
-    //         if (!ModelState.IsValid)
-    //         {
-    //             return BadRequest(ModelState);
-    //         }
-
-    //         var fileUploadHelper = new FileUploadHelper(
-    //             _configuration,
-    //             _allowedExtensions,
-    //             _allowedMimeTypes,
-    //             _maxFileSize
-    //         );
-    //         var filesToProcess = new List<(IFormFile? File, string FilePathProperty)>
-    //         {
-    //             (paymentChannelDTO.File_Icon, nameof(paymentChannelDTO.Icon)),
-    //         };
-
-    //         foreach (var (file, filePathProperty) in filesToProcess)
-    //         {
-    //             if (
-    //                 !fileUploadHelper.ValidateFile(
-    //                     file,
-    //                     true,
-    //                     flagDomain,
-    //                     out var resolvedFilePath,
-    //                     out var errorMessage
-    //                 )
-    //             )
-    //             {
-    //                 return BadRequest(errorMessage);
-    //             }
-
-    //             var fileName = "_" + filePathProperty + resolvedFilePath;
-    //             typeof(PaymentChannelDTO)
-    //                 .GetProperty(filePathProperty)
-    //                 ?.SetValue(paymentChannelDTO, fileName);
-    //         }
-
-    //         var createdPaymentChannel = _paymentChannelRepository.CreatePaymentChannel(
-    //             paymentChannelDTO
-    //         );
-
-    //         foreach (var (file, filePathProperty) in filesToProcess)
-    //         {
-    //             if (file != null && file.Length > 0)
-    //             {
-    //                 if (
-    //                     !fileUploadHelper.ValidateFile(
-    //                         file,
-    //                         true,
-    //                         flagDomain,
-    //                         out var resolvedFilePath,
-    //                         out var errorMessage
-    //                     )
-    //                 )
-    //                 {
-    //                     return BadRequest(errorMessage);
-    //                 }
-    //                 await fileUploadHelper.SaveFileAsync(
-    //                     file,
-    //                     flagDomain,
-    //                     paymentChannelDTO.Id.ToString() + "_" + filePathProperty,
-    //                     resolvedFilePath
-    //                 );
-    //             }
-    //         }
-
-    //         return CreatedAtAction(
-    //             nameof(Get),
-    //             new { id = createdPaymentChannel.Id },
-    //             createdPaymentChannel
-    //         );
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _logHelper.LogError(ex);
-    //         return StatusCode(500, "An error occurred while processing your request.");
-    //     }
-    // }
-
-    // PUT api/<PaymentChannelController>/5
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(
-        [FromRoute] int id,
-        PaymentChannelFormDTO paymentChannelFormDTO
-    )
-    {
-        try
-        {
-            if (id != paymentChannelFormDTO.Id)
-            {
-                return BadRequest();
-            }
-
-            var fileUploadHelper = new FileUploadHelper(
-                _configuration,
-                _allowedExtensions,
-                _allowedMimeTypes,
-                _maxFileSize
-            );
-            var filesToProcess = new List<(IFormFile file, string filePathProperty)>
-            {
-                (paymentChannelFormDTO.File_Icon, nameof(paymentChannelFormDTO.Icon)),
-            };
-
-            // Validate and update file paths
-            foreach (var (file, filePathProperty) in filesToProcess)
-            {
-                if (file != null && file.Length > 0)
-                {
-                    if (
-                        !fileUploadHelper.ValidateFile(
-                            file,
-                            true,
-                            flagDomainPaymentChannel,
-                            out var resolvedFilePath,
-                            out var errorMessage
-                        )
-                    )
-                    {
-                        return BadRequest(errorMessage);
-                    }
-                    var fileName = "_" + filePathProperty + resolvedFilePath;
-                    typeof(PaymentChannelFormDTO)
-                        .GetProperty(filePathProperty)
-                        ?.SetValue(paymentChannelFormDTO, fileName);
-                }
-            }
-
-            // Update the payment channel in the repository
-
-            var isUpdated = _paymentChannelRepository.UpdatePaymentChannel(paymentChannelFormDTO);
-            if (!isUpdated)
-            {
-                return NotFound();
-            }
-
-            // Save the files
-            foreach (var (file, filePathProperty) in filesToProcess)
-            {
-                if (file != null && file.Length > 0)
-                {
-                    var fileExtension = Path.GetExtension(file.FileName);
-                    var fileName = paymentChannelFormDTO.Id.ToString() + "_" + filePathProperty;
-                    await fileUploadHelper.SaveFileAsync(
-                        file,
-                        flagDomainPaymentChannel,
-                        fileName,
-                        fileExtension
-                    );
-                }
-            }
-
-            return Ok("Payment Channel updated successfully.");
-        }
-        catch (Exception ex)
-        {
-            _logHelper.LogError(ex);
-            return StatusCode(500, "An error occurred while processing your request.");
-        }
-    }
-
-    // DELETE api/<PaymentChannelController>/5
-    [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
-    {
-        try
-        {
-            var paymentChannel = _paymentChannelRepository.GetPaymentChannelById(id);
-            if (paymentChannel == null)
-            {
-                return NotFound();
-            }
-
-            var filePaths = new List<string?> { paymentChannel.Icon };
-            foreach (var filePath in filePaths)
-            {
-                if (!filePath.Contains("default.png"))
-                {
-                    var resolvedFilePath = Path.Combine(
-                            _configuration["MediaFilePath"],
-                            flagDomainPaymentChannel,
-                            filePath.Replace(
-                                $"{_configuration["MediaHostUrl"]}{flagDomainPaymentChannel}/",
-                                ""
-                            )
-                        )
-                        .Replace('\\', '/');
-                    if (System.IO.File.Exists(resolvedFilePath))
-                    {
-                        System.IO.File.Delete(resolvedFilePath);
-                    }
-                }
-            }
-
-            var isDeleted = _paymentChannelRepository.DeletePaymentChannel(id);
-            if (!isDeleted)
-            {
-                return StatusCode(500, "An error occurred while deleting the payment channel.");
-            }
-
-            return Ok($"Payment channel with ID {id} has been successfully deleted.");
-        }
-        catch (Exception ex)
-        {
-            _logHelper.LogError(ex);
-            return StatusCode(500, "An error occurred while processing your request.");
-        }
-    }
-
-    [HttpGet("GetAllPaymentChannels")]
     public ActionResult<ResponseDTO<PaymentChannelPagingDTO>> GetAllPaymentChannels(
         [FromQuery] PageSortParam pageSortParam
     )
@@ -332,7 +68,7 @@ public class PaymentChannelController : ControllerBase
         }
     }
 
-    [HttpPost("PaymentChannelCreate")]
+    [HttpPost]
     [AllowAnonymous]
     public async Task<ActionResult<ResponseDTO<PaymentChannelInfoDTO>>> PaymentChannelCreate(
         PaymentChannelFormDTO paymentChannelFormDTO
@@ -413,7 +149,7 @@ public class PaymentChannelController : ControllerBase
 
             ResponseDTO<PaymentChannelInfoDTO> response = new ResponseDTO<PaymentChannelInfoDTO>
             {
-                StatusCode = Ok().StatusCode,
+                StatusCode = 201,
                 Message = "Payment Channel Created Successfully.",
                 Payload = registerPaymentChannel,
                 TimeStamp = DateTime.Now,
@@ -428,7 +164,7 @@ public class PaymentChannelController : ControllerBase
         }
     }
 
-    [HttpGet("GetPaymentChannelById/{id}")]
+    [HttpGet("{id}")]
     public ActionResult<ResponseDTO<PaymentChannelInfoDTO>> GetPaymentChannelById(int id)
     {
         try
@@ -460,7 +196,7 @@ public class PaymentChannelController : ControllerBase
         }
     }
 
-    [HttpPut("UpdatePaymentChannel/{id}")]
+    [HttpPut("{id}")]
     public ActionResult<ResponseDTO<PaymentChannelInfoDTO>> UpdatePaymentChannel(
         [FromRoute] int id,
         PaymentChannelFormDTO paymentChannelFormDTO
@@ -494,7 +230,7 @@ public class PaymentChannelController : ControllerBase
         }
     }
 
-    [HttpDelete("DeletePaymentChannel/{id}")]
+    [HttpDelete("{id}")]
     public ActionResult<ResponseDTO<PaymentChannelInfoDTO>> DeletePaymentChannel([FromRoute] int id)
     {
         try
@@ -510,14 +246,11 @@ public class PaymentChannelController : ControllerBase
             {
                 return NotFound();
             }
-
-            ResponseDTO<PaymentChannelInfoDTO> responseDto = new ResponseDTO<PaymentChannelInfoDTO>
-            {
-                StatusCode = 200, // OK status
-                Message = "Payment channel deleted successfully.",
-            };
-
-            return Ok(responseDto);
+            ResponseDTO<PaymentChannelInfoDTO> responseDto = new ResponseDTO<PaymentChannelInfoDTO>();
+            responseDto.StatusCode = 204;
+            responseDto.Message = "Payment channel deleted successfully.";
+            responseDto.TimeStamp = DateTime.Now;
+            return responseDto;
         }
         catch (Exception ex)
         {

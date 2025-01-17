@@ -283,8 +283,8 @@ namespace KiloTaxi.API.Controllers
         }
 
         // DELETE api/<CustomerController>/5
-        [HttpDelete("{id}")]
-        public ActionResult Delete([FromRoute] int id)
+       [HttpDelete("{id}")]
+        public ActionResult<ResponseDTO<CustomerInfoDTO>> DeleteCustomer([FromRoute] int id)
         {
             try
             {
@@ -293,12 +293,14 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
+
                 var filePaths = new List<string?>
                 {
                     // deleteEntity.NrcImageFront,
                     // deleteEntity.NrcImageBack,
                     deleteEntity.Profile,
                 };
+
                 foreach (var filePath in filePaths)
                 {
                     if (!filePath.Contains("default.png"))
@@ -318,12 +320,24 @@ namespace KiloTaxi.API.Controllers
                         }
                     }
                 }
+
                 var result = _customerRepository.DeleteCustomer(deleteEntity.Id);
                 if (!result)
                 {
                     return NotFound();
                 }
-                return NoContent();
+
+                // Return a response with a success message
+                ResponseDTO<CustomerInfoDTO> responseDto = new ResponseDTO<CustomerInfoDTO>
+                {
+                    StatusCode = 204, // OK status
+                    Message = "Customer Info Deleted Successfully.",
+                    Payload =
+                        null // No payload since we are deleting the customer
+                    ,
+                };
+
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {

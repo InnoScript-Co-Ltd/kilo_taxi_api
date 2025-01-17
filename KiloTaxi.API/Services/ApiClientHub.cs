@@ -143,7 +143,7 @@ public class ApiClientHub : IDisposable
                 var orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
                 var driverInfoDTO = driverRepository.GetDriverById(driverID);
                 orderFormDTO.Status = Common.Enums.OrderStatus.InProgress;
-
+                orderFormDTO.DriverId = driverInfoDTO.Id;
                 orderRepository.UpdateOrder(orderFormDTO);
                 if (_hubConnection.State == HubConnectionState.Connected)
                 {

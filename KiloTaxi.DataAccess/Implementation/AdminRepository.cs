@@ -137,6 +137,7 @@ namespace KiloTaxi.DataAccess.Implementation
                 var adminEntity = _dbKiloTaxiContext.Admins.FirstOrDefault(admin =>
                     admin.Id == adminFormDTO.Id
                 );
+                adminFormDTO.Password=BCrypt.Net.BCrypt.HashPassword(adminFormDTO.Password);
                 if (adminEntity == null)
                 {
                     return false;
