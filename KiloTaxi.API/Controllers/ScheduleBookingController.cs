@@ -32,7 +32,7 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NoContent();
                 }
-                return Ok(responseDto);
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -93,7 +93,7 @@ namespace KiloTaxi.API.Controllers
                 
                 var response = new ResponseDTO<ScheduleBookingInfoDTO>
                 {
-                    StatusCode = Ok().StatusCode,
+                    StatusCode = 201,
                     Message = "schedule booking Register Success.",
                     TimeStamp = DateTime.Now,
                     Payload = createdScheduleBooking,
@@ -160,7 +160,7 @@ namespace KiloTaxi.API.Controllers
 
                 ResponseDTO<ScheduleBookingInfoDTO> responseDto = new ResponseDTO<ScheduleBookingInfoDTO>
                 {
-                    StatusCode = 200,
+                    StatusCode = 204,
                     Message = "schedule booking Deleted Successfully.",
                     TimeStamp = DateTime.Now,
                     Payload = null,

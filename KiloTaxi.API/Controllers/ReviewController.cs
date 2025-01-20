@@ -87,7 +87,7 @@ namespace KiloTaxi.API.Controllers
                 
                 var response = new ResponseDTO<ReviewInfoDTO>
                 {
-                    StatusCode = Ok().StatusCode,
+                    StatusCode = 201,
                     Message = "review Register Success.",
                     Payload = createdReview,
                     TimeStamp = DateTime.Now,
@@ -153,7 +153,7 @@ namespace KiloTaxi.API.Controllers
 
                 ResponseDTO<ReviewInfoDTO> responseDto = new ResponseDTO<ReviewInfoDTO>
                 {
-                    StatusCode = 200,
+                    StatusCode = 204,
                     Message = "review Deleted Successfully.",
                     TimeStamp = DateTime.Now,
                     Payload = null,

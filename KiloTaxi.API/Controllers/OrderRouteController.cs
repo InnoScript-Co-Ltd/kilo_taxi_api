@@ -90,7 +90,7 @@ namespace KiloTaxi.API.Controllers
                 
                 var response = new ResponseDTO<OrderRouteInfoDTO>
                 {
-                    StatusCode = Ok().StatusCode,
+                    StatusCode = 201,
                     Message = "order route Register Success.",
                     TimeStamp = DateTime.Now,
                     Payload = createdOrderRoute,
@@ -157,7 +157,7 @@ namespace KiloTaxi.API.Controllers
 
                 ResponseDTO<OrderRouteInfoDTO> responseDto = new ResponseDTO<OrderRouteInfoDTO>
                 {
-                    StatusCode = 200,
+                    StatusCode = 204,
                     Message = "order route Deleted Successfully.",
                     TimeStamp = DateTime.Now,
                     Payload = null,

@@ -698,7 +698,7 @@ public class DriverController : ControllerBase
             // Return a response with a success message
             ResponseDTO<DriverInfoDTO> responseDto = new ResponseDTO<DriverInfoDTO>
             {
-                StatusCode = 200, // OK status
+                StatusCode = 204, // OK status
                 Message = "Driver Info Deleted Successfully.",
                 Payload =
                     null // No payload since we are deleting the driver

@@ -90,7 +90,7 @@ namespace KiloTaxi.API.Controllers
                 
                 var response = new ResponseDTO<VehicleTypeInfoDTO>
                 {
-                    StatusCode = Ok().StatusCode,
+                    StatusCode = 201,
                     Message = "vehicle type Register Success.",
                     Payload = createdVehicleType,
                     TimeStamp = DateTime.Now,
@@ -157,7 +157,7 @@ namespace KiloTaxi.API.Controllers
 
                 ResponseDTO<VehicleTypeInfoDTO> responseDto = new ResponseDTO<VehicleTypeInfoDTO>
                 {
-                    StatusCode = 200,
+                    StatusCode = 204,
                     Message = "vehicle type Deleted Successfully.",
                     TimeStamp = DateTime.Now,
                     Payload = null,

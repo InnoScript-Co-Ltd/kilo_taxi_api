@@ -83,7 +83,7 @@ public class SosController : ControllerBase
 
             var response = new ResponseDTO<SosInfoDTO>
             {
-                StatusCode = Ok().StatusCode,
+                StatusCode = 201,
                 Message = "sos Register Success.",
                 Payload = createdSos,
                 TimeStamp = DateTime.Now,
@@ -152,7 +152,7 @@ public class SosController : ControllerBase
 
             ResponseDTO<SosInfoDTO> responseDto = new ResponseDTO<SosInfoDTO>
             {
-                StatusCode = 200,
+                StatusCode = 204,
                 Message = "sos Deleted Successfully.",
                 Payload = null,
             };

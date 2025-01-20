@@ -87,7 +87,7 @@ namespace KiloTaxi.API.Controllers
                 
                 var response = new ResponseDTO<ReasonInfoDTO>
                 {
-                    StatusCode = Ok().StatusCode,
+                    StatusCode = 201,
                     Message = "Reason Register Success.",
                     Payload = createdReason,
                     TimeStamp = DateTime.Now,
@@ -153,7 +153,7 @@ namespace KiloTaxi.API.Controllers
 
                 ResponseDTO<ReasonInfoDTO> responseDto = new ResponseDTO<ReasonInfoDTO>
                 {
-                    StatusCode = 200,
+                    StatusCode = 204,
                     Message = "Reason Deleted Successfully.",
                     Payload = null,
                 };

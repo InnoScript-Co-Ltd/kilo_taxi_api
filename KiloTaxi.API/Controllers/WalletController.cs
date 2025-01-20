@@ -88,7 +88,7 @@ public class WalletController : ControllerBase
             
             var response = new ResponseDTO<WalletInfoDTO>
             {
-                StatusCode = Ok().StatusCode,
+                StatusCode = 201,
                 Message = "wallet Register Success.",
                 Payload = createdWallet,
                 TimeStamp = DateTime.Now,
@@ -157,7 +157,7 @@ public class WalletController : ControllerBase
 
             ResponseDTO<WalletInfoDTO> responseDto = new ResponseDTO<WalletInfoDTO>
             {
-                StatusCode = 200,
+                StatusCode = 204,
                 Message = "wallet Deleted Successfully.",
                 Payload = null,
             };

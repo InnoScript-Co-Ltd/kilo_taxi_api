@@ -22,9 +22,9 @@ public static class TravelRateConverter
             Unit = travelRateEntity.Unit,
             Rate = travelRateEntity.Rate,
             CityId = travelRateEntity.CityId,
-            CityName = travelRateEntity.City.Name,
+            CityName = travelRateEntity.City?.Name ?? null,
             VehicleTypeId = travelRateEntity.VehicleTypeId,
-            VehicleTypeName = travelRateEntity.VehicleType.Name,
+            VehicleTypeName = travelRateEntity.VehicleType?.Name ?? null,
                
         };
     }

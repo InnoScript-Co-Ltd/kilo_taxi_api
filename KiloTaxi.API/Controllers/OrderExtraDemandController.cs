@@ -87,7 +87,7 @@ namespace KiloTaxi.API.Controllers
 
                 var createdOrderExtraDemand = _orderExtraDemandRepository.CreateOrderExtraDemand(orderExtraDemandDTOList);
                 ResponseDTO<OrderExtraDemandDTO>response=new ResponseDTO<OrderExtraDemandDTO>();
-                response.StatusCode = Ok().StatusCode;
+                response.StatusCode = 201;
                 response.Message = "OrderExtraDemand created Success.";
                 response.TimeStamp=DateTime.Now;
                 response.PayloadList = createdOrderExtraDemand;
@@ -153,7 +153,7 @@ namespace KiloTaxi.API.Controllers
 
                 ResponseDTO<OrderExtraDemandInfoDTO> responseDto = new ResponseDTO<OrderExtraDemandInfoDTO>
                 {
-                    StatusCode = 200,
+                    StatusCode = 204,
                     Message = "order extra demand Info Deleted Successfully.",
                     TimeStamp = DateTime.Now,
                     Payload = null,

@@ -164,7 +164,7 @@ public class PaymentChannelController : ControllerBase
             
             var response = new ResponseDTO<PaymentChannelInfoDTO>
             {
-                StatusCode = Ok().StatusCode,
+                StatusCode = 201,
                 Message = "Payment Channel Register Success.",
                 Payload = createdPaymentChannel,
                 TimeStamp = DateTime.Now,

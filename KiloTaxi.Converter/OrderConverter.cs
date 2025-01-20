@@ -38,11 +38,15 @@ namespace KiloTaxi.Converter
                 DestinationLat = orderEntity.DestinationLat,
                 DestinationLong = orderEntity.DestinationLong,
                 WalletTransactionId = orderEntity.WalletTransactionId,
-                Customer =CustomerConverter.ConvertEntityToModel(orderEntity.Customer,_mediaHostUrl),
-                Driver = DriverConverter.ConvertEntityToModel(orderEntity.Driver,_mediaHostUrl),
                 CustomerId = orderEntity.CustomerId,
                 DriverId = orderEntity.DriverId,
                 VehicleId = orderEntity.VehicleId,
+                Customer = orderEntity.Customer != null
+                    ? CustomerConverter.ConvertEntityToModel(orderEntity.Customer,_mediaHostUrl)
+                    : null,
+                Driver = orderEntity.Driver != null
+                    ? DriverConverter.ConvertEntityToModel(orderEntity.Driver,_mediaHostUrl)
+                    : null,
                 ScheduleBookingId = orderEntity.ScheduleBookingId,
                 EstimatedAmount = orderEntity.EstimatedAmount,
                 Status = Enum.Parse<OrderStatus>(orderEntity.Status),

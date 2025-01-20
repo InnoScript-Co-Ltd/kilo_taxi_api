@@ -32,6 +32,48 @@ namespace KiloTaxi.EntityFramework.Data
                 context.Wallets.AddRange(wallets);
                 context.SaveChanges();            
             }
+            // if (!context.Orders.Any())
+            // {
+            //     Order[] orders = new Order[]
+            //     {
+            //         new Order {Id = 999,EstimatedAmount= 8500,Status=OrderStatus.Pending.ToString(),PickUpLocation="Lanmadaw",
+            //             PickUpLat="16.7722",PickUpLong = "96.1489",DestinationLocation = "Hledan",DestinationLat = "16.8245",DestinationLong = "96.1385",CustomerId = 1,CreatedDate = DateTime.Now},
+            //     };
+            //     context.Orders.AddRange(orders);
+            //     context.SaveChanges();            
+            // }
+            if (!context.OrderRoutes.Any())
+            {
+                OrderRoute[] orderRoutes = new OrderRoute[]
+                {
+                    new OrderRoute {Lat = "16.7722",Long = "96.1489",OrderId = 2,CreateDate = DateTime.Now},
+                    new OrderRoute { Lat= "16.7765", Long= "96.1472",OrderId = 2,CreateDate = DateTime.Now}, 
+                    new OrderRoute { Lat= "16.7840", Long = "96.1435",OrderId = 2,CreateDate = DateTime.Now }, 
+                    new OrderRoute  { Lat="16.7956", Long ="96.1413",OrderId = 2,CreateDate = DateTime.Now },
+                    new OrderRoute  { Lat= "16.8120", Long = "96.1400" ,OrderId = 2,CreateDate = DateTime.Now}, 
+                    new OrderRoute { Lat= "16.8245", Long = "96.1385" ,OrderId = 2,CreateDate = DateTime.Now} 
+                };
+                context.OrderRoutes.AddRange(orderRoutes);
+                context.SaveChanges();            
+            }
+            if (!context.KiloAmounts.Any())
+            {
+                KiloAmount[] kiloAmounts = new KiloAmount[]
+                {
+                    new KiloAmount {Kilo = 1,Amount = 1000},
+                };
+                context.KiloAmounts.AddRange(kiloAmounts);
+                context.SaveChanges();            
+            }
+            if (!context.WaitingDefaults.Any())
+            {
+                WaitingDefault[] waitingDefaults = new WaitingDefault[]
+                {
+                    new WaitingDefault {DefaultTime = 10},
+                };
+                context.WaitingDefaults.AddRange(waitingDefaults);
+                context.SaveChanges();            
+            }
         }
     }
 }

@@ -43,6 +43,35 @@ public class DriverRepository : IDriverRepository
                     || p.Email.Contains(pageSortParam.SearchTerm)
                 );
             }
+            if (pageSortParam.Id.HasValue)
+            {
+                query = query.Where(p => p.Id == pageSortParam.Id.Value);
+            }
+            if (!string.IsNullOrEmpty(pageSortParam.Phone))
+            {
+                query = query.Where(p => p.Phone.Contains(pageSortParam.Phone));
+            }
+
+            if (pageSortParam.RegisterFrom.HasValue)
+            {
+                query = query.Where(p => p.CreatedDate >= pageSortParam.RegisterFrom.Value);
+            }
+
+            if (!string.IsNullOrEmpty(pageSortParam.Township))
+            {
+                query = query.Where(p => p.TownShip.Contains(pageSortParam.Township));
+            }
+
+            if (!string.IsNullOrEmpty(pageSortParam.City))
+            {
+                query = query.Where(p => p.City.Contains(pageSortParam.City));
+            }
+
+            if (!string.IsNullOrEmpty(pageSortParam.Status))
+            {
+                query = query.Where(p => p.Status.Contains(pageSortParam.Status));
+            }
+
 
             int totalCount = query.Count();
             if (!string.IsNullOrEmpty(pageSortParam.SortField))
@@ -65,7 +94,7 @@ public class DriverRepository : IDriverRepository
                         ) ?? Enumerable.Empty<Driver>().AsQueryable()
                     );
             }
-
+        
             if (query.Count() > pageSortParam.PageSize)
             {
                 query = query

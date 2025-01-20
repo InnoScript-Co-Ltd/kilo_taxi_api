@@ -51,7 +51,10 @@ namespace KiloTaxi.DataAccess.Implementation
                         || customer.Phone.Contains(pageSortParam.SearchTerm)
                     );
                 }
-
+                if (!string.IsNullOrEmpty(pageSortParam.Status))
+                {
+                    query = query.Where(p => p.Status.Contains(pageSortParam.Status));
+                }
                 int totalCount = query.Count();
 
                 if (!string.IsNullOrEmpty(pageSortParam.SortField))

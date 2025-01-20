@@ -75,7 +75,7 @@ public class TopUpTransactionController : ControllerBase
             
             var response = new ResponseDTO<TopUpTransactionInfoDTO>
             {
-                StatusCode = Ok().StatusCode,
+                StatusCode = 201,
                 Message = "Topup Transaction Register Success.",
                 Payload = createdTransaction,
                 TimeStamp = DateTime.Now,

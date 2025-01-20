@@ -64,7 +64,7 @@ namespace KiloTaxi.API.Controllers;
                     Message = "travel rate retrieved successfully.",
                     Payload = result,
                 };
-                return Ok(responseDto);
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -87,7 +87,7 @@ namespace KiloTaxi.API.Controllers;
                 
                 var response = new ResponseDTO<TravelRateInfoDTO>
                 {
-                    StatusCode = Ok().StatusCode,
+                    StatusCode = 201,
                     Message = "travel rate Register Success.",
                     Payload = createdTravelRate,
                     TimeStamp = DateTime.Now,
@@ -148,7 +148,7 @@ namespace KiloTaxi.API.Controllers;
 
                 ResponseDTO<TravelRateInfoDTO> responseDto = new ResponseDTO<TravelRateInfoDTO>
                 {
-                    StatusCode = 200,
+                    StatusCode = 204,
                     Message = "travel rate Deleted Successfully.",
                     Payload = null,
                 };

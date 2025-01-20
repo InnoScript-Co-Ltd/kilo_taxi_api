@@ -89,7 +89,7 @@ namespace KiloTaxi.API.Controllers
                 
                 var response = new ResponseDTO<SmsInfoDTO>
                 {
-                    StatusCode = Ok().StatusCode,
+                    StatusCode = 201,
                     Message = "sms Register Success.",
                     Payload = createdSms,
                     TimeStamp = DateTime.Now,
@@ -155,7 +155,7 @@ namespace KiloTaxi.API.Controllers
 
                 ResponseDTO<SmsInfoDTO> responseDto = new ResponseDTO<SmsInfoDTO>
                 {
-                    StatusCode = 200,
+                    StatusCode = 204,
                     Message = "sms Deleted Successfully.",
                     TimeStamp = DateTime.Now,
                     Payload = null,

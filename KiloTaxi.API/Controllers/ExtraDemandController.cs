@@ -89,7 +89,7 @@ namespace KiloTaxi.API.Controllers
                 
                 var response = new ResponseDTO<ExtraDemandInfoDTO>
                 {
-                    StatusCode = Ok().StatusCode,
+                    StatusCode = 201,
                     Message = "extra demand Register Success.",
                     TimeStamp = DateTime.Now,
                     Payload = createdExtraDemand,

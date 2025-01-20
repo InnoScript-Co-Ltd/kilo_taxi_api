@@ -90,7 +90,7 @@ namespace KiloTaxi.API.Controllers
                 
                 var response = new ResponseDTO<OrderExtendInfoDTO>
                 {
-                    StatusCode = Ok().StatusCode,
+                    StatusCode = 201,
                     Message = "order extend Register Success.",
                     TimeStamp = DateTime.Now,
                     Payload = createdOrderExtend,
@@ -157,7 +157,7 @@ namespace KiloTaxi.API.Controllers
 
                 ResponseDTO<OrderExtendInfoDTO> responseDto = new ResponseDTO<OrderExtendInfoDTO>
                 {
-                    StatusCode = 200,
+                    StatusCode = 204,
                     Message = "order extend Deleted Successfully.",
                     TimeStamp = DateTime.Now,
                     Payload = null,

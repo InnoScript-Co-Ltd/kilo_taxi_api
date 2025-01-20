@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Net;
+using KiloTaxi.Common.ConfigurationSettings;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
@@ -9,6 +10,7 @@ using KiloTaxi.Model.DTO;
 using KiloTaxi.Model.DTO.Request;
 using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace KiloTaxi.DataAccess.Implementation;
 
@@ -17,9 +19,11 @@ public class PaymentChannelRepository : IPaymentChannelRepository
     private readonly DbKiloTaxiContext _dbContext;
     private string _mediaHostUrl;
 
-    public PaymentChannelRepository(DbKiloTaxiContext dbContext)
+    public PaymentChannelRepository(DbKiloTaxiContext dbContext,IOptions<MediaSettings> mediaSettings)
     {
         _dbContext = dbContext;
+        _mediaHostUrl = mediaSettings.Value.MediaHostUrl;
+
     }
 
     public PaymentChannelInfoDTO CreatePaymentChannel(PaymentChannelFormDTO paymentChannelFormDTO)

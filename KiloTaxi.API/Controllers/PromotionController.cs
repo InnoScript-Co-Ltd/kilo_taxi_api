@@ -91,7 +91,7 @@ namespace KiloTaxi.API.Controllers
                 
                 var response = new ResponseDTO<PromotionInfoDTO>
                 {
-                    StatusCode = Ok().StatusCode,
+                    StatusCode = 201,
                     Message = "promotion Register Success.",
                     TimeStamp = DateTime.Now,
                     Payload = createdPromotion,
@@ -158,7 +158,7 @@ namespace KiloTaxi.API.Controllers
 
                 ResponseDTO<PromotionInfoDTO> responseDto = new ResponseDTO<PromotionInfoDTO>
                 {
-                    StatusCode = 200,
+                    StatusCode = 204,
                     Message = "promotion Deleted Successfully.",
                     TimeStamp = DateTime.Now,
                     Payload = null,
