@@ -182,8 +182,11 @@ namespace KiloTaxi.DataAccess.Implementation
                 var orderDTO = OrderConverter.ConvertEntityToModel(
                     _dbKiloTaxiContext.Orders.FirstOrDefault(order => order.Id == id)
                 );
-                var orderRouteDTO=OrderRouteConverter.ConvertEntityToModel(_dbKiloTaxiContext.OrderRoutes.FirstOrDefault(o=>o.OrderId == id));
-                orderDTO.OrderRouteInfo = orderRouteDTO;
+                var orderRouteList = _dbKiloTaxiContext.OrderRoutes.Where(o => o.OrderId == id).ToList();
+                orderDTO.OrderRouteInfo = orderRouteList
+                    .Select(orderRoute => OrderRouteConverter.ConvertEntityToModel(orderRoute))
+                    .ToList();
+
                 if (orderDTO == null)
                 {
                     LoggerHelper.Instance.LogError($"Order with Id: {id} not found.");

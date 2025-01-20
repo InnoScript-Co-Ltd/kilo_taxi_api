@@ -27,7 +27,7 @@ namespace KiloTaxi.Model.DTO.Response
 
         public int? VehicleId { get; set; }
         public IEnumerable<VehicleInfoDTO> VehicleInfo { get; set; }
-        public OrderRouteInfoDTO? OrderRouteInfo { get; set; }
+        public List<OrderRouteInfoDTO>? OrderRouteInfo { get; set; }
         public int? ScheduleBookingId { get; set; }
         public ScheduleBookingDTO ScheduleBooking { get; set; }
 
