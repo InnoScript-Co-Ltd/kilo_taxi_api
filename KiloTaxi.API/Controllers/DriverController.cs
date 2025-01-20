@@ -1,4 +1,5 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Net;
+using System.Net.NetworkInformation;
 using KiloTaxi.API.Helper.FileHelpers;
 using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
@@ -480,20 +481,19 @@ public class DriverController : ControllerBase
     }
 
     [HttpGet("GetAllDrivers")]
-    public ActionResult<ResponseDTO<DriverPagingDTO>> GetAllDrivers(
-        [FromQuery] PageSortParam pageSortParam
-    )
+    public ActionResult GetAllDrivers([FromQuery] PageSortParam pageSortParam)
     {
         try
         {
             var responseDto = _driverRepository.GetAllDrivers(pageSortParam);
 
+            // If no drivers are found, return an empty array
             if (responseDto?.Payload?.Drivers == null || !responseDto.Payload.Drivers.Any())
             {
-                return NoContent();
+                return Ok(new List<DriverInfoDTO>());
             }
 
-            return Ok(responseDto);
+            return Ok(responseDto.Payload.Drivers);
         }
         catch (Exception ex)
         {

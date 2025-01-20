@@ -11,7 +11,7 @@ namespace KiloTaxi.Model.DTO
         public string VehicleId { get; set; }
         public string Lat { get; set; }
         public string? Long { get; set; }
-        public DateTime? TimeStamp {get;set;} 
+        public string? TimeStamp {get;set;} 
         public double?  Accuracy { get; set; }
         public double? Altitude {get;set;}
         public double? AltitudeAccuracy{get;set;}
