@@ -2,12 +2,14 @@ using System;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class OrderExtendConverter
     {
-        public static OrderExtendDTO ConvertEntityToModel(OrderExtend orderExtendEntity)
+        public static OrderExtendInfoDTO ConvertEntityToModel(OrderExtend orderExtendEntity)
         {
             if (orderExtendEntity == null)
             {
@@ -21,7 +23,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new OrderExtendDTO()
+            return new OrderExtendInfoDTO()
             {
                 Id = orderExtendEntity.Id,
                 DestinationLocation = orderExtendEntity.DestinationLocation,
@@ -33,21 +35,21 @@ namespace KiloTaxi.Converter
         }
 
         public static void ConvertModelToEntity(
-            OrderExtendDTO orderExtendDTO,
+            OrderExtendFormDTO orderExtendFormDTO,
             ref OrderExtend orderExtendEntity
         )
         {
             try
             {
-                if (orderExtendDTO == null)
+                if (orderExtendFormDTO == null)
                 {
                     LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(orderExtendDTO)),
-                        "OrderExtendDTO is null"
+                        new ArgumentNullException(nameof(orderExtendFormDTO)),
+                        "OrderExtendFormDTO is null"
                     );
                     throw new ArgumentNullException(
-                        nameof(orderExtendDTO),
-                        "Source orderExtendDTO cannot be null"
+                        nameof(orderExtendFormDTO),
+                        "Source orderExtendFormDTO cannot be null"
                     );
                 }
 
@@ -63,12 +65,12 @@ namespace KiloTaxi.Converter
                     );
                 }
 
-                orderExtendEntity.Id = orderExtendDTO.Id;
-                orderExtendEntity.DestinationLocation = orderExtendDTO.DestinationLocation;
-                orderExtendEntity.DestinationLat = orderExtendDTO.DestinationLat;
-                orderExtendEntity.DestinationLong = orderExtendDTO.DestinationLong;
-                orderExtendEntity.CreateDate = orderExtendDTO.CreateDate;
-                orderExtendEntity.OrderId = orderExtendDTO.OrderId;
+                orderExtendEntity.Id = orderExtendFormDTO.Id;
+                orderExtendEntity.DestinationLocation = orderExtendFormDTO.DestinationLocation;
+                orderExtendEntity.DestinationLat = orderExtendFormDTO.DestinationLat;
+                orderExtendEntity.DestinationLong = orderExtendFormDTO.DestinationLong;
+                orderExtendEntity.CreateDate = orderExtendFormDTO.CreateDate;
+                orderExtendEntity.OrderId = orderExtendFormDTO.OrderId;
             }
             catch (Exception ex)
             {

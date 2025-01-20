@@ -1,6 +1,8 @@
 ﻿using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,20 +20,17 @@ public class SosController : ControllerBase
         _logHelper = LoggerHelper.Instance;
         _sosRepository = sosRepository;
     }
-
     [HttpGet]
-    public ActionResult<IEnumerable<SosPagingDTO>> GetSosList(
-        [FromQuery] PageSortParam pageSortParam
-    )
+    public ActionResult<ResponseDTO<SosPagingDTO>> GetSosList([FromQuery] PageSortParam pageSortParam)
     {
         try
         {
-            SosPagingDTO sosPagingDto = _sosRepository.GetAllSosList(pageSortParam);
-            if (!sosPagingDto.Sos.Any())
+            var responseDto = _sosRepository.GetAllSosList(pageSortParam);
+            if (!responseDto.Payload.Sos.Any())
             {
                 return NoContent();
             }
-            return Ok(sosPagingDto);
+            return Ok(responseDto);
         }
         catch (Exception ex)
         {
@@ -39,9 +38,8 @@ public class SosController : ControllerBase
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }
-
     [HttpGet("{id}")]
-    public ActionResult<SosDTO> Get(int id)
+    public ActionResult<ResponseDTO<SosInfoDTO>> Get(int id)
     {
         try
         {
@@ -56,7 +54,13 @@ public class SosController : ControllerBase
                 return NotFound();
             }
 
-            return Ok(sos);
+            ResponseDTO<SosInfoDTO> responseDto = new ResponseDTO<SosInfoDTO>
+            {
+                StatusCode = Ok().StatusCode,
+                Message = "sos retrieved successfully.",
+                Payload = sos,
+            };
+            return Ok(responseDto);
         }
         catch (Exception ex)
         {
@@ -64,9 +68,9 @@ public class SosController : ControllerBase
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }
-
+    
     [HttpPost]
-    public ActionResult<SosDTO> Create([FromBody] SosDTO sosDTO)
+    public ActionResult<ResponseDTO<SosInfoDTO>> Create([FromBody] SosFormDTO sosFormDTO)
     {
         try
         {
@@ -75,9 +79,16 @@ public class SosController : ControllerBase
                 return BadRequest(ModelState);
             }
 
-            var createdSos = _sosRepository.CreateSos(sosDTO);
+            var createdSos = _sosRepository.CreateSos(sosFormDTO);
 
-            return CreatedAtAction(nameof(Get), new { id = createdSos.Id }, createdSos);
+            var response = new ResponseDTO<SosInfoDTO>
+            {
+                StatusCode = 201,
+                Message = "sos Register Success.",
+                Payload = createdSos,
+                TimeStamp = DateTime.Now,
+            };
+            return response;
         }
         catch (Exception ex)
         {
@@ -85,13 +96,13 @@ public class SosController : ControllerBase
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }
-
+    
     [HttpPut("{id}")]
-    public ActionResult Put([FromRoute] int id, SosDTO sosDTO)
+    public  ActionResult<ResponseDTO<SosInfoDTO>> Put([FromRoute] int id, SosFormDTO sosFormDTO)
     {
         try
         {
-            if (id != sosDTO.Id)
+            if (id != sosFormDTO.Id)
             {
                 return BadRequest("Sos ID mismatch.");
             }
@@ -101,13 +112,19 @@ public class SosController : ControllerBase
                 return BadRequest(ModelState);
             }
 
-            var isUpdated = _sosRepository.UpdateSos(sosDTO);
+            var isUpdated = _sosRepository.UpdateSos(sosFormDTO);
             if (!isUpdated)
             {
                 return NotFound();
             }
 
-            return Ok("Sos updated successfully.");
+            ResponseDTO<SosInfoDTO> responseDto = new ResponseDTO<SosInfoDTO>
+            {
+                StatusCode = 200,
+                Message = "sos Updated Successfully.",
+                Payload = null,
+            };
+            return Ok(responseDto);
         }
         catch (Exception ex)
         {
@@ -115,9 +132,9 @@ public class SosController : ControllerBase
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }
-
+    
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public ActionResult<ResponseDTO<SosInfoDTO>> Delete(int id)
     {
         try
         {
@@ -133,7 +150,13 @@ public class SosController : ControllerBase
                 return NotFound();
             }
 
-            return NoContent();
+            ResponseDTO<SosInfoDTO> responseDto = new ResponseDTO<SosInfoDTO>
+            {
+                StatusCode = 204,
+                Message = "sos Deleted Successfully.",
+                Payload = null,
+            };
+            return Ok(responseDto);
         }
         catch (Exception ex)
         {

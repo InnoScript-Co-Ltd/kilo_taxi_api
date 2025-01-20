@@ -14,6 +14,6 @@ public interface IApiHub
 
     Task SendTripBeginToCustomer(OrderDTO order);
 
-    Task NotifyCustomerTripComplete(OrderFormDTO orderDTO, PromotionUsageDTO promotionUsageDTO,
+    Task NotifyCustomerTripComplete(OrderFormDTO orderDTO, PromotionUsageInfoDTO promotionUsageDTO,
         List<OrderExtraDemandDTO> orderExtraDemandDtos);
 }

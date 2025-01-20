@@ -2,12 +2,14 @@ using System;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class OrderExtraDemandConverter
     {
-        public static OrderExtraDemandDTO ConvertEntityToModel(OrderExtraDemand orderExtraDemandEntity)
+        public static OrderExtraDemandInfoDTO ConvertEntityToModel(OrderExtraDemand orderExtraDemandEntity)
         {
             if (orderExtraDemandEntity == null)
             {
@@ -21,7 +23,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new OrderExtraDemandDTO()
+            return new OrderExtraDemandInfoDTO()
             {
                 Id = orderExtraDemandEntity.Id,
                 OrderId = orderExtraDemandEntity.OrderId,
@@ -41,7 +43,7 @@ namespace KiloTaxi.Converter
                 {
                     LoggerHelper.Instance.LogError(
                         new ArgumentNullException(nameof(orderExtraDemandDTO)),
-                        "OrderExtraDemandDTO is null"
+                        "OrderExtraDemandFormDTO is null"
                     );
                     throw new ArgumentNullException(
                         nameof(orderExtraDemandDTO),

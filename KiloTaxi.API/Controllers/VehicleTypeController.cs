@@ -2,6 +2,8 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
@@ -21,17 +23,17 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<VehicleTypeController>
         [HttpGet]
-        public ActionResult<VehicleTypePagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ResponseDTO<VehicleTypePagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                VehicleTypePagingDTO vehicleTypePagingDTO =
+                var responseDto =
                     _vehicleTypeRepository.GetAllVehicleTypes(pageSortParam);
-                if (!vehicleTypePagingDTO.VehicleTypes.Any())
+                if (!responseDto.Payload.VehicleTypes.Any())
                 {
                     return NoContent();
                 }
-                return Ok(vehicleTypePagingDTO);
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -42,7 +44,7 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<VehicleTypeController>/5
         [HttpGet("{id}")]
-        public ActionResult<VehicleTypeDTO> Get(int id)
+        public ActionResult<ResponseDTO<VehicleTypeInfoDTO>> Get(int id)
         {
             try
             {
@@ -56,7 +58,15 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(result);
+                
+                ResponseDTO<VehicleTypeInfoDTO> responseDto = new ResponseDTO<VehicleTypeInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "vehicle type retrieved successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = result,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -67,21 +77,25 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<VehicleTypeController>
         [HttpPost]
-        public ActionResult<VehicleTypeDTO> Post([FromBody] VehicleTypeDTO vehicleTypeDTO)
+        public ActionResult<ResponseDTO<VehicleTypeInfoDTO>> Post([FromBody] VehicleTypeFormDTO vehicleTypeFormDTO)
         {
             try
             {
-                if (vehicleTypeDTO == null)
+                if (vehicleTypeFormDTO == null)
                 {
                     return BadRequest();
                 }
 
-                var createdVehicleType = _vehicleTypeRepository.AddVehicleType(vehicleTypeDTO);
-                return CreatedAtAction(
-                    nameof(Get),
-                    new { id = createdVehicleType.Id },
-                    createdVehicleType
-                );
+                var createdVehicleType = _vehicleTypeRepository.AddVehicleType(vehicleTypeFormDTO);
+                
+                var response = new ResponseDTO<VehicleTypeInfoDTO>
+                {
+                    StatusCode = 201,
+                    Message = "vehicle type Register Success.",
+                    Payload = createdVehicleType,
+                    TimeStamp = DateTime.Now,
+                };
+                return response;
             }
             catch (Exception ex)
             {
@@ -92,21 +106,29 @@ namespace KiloTaxi.API.Controllers
 
         // PUT api/<VehicleTypeController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] VehicleTypeDTO vehicleTypeDTO)
+        public ActionResult<ResponseDTO<VehicleTypeInfoDTO>> Put(int id, [FromBody] VehicleTypeFormDTO vehicleTypeFormDTO)
         {
             try
             {
-                if (vehicleTypeDTO == null || id != vehicleTypeDTO.Id)
+                if (vehicleTypeFormDTO == null || id != vehicleTypeFormDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _vehicleTypeRepository.UpdateVehicleType(vehicleTypeDTO);
+                var result = _vehicleTypeRepository.UpdateVehicleType(vehicleTypeFormDTO);
                 if (!result)
                 {
                     return NotFound();
                 }
-                return Ok();
+                
+                ResponseDTO<VehicleTypeInfoDTO> responseDto = new ResponseDTO<VehicleTypeInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "vehicle type Updated Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -117,7 +139,7 @@ namespace KiloTaxi.API.Controllers
 
         // DELETE api/<VehicleTypeController>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ResponseDTO<VehicleTypeInfoDTO>> Delete(int id)
         {
             try
             {
@@ -133,7 +155,14 @@ namespace KiloTaxi.API.Controllers
                     return NotFound();
                 }
 
-                return NoContent();
+                ResponseDTO<VehicleTypeInfoDTO> responseDto = new ResponseDTO<VehicleTypeInfoDTO>
+                {
+                    StatusCode = 204,
+                    Message = "vehicle type Deleted Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {

@@ -1,12 +1,14 @@
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.DataAccess.Interface;
 
 public interface IScheduleBookingRepository
 {
-    ScheduleBookingPagingDTO GetAllScheduleBooking(PageSortParam pageSortParam);
-    ScheduleBookingDTO AddScheduleBooking(ScheduleBookingDTO scheduleBookingDTO);
-    bool UpdateScheduleBooking(ScheduleBookingDTO scheduleBookingDTO);
-    ScheduleBookingDTO getScheduleBookingById(int id);
+    ResponseDTO<ScheduleBookingPagingDTO> GetAllScheduleBooking(PageSortParam pageSortParam);
+    ScheduleBookingInfoDTO AddScheduleBooking(ScheduleBookingFormDTO scheduleBookingFormDTO);
+    bool UpdateScheduleBooking(ScheduleBookingFormDTO scheduleBookingFormDTO);
+    ScheduleBookingInfoDTO getScheduleBookingById(int id);
     bool DeleteScheduleBooking(int id);
 }

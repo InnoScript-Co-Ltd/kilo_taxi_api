@@ -103,6 +103,13 @@
                     </ScrollViewer>
                 </StackPanel>
             </Grid>
+            <Grid>
+                <StackPanel>
+                    <Button x:Name="btnSendLocation" Content="send location" Click="btnSendLocation_Click" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    </ScrollViewer>
+                </StackPanel>
+            </Grid>
             
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="100" Height="310" >
                 <Grid>

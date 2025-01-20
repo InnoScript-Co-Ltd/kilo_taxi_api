@@ -1,12 +1,14 @@
 ﻿using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter;
 
 public static class TravelRateConverter
 {
-    public static TravelRateDTO ConvertEntityToModel(TravelRate travelRateEntity)
+    public static TravelRateInfoDTO ConvertEntityToModel(TravelRate travelRateEntity)
     {
         if (travelRateEntity == null)
         {
@@ -14,34 +16,34 @@ public static class TravelRateConverter
             throw new ArgumentNullException(nameof(travelRateEntity), "Source travelRateEntity cannot be null");
         }
 
-        return new TravelRateDTO()
+        return new TravelRateInfoDTO()
         {
             Id = travelRateEntity.Id,
             Unit = travelRateEntity.Unit,
             Rate = travelRateEntity.Rate,
             CityId = travelRateEntity.CityId,
-            CityName = travelRateEntity.City.Name,
+            CityName = travelRateEntity.City?.Name ?? null,
             VehicleTypeId = travelRateEntity.VehicleTypeId,
-            VehicleTypeName = travelRateEntity.VehicleType.Name,
+            VehicleTypeName = travelRateEntity.VehicleType?.Name ?? null,
                
         };
     }
 
-    public static void ConvertModelToEntity(TravelRateDTO travelRateDTO, ref TravelRate travelRateEntity)
+    public static void ConvertModelToEntity(TravelRateFormDTO travelRateFormDTO, ref TravelRate travelRateEntity)
     {
         try
         {
-            if (travelRateDTO == null)
+            if (travelRateFormDTO == null)
             {
-                LoggerHelper.Instance.LogError(new ArgumentNullException(nameof(travelRateDTO)), "travelRateDTO is null");
-                throw new ArgumentNullException(nameof(travelRateDTO), "Source travelRateDTO cannot be null");
+                LoggerHelper.Instance.LogError(new ArgumentNullException(nameof(travelRateFormDTO)), "travelRateFormDTO is null");
+                throw new ArgumentNullException(nameof(travelRateFormDTO), "Source travelRateFormDTO cannot be null");
             }
 
-            travelRateEntity.Id = travelRateDTO.Id;
-            travelRateEntity.Unit = travelRateDTO.Unit;
-            travelRateEntity.Rate = travelRateDTO.Rate;
-            travelRateEntity.CityId = travelRateDTO.CityId;
-            travelRateEntity.VehicleTypeId = travelRateDTO.VehicleTypeId;
+            travelRateEntity.Id = travelRateFormDTO.Id;
+            travelRateEntity.Unit = travelRateFormDTO.Unit;
+            travelRateEntity.Rate = travelRateFormDTO.Rate;
+            travelRateEntity.CityId = travelRateFormDTO.CityId;
+            travelRateEntity.VehicleTypeId = travelRateFormDTO.VehicleTypeId;
               
         }
         catch (ArgumentException ex)

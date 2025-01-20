@@ -85,6 +85,17 @@ namespace Simulator.DriverApp
             connection.InvokeAsync("SendSos", sosDto);
             lblLogs.Text += Environment.NewLine + "SendSos has been invoked";
         }
+        private void btnSendLocation_Click(object sender, RoutedEventArgs e)
+        {
+            var vehicleLocation = new VehicleLocation()
+            {
+                VehicleId = "1",
+                Lat ="16.78083",
+                Long = "96.14972"
+            };           
+            connection.InvokeAsync("SendVehicleLocationToCustomer",vehicleLocation,"1" );
+            lblLogs.Text += Environment.NewLine + "SendDriverLocation has been invoked";
+        }
         private void btnSendTripLocation_Click(object sender, RoutedEventArgs e)
         {
             var tripLocation = new TripLocation

@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Model.DTO
 {
     public class ReasonPagingDTO
     {
         public PagingResult Paging { get; set; }
-        public IEnumerable<ReasonDTO> Reasons { get; set; }
+        public IEnumerable<ReasonInfoDTO> Reasons { get; set; }
     }
 }

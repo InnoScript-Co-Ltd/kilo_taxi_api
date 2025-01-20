@@ -2,12 +2,14 @@ using System;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class VehicleTypeConverter
     {
-        public static VehicleTypeDTO ConvertEntityToModel(VehicleType vehicleTypeEntity)
+        public static VehicleTypeInfoDTO ConvertEntityToModel(VehicleType vehicleTypeEntity)
         {
             if (vehicleTypeEntity == null)
             {
@@ -21,7 +23,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new VehicleTypeDTO()
+            return new VehicleTypeInfoDTO()
             {
                 Id = vehicleTypeEntity.Id,
                 Name = vehicleTypeEntity.Name,
@@ -30,21 +32,21 @@ namespace KiloTaxi.Converter
         }
 
         public static void ConvertModelToEntity(
-            VehicleTypeDTO vehicleTypeDTO,
+            VehicleTypeFormDTO vehicleTypeFormDTO,
             ref VehicleType vehicleTypeEntity
         )
         {
             try
             {
-                if (vehicleTypeDTO == null)
+                if (vehicleTypeFormDTO == null)
                 {
                     LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(vehicleTypeDTO)),
-                        "vehicleTypeDTO is null"
+                        new ArgumentNullException(nameof(vehicleTypeFormDTO)),
+                        "vehicleTypeFormDTO is null"
                     );
                     throw new ArgumentNullException(
-                        nameof(vehicleTypeDTO),
-                        "Source vehicleTypeDTO cannot be null"
+                        nameof(vehicleTypeFormDTO),
+                        "Source vehicleTypeFormDTO cannot be null"
                     );
                 }
 
@@ -60,9 +62,9 @@ namespace KiloTaxi.Converter
                     );
                 }
 
-                vehicleTypeEntity.Id = vehicleTypeDTO.Id;
-                vehicleTypeEntity.Name = vehicleTypeDTO.Name;
-                vehicleTypeEntity.Description = vehicleTypeDTO.Description;
+                vehicleTypeEntity.Id = vehicleTypeFormDTO.Id;
+                vehicleTypeEntity.Name = vehicleTypeFormDTO.Name;
+                vehicleTypeEntity.Description = vehicleTypeFormDTO.Description;
             }
             catch (Exception ex)
             {

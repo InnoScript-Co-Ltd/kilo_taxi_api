@@ -2,12 +2,14 @@ using System;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class ExtraDemandConverter
     {
-        public static ExtraDemandDTO ConvertEntityToModel(ExtraDemand extraDemandEntity)
+        public static ExtraDemandInfoDTO ConvertEntityToModel(ExtraDemand extraDemandEntity)
         {
             if (extraDemandEntity == null)
             {
@@ -21,7 +23,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new ExtraDemandDTO()
+            return new ExtraDemandInfoDTO()
             {
                 Id = extraDemandEntity.Id,
                 Title = extraDemandEntity.Title,
@@ -32,21 +34,21 @@ namespace KiloTaxi.Converter
         }
 
         public static void ConvertModelToEntity(
-            ExtraDemandDTO extraDemandDTO,
+            ExtraDemandFormDTO extraDemandFormDTO,
             ref ExtraDemand extraDemandEntity
         )
         {
             try
             {
-                if (extraDemandDTO == null)
+                if (extraDemandFormDTO == null)
                 {
                     LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(extraDemandDTO)),
-                        "ExtraDemandDTO is null"
+                        new ArgumentNullException(nameof(extraDemandFormDTO)),
+                        "extraDemandFormDTO is null"
                     );
                     throw new ArgumentNullException(
-                        nameof(extraDemandDTO),
-                        "Source extraDemandDTO cannot be null"
+                        nameof(extraDemandFormDTO),
+                        "Source extraDemandFormDTO cannot be null"
                     );
                 }
 
@@ -62,11 +64,11 @@ namespace KiloTaxi.Converter
                     );
                 }
 
-                extraDemandEntity.Id = extraDemandDTO.Id;
-                extraDemandEntity.Title = extraDemandDTO.Title;
-                extraDemandEntity.Description = extraDemandDTO.Description;
-                extraDemandEntity.Amount = extraDemandDTO.Amount;
-                extraDemandEntity.CreateDate = extraDemandDTO.CreateDate;
+                extraDemandEntity.Id = extraDemandFormDTO.Id;
+                extraDemandEntity.Title = extraDemandFormDTO.Title;
+                extraDemandEntity.Description = extraDemandFormDTO.Description;
+                extraDemandEntity.Amount = extraDemandFormDTO.Amount;
+                extraDemandEntity.CreateDate = extraDemandFormDTO.CreateDate;
             }
             catch (Exception ex)
             {

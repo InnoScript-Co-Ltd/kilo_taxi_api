@@ -30,11 +30,31 @@ namespace KiloTaxi.DataAccess.Implementation
                     .Orders.Include(o => o.Customer)
                     .Include(o => o.Driver)
                     .AsQueryable();
+                
                 if (!string.IsNullOrEmpty(pageSortParam.SearchTerm))
                 {
                     query = query.Where(p => p.Status.Contains(pageSortParam.SearchTerm));
                 }
-
+                if (!string.IsNullOrEmpty(pageSortParam.Phone))
+                {
+                    query = query.Where(p => p.Driver.Phone.Contains(pageSortParam.Phone));
+                }
+                if (!string.IsNullOrEmpty(pageSortParam.Name))
+                {
+                    query = query.Where(p => p.Driver.Name.Contains(pageSortParam.Name));
+                }
+                if (pageSortParam.Id.HasValue)
+                {
+                    query = query.Where(p => p.Id == pageSortParam.Id.Value);
+                }
+                if (pageSortParam.RegisterFrom.HasValue)
+                {
+                    query = query.Where(p => p.CreatedDate >= pageSortParam.RegisterFrom.Value);
+                }
+                if (pageSortParam.RegisterTo.HasValue)
+                {
+                    query = query.Where(p => p.CreatedDate >= pageSortParam.RegisterTo.Value);
+                }
                 int totalCount = query.Count();
                 if (!string.IsNullOrEmpty(pageSortParam.SortField))
                 {
@@ -110,7 +130,8 @@ namespace KiloTaxi.DataAccess.Implementation
 
                 _dbKiloTaxiContext.Add(orderEntity);
                 _dbKiloTaxiContext.SaveChanges();
-
+                _dbKiloTaxiContext.Customers.FirstOrDefault(c => c.Id == orderEntity.CustomerId);
+                _dbKiloTaxiContext.Drivers.FirstOrDefault(d=>d.Id == orderEntity.DriverId);
                 orderFormDTO.Id = orderEntity.Id;
 
                 LoggerHelper.Instance.LogInfo(
@@ -161,6 +182,10 @@ namespace KiloTaxi.DataAccess.Implementation
                 var orderDTO = OrderConverter.ConvertEntityToModel(
                     _dbKiloTaxiContext.Orders.FirstOrDefault(order => order.Id == id)
                 );
+                var orderRouteList = _dbKiloTaxiContext.OrderRoutes.Where(o => o.OrderId == id).ToList();
+                orderDTO.OrderRouteInfo = orderRouteList
+                    .Select(orderRoute => OrderRouteConverter.ConvertEntityToModel(orderRoute))
+                    .ToList();
 
                 if (orderDTO == null)
                 {

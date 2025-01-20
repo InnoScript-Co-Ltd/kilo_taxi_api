@@ -152,7 +152,7 @@ public class ApiHub : Hub<IApiClient>, IApiHub
         await _hubCustomer.Clients.Client(customerConnectionId).ReceiveTripBegin(orderDTO);
     }
     
-    public async Task NotifyCustomerTripComplete(OrderFormDTO orderDTO, PromotionUsageDTO promotionUsageDTO,
+    public async Task NotifyCustomerTripComplete(OrderFormDTO orderDTO, PromotionUsageInfoDTO promotionUsageDTO,
         List<OrderExtraDemandDTO> orderExtraDemandDtos)
     {
         try

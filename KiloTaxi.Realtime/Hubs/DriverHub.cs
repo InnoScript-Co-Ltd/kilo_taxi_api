@@ -18,12 +18,16 @@ namespace KiloTaxi.Realtime.Hubs
         private DashBoardConnectionManager _dashBoardConnectionManager;
         private readonly IHubContext<DashboardHub, IDashboardClient> _hubDashboard;
         private readonly HttpClient _httpClient;
+        private readonly IHubContext<CustomerHub, ICustomerClient> _hubCustomer;
         private readonly IHubContext<ApiHub, IApiClient> _hubApi;
+        private CustomerConnectionManager _customerConnectionManager;
 
         public DriverHub(
             DriverConnectionManager driverConnectionManager,
             IHubContext<DashboardHub, IDashboardClient> hubDashboard,
             IHttpClientFactory httpClientFactory,
+            CustomerConnectionManager customerConnectionManager,
+            IHubContext<CustomerHub, ICustomerClient> hubCustomer,
             IHubContext<ApiHub, IApiClient> hubApi
         )
         {
@@ -32,6 +36,9 @@ namespace KiloTaxi.Realtime.Hubs
             _hubDashboard = hubDashboard;
             _httpClient = httpClientFactory.CreateClient();
             _hubApi = hubApi;
+            _hubCustomer = hubCustomer;
+            _customerConnectionManager = customerConnectionManager;
+
         }
 
         #region SignalR Events
@@ -80,6 +87,20 @@ namespace KiloTaxi.Realtime.Hubs
                 _logHelper.LogDebug($"SendVehicleLocation {vehicleLocation.VehicleId}");
 
                 await _hubDashboard.Clients.All.ReceiveLocationData(vehicleLocation);
+            }
+            catch (Exception ex)
+            {
+                _logHelper.LogError(ex, ex?.Message);
+            }
+        }
+        public async Task SendVehicleLocationToCustomer(VehicleLocation vehicleLocation,string CustomerId)
+        {
+            try
+            {
+                _logHelper.LogDebug($"SendVehicleLocation {vehicleLocation.VehicleId}");
+                var customerConnectionId = _customerConnectionManager.GetConnectionId(CustomerId);
+
+                await _hubCustomer.Clients.Client(customerConnectionId).ReceiveDriverLocation(vehicleLocation);
             }
             catch (Exception ex)
             {

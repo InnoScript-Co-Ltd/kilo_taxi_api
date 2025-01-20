@@ -1,15 +1,17 @@
 ﻿using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter;
 
 public static class WalletConverter
 {
-    public static WalletDTO ConvertEntityToModel(Wallet walletEntity)
+    public static WalletInfoDTO ConvertEntityToModel(Wallet walletEntity)
     {
         if (walletEntity == null) throw new ArgumentNullException(nameof(walletEntity));
 
-        return new WalletDTO
+        return new WalletInfoDTO
         {
             Id = walletEntity.Id,
             WalletName = walletEntity.WalletName,
@@ -18,13 +20,13 @@ public static class WalletConverter
         };
     }
 
-    public static void ConvertModelToEntity(WalletDTO walletDTO, ref Wallet walletEntity)
+    public static void ConvertModelToEntity(WalletFormDTO walletFormDTO, ref Wallet walletEntity)
     {
-        if (walletDTO == null) throw new ArgumentNullException(nameof(walletDTO));
+        if (walletFormDTO == null) throw new ArgumentNullException(nameof(walletFormDTO));
 
-        walletEntity.Id = walletDTO.Id;
-        walletEntity.WalletName = walletDTO.WalletName;
-        walletEntity.CreatedDate = walletDTO.CreateDate;
-        walletEntity.UpdateDate = walletDTO.UpdateDate;
+        walletEntity.Id = walletFormDTO.Id;
+        walletEntity.WalletName = walletFormDTO.WalletName;
+        walletEntity.CreatedDate = walletFormDTO.CreateDate;
+        walletEntity.UpdateDate = walletFormDTO.UpdateDate;
     }
 }

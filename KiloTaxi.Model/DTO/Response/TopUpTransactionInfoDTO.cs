@@ -1,31 +1,28 @@
+﻿using System.ComponentModel.DataAnnotations;
 using KiloTaxi.Common.Enums;
+using Microsoft.AspNetCore.Http;
 
-namespace KiloTaxi.Model.DTO
+namespace KiloTaxi.Model.DTO.Response;
+
+public class TopUpTransactionInfoDTO
 {
-    public class TopUpTransactionInfoDTO
-    {
-        public int Id { get; set; }
-
-        public decimal Amount { get; set; }
-
-        public string? TransactionScreenShoot { get; set; }
-
-        public TopUpTransactionStatus Status { get; set; }
-
-        public string? PhoneNumber { get; set; }
-
-        public string? DigitalPaymentFromPhoneNumber { get; set; }
-
-        public string? DigitalPaymentToPhoneNumber { get; set; }
-
-        public int PaymentChannelId { get; set; }
-
-        public string PaymentChannelName { get; set; }
-
-        public string? File_TransactionScreenShoot { get; set; }
-
-        public int UseId { get; set; }
-
-        public DateTime TransactionDate { get; set; }
-    }
+    public int Id { get; set; }
+    
+    public decimal Amount { get; set; }
+    
+    public string? TransactionScreenShoot { get; set; }
+    
+    public TopUpTransactionStatus Status { get; set; }
+    
+    public string? PhoneNumber { get; set; }    
+    
+    public string? DigitalPaymentFromPhoneNumber { get; set; }
+    
+    public string? DigitalPaymentToPhoneNumber { get; set; }
+    
+    public int PaymentChannelId { get; set; }
+    
+    public IFormFile? File_TransactionScreenShoot { get; set; }
+    
+    public int UseId { get; set; }
 }

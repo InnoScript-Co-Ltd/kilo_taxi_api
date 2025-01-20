@@ -6,9 +6,7 @@ namespace KiloTaxi.DataAccess.Interface
 {
     public interface ITopUpTransactionRepository
     {
+        TopUpTransactionInfoDTO CreateTopUpTransaction(TopUpTransactionFormDTO topUpTransactionFormDTO);
         ResponseDTO<TopUpTransactionPagingDTO> GetAllTopUpTransactions(PageSortParam pageSortParam);
-        TopUpTransactionInfoDTO CreateTopUpTransaction(
-            TopUpTransactionFormDTO topUpTransactionFormDTO
-        );
     }
 }

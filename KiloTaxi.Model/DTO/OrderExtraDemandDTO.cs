@@ -1,4 +1,5 @@
 ﻿using KiloTaxi.EntityFramework.EntityModel;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Model.DTO;
 
@@ -12,7 +13,7 @@ public class OrderExtraDemandDTO
     
     public int Unit { get; set; }
     
-    public ExtraDemandDTO ExtraDemandDto { get; set; }
+    public ExtraDemandInfoDTO ExtraDemandDto { get; set; }
     
 
 }

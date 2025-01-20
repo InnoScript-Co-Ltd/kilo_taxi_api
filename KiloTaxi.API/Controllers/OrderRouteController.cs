@@ -1,6 +1,8 @@
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
@@ -20,18 +22,18 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<OrderRouteController>
         [HttpGet]
-        public ActionResult<OrderRoutePagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ResponseDTO<OrderRoutePagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                OrderRoutePagingDTO orderRoutePagingDTO = _orderRouteRepository.GetAllOrderRoute(
+                var responseDto = _orderRouteRepository.GetAllOrderRoute(
                     pageSortParam
                 );
-                if (!orderRoutePagingDTO.OrderRoutes.Any())
+                if (!responseDto.Payload.OrderRoutes.Any())
                 {
                     return NoContent();
                 }
-                return Ok(orderRoutePagingDTO);
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -42,7 +44,7 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<OrderRouteController>/5
         [HttpGet("{id}")]
-        public ActionResult<OrderRouteDTO> Get(int id)
+        public ActionResult<ResponseDTO<OrderRouteInfoDTO>> Get(int id)
         {
             try
             {
@@ -56,7 +58,15 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(result);
+                
+                ResponseDTO<OrderRouteInfoDTO> responseDto = new ResponseDTO<OrderRouteInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "order route retrieved successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = result,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -67,21 +77,25 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<OrderRouteController>
         [HttpPost]
-        public ActionResult<OrderRouteDTO> Post([FromBody] OrderRouteDTO orderRouteDTO)
+        public ActionResult<ResponseDTO<OrderRouteInfoDTO>> Post([FromBody] OrderRouteFormDTO orderRouteFormDTO)
         {
             try
             {
-                if (orderRouteDTO == null)
+                if (orderRouteFormDTO == null)
                 {
                     return BadRequest();
                 }
 
-                var createdOrderRoute = _orderRouteRepository.CreateOrderRoute(orderRouteDTO);
-                return CreatedAtAction(
-                    nameof(Get),
-                    new { id = createdOrderRoute.Id },
-                    createdOrderRoute
-                );
+                var createdOrderRoute = _orderRouteRepository.CreateOrderRoute(orderRouteFormDTO);
+                
+                var response = new ResponseDTO<OrderRouteInfoDTO>
+                {
+                    StatusCode = 201,
+                    Message = "order route Register Success.",
+                    TimeStamp = DateTime.Now,
+                    Payload = createdOrderRoute,
+                };
+                return response;
             }
             catch (Exception ex)
             {
@@ -92,21 +106,29 @@ namespace KiloTaxi.API.Controllers
 
         // PUT api/<OrderRouteController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] OrderRouteDTO orderRouteDTO)
+        public ActionResult<ResponseDTO<OrderRouteInfoDTO>> Put(int id, [FromBody]  OrderRouteFormDTO orderRouteFormDTO)
         {
             try
             {
-                if (orderRouteDTO == null || id != orderRouteDTO.Id)
+                if (orderRouteFormDTO == null || id != orderRouteFormDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _orderRouteRepository.UpdateOrderRoute(orderRouteDTO);
+                var result = _orderRouteRepository.UpdateOrderRoute(orderRouteFormDTO);
                 if (!result)
                 {
                     return NotFound();
                 }
-                return Ok();
+                
+                ResponseDTO<OrderRouteInfoDTO> responseDto = new ResponseDTO<OrderRouteInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "order route Updated Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -117,7 +139,7 @@ namespace KiloTaxi.API.Controllers
 
         // DELETE api/<OrderRouteController>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ResponseDTO<OrderRouteInfoDTO>> Delete(int id)
         {
             try
             {
@@ -133,7 +155,14 @@ namespace KiloTaxi.API.Controllers
                     return NotFound();
                 }
 
-                return NoContent();
+                ResponseDTO<OrderRouteInfoDTO> responseDto = new ResponseDTO<OrderRouteInfoDTO>
+                {
+                    StatusCode = 204,
+                    Message = "order route Deleted Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {

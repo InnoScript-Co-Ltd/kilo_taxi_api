@@ -1,10 +1,13 @@
 ﻿using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation;
@@ -18,18 +21,20 @@ public class SosRepository : ISosRepository
         _dbKiloTaxiContext = dbKiloTaxiContext;
     }
 
-    public SosPagingDTO GetAllSosList(PageSortParam pageSortParam)
+    public ResponseDTO<SosPagingDTO> GetAllSosList(PageSortParam pageSortParam)
     {
         try
         {
-            var query = _dbKiloTaxiContext.Sos.Include(s => s.Reason).AsQueryable();
+            var query = _dbKiloTaxiContext.Sos
+                .Include(s=>s.Reason)
+                .AsQueryable();
             if (!string.IsNullOrEmpty(pageSortParam.SearchTerm))
             {
                 query = query.Where(p =>
                     p.Address.Contains(pageSortParam.SearchTerm)
                     || p.Status.Contains(pageSortParam.SearchTerm)
                     || p.UserType.Contains(pageSortParam.SearchTerm)
-                );
+                    );
             }
 
             int totalCount = query.Count();
@@ -61,7 +66,9 @@ public class SosRepository : ISosRepository
                     .Take(pageSortParam.PageSize);
             }
 
-            var sos = query.Select(sos => SosConverter.ConvertEntityToModel(sos)).ToList();
+            var sos = query
+                .Select(sos => SosConverter.ConvertEntityToModel(sos))
+                .ToList();
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSortParam.PageSize);
             var pagingResult = new PagingResult
             {
@@ -79,7 +86,13 @@ public class SosRepository : ISosRepository
                     pageSortParam.CurrentPage * pageSortParam.PageSize
                 ),
             };
-            return new SosPagingDTO() { Paging = pagingResult, Sos = sos };
+            
+            ResponseDTO<SosPagingDTO> responseDto = new ResponseDTO<SosPagingDTO>();
+            responseDto.StatusCode = (int)HttpStatusCode.OK;
+            responseDto.Message = "sos retrieved successfully";
+            responseDto.TimeStamp = DateTime.Now;
+            responseDto.Payload = new SosPagingDTO { Paging = pagingResult, Sos = sos };
+            return responseDto;
         }
         catch (Exception ex)
         {
@@ -87,8 +100,8 @@ public class SosRepository : ISosRepository
             throw;
         }
     }
-
-    public SosDTO GetSosById(int id)
+    
+    public SosInfoDTO GetSosById(int id)
     {
         try
         {
@@ -101,20 +114,21 @@ public class SosRepository : ISosRepository
             throw;
         }
     }
-
-    public SosDTO CreateSos(SosDTO sosDTO)
+    
+    public SosInfoDTO CreateSos(SosFormDTO sosFormDTO)
     {
         try
         {
             var sosEntity = new Sos();
-
-            SosConverter.ConvertModelToEntity(sosDTO, ref sosEntity);
+            
+            SosConverter.ConvertModelToEntity(sosFormDTO, ref sosEntity);
 
             _dbKiloTaxiContext.Sos.Add(sosEntity);
             _dbKiloTaxiContext.SaveChanges();
 
-            sosDTO.Id = sosEntity.Id;
-            return sosDTO;
+            sosFormDTO.Id = sosEntity.Id;
+            var sosInfoDTO = SosConverter.ConvertEntityToModel(sosEntity);
+            return sosInfoDTO;
         }
         catch (Exception ex)
         {
@@ -122,15 +136,13 @@ public class SosRepository : ISosRepository
             throw;
         }
     }
-
-    public bool UpdateSos(SosDTO sosDTO)
+    public bool UpdateSos(SosFormDTO sosFormDTO)
     {
         try
         {
-            var sosEntity = _dbKiloTaxiContext.Sos.FirstOrDefault(s => s.Id == sosDTO.Id);
-            if (sosEntity == null)
-                return false;
-            SosConverter.ConvertModelToEntity(sosDTO, ref sosEntity);
+            var sosEntity = _dbKiloTaxiContext.Sos.FirstOrDefault(s => s.Id == sosFormDTO.Id);
+            if (sosEntity == null) return false;
+            SosConverter.ConvertModelToEntity(sosFormDTO, ref sosEntity);
             _dbKiloTaxiContext.SaveChanges();
             return true;
         }
@@ -146,8 +158,7 @@ public class SosRepository : ISosRepository
         try
         {
             var sosEntity = _dbKiloTaxiContext.Sos.FirstOrDefault(s => s.Id == id);
-            if (sosEntity == null)
-                return false;
+            if (sosEntity == null) return false;
 
             _dbKiloTaxiContext.Sos.Remove(sosEntity);
             _dbKiloTaxiContext.SaveChanges();

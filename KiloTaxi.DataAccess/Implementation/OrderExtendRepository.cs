@@ -1,10 +1,13 @@
 using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -18,7 +21,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbContext;
         }
 
-        public OrderExtendPagingDTO GetAllOrderExtend(PageSortParam pageSortParam)
+        public ResponseDTO<OrderExtendPagingDTO> GetAllOrderExtend(PageSortParam pageSortParam)
         {
             try
             {
@@ -83,7 +86,12 @@ namespace KiloTaxi.DataAccess.Implementation
                     ),
                 };
 
-                return new OrderExtendPagingDTO { Paging = pagingResult, OrderExtends = orderExtends };
+                ResponseDTO<OrderExtendPagingDTO> responseDto = new ResponseDTO<OrderExtendPagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "order extends retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new OrderExtendPagingDTO { Paging = pagingResult, OrderExtends = orderExtends };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -95,27 +103,28 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public OrderExtendDTO CreateOrderExtend(OrderExtendDTO orderExtendDTO)
+        public OrderExtendInfoDTO CreateOrderExtend(OrderExtendFormDTO orderExtendFormDTO)
         {
             try
             {
                 OrderExtend orderExtendEntity = new OrderExtend();
-                OrderExtendConverter.ConvertModelToEntity(orderExtendDTO, ref orderExtendEntity);
+                OrderExtendConverter.ConvertModelToEntity(orderExtendFormDTO, ref orderExtendEntity);
 
                 var order = _dbKiloTaxiContext.Orders.FirstOrDefault(s =>
-                    s.Id == orderExtendDTO.OrderId
+                    s.Id == orderExtendFormDTO.OrderId
                 );
 
                 _dbKiloTaxiContext.Add(orderExtendEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                orderExtendDTO.Id = orderExtendEntity.Id;
+                orderExtendFormDTO.Id = orderExtendEntity.Id;
 
                 LoggerHelper.Instance.LogInfo(
                     $"OrderExtend added successfully with Id: {orderExtendEntity.Id}"
                 );
 
-                return orderExtendDTO;
+                var orderExtendInfoDTO = OrderExtendConverter.ConvertEntityToModel(orderExtendEntity);
+                return orderExtendInfoDTO;
             }
             catch (Exception ex)
             {
@@ -124,19 +133,19 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public bool UpdateOrderExtend(OrderExtendDTO orderExtendDTO)
+        public bool UpdateOrderExtend(OrderExtendFormDTO orderExtendFormDTO)
         {
             try
             {
                 var orderExtendEntity = _dbKiloTaxiContext.OrderExtends.FirstOrDefault(orderExtend =>
-                    orderExtend.Id == orderExtendDTO.Id
+                    orderExtend.Id == orderExtendFormDTO.Id
                 );
                 if (orderExtendEntity == null)
                 {
                     return false;
                 }
 
-                OrderExtendConverter.ConvertModelToEntity(orderExtendDTO, ref orderExtendEntity);
+                OrderExtendConverter.ConvertModelToEntity(orderExtendFormDTO, ref orderExtendEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
                 return true;
@@ -145,13 +154,13 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating orderExtend with Id: {orderExtendDTO.Id}"
+                    $"Error occurred while updating orderExtend with Id: {orderExtendFormDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public OrderExtendDTO GetOrderExtendById(int id)
+        public OrderExtendInfoDTO GetOrderExtendById(int id)
         {
             try
             {

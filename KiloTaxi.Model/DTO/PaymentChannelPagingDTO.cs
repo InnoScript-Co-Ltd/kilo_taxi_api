@@ -11,5 +11,6 @@ namespace KiloTaxi.Model.DTO
     {
         public PagingResult Paging { get; set; }
         public IEnumerable<PaymentChannelInfoDTO> PaymentChannels { get; set; }
+
     }
 }

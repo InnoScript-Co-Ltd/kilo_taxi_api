@@ -3,12 +3,14 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 
 namespace KiloTaxi.Converter
 {
     public static class ScheduleBookingConverter
     {
-        public static ScheduleBookingDTO ConvertEntityToModel(ScheduleBooking scheduleBookingEntity)
+        public static ScheduleBookingInfoDTO ConvertEntityToModel(ScheduleBooking scheduleBookingEntity)
         {
             if (scheduleBookingEntity == null)
             {
@@ -22,7 +24,7 @@ namespace KiloTaxi.Converter
                 );
             }
 
-            return new ScheduleBookingDTO()
+            return new ScheduleBookingInfoDTO()
             {
                 Id = scheduleBookingEntity.Id,
                 CustomerId = scheduleBookingEntity.CustomerId,
@@ -39,19 +41,19 @@ namespace KiloTaxi.Converter
             };
         }
 
-        public static void ConvertModelToEntity(ScheduleBookingDTO scheduleBookingDTO, ref ScheduleBooking scheduleBookingEntity)
+        public static void ConvertModelToEntity(ScheduleBookingFormDTO scheduleBookingFormDTO, ref ScheduleBooking scheduleBookingEntity)
         {
             try
             {
-                if (scheduleBookingDTO == null)
+                if (scheduleBookingFormDTO == null)
                 {
                     LoggerHelper.Instance.LogError(
-                        new ArgumentNullException(nameof(scheduleBookingDTO)),
-                        "ScheduleBookingDTO is null"
+                        new ArgumentNullException(nameof(scheduleBookingFormDTO)),
+                        "ScheduleBookingFormDTO is null"
                     );
                     throw new ArgumentNullException(
-                        nameof(scheduleBookingDTO),
-                        "Source scheduleBookingDTO cannot be null"
+                        nameof(scheduleBookingFormDTO),
+                        "Source scheduleBookingFormDTO cannot be null"
                     );
                 }
 
@@ -67,18 +69,18 @@ namespace KiloTaxi.Converter
                     );
                 }
 
-                scheduleBookingEntity.Id = scheduleBookingDTO.Id;
-                scheduleBookingEntity.CustomerId = scheduleBookingDTO.CustomerId;
-                scheduleBookingEntity.DriverId = scheduleBookingDTO.DriverId;
-                scheduleBookingEntity.PickUpLocation = scheduleBookingDTO.PickUpLocation;
-                scheduleBookingEntity.PickUpLat = scheduleBookingDTO.PickUpLat;
-                scheduleBookingEntity.PickUpLong = scheduleBookingDTO.PickUpLong;
-                scheduleBookingEntity.DestinationLocation = scheduleBookingDTO.DestinationLocation;
-                scheduleBookingEntity.DestinationLat = scheduleBookingDTO.DestinationLat;
-                scheduleBookingEntity.DestinationLong = scheduleBookingDTO.DestinationLong;
-                scheduleBookingEntity.ScheduleTime = scheduleBookingDTO.ScheduleTime;
-                scheduleBookingEntity.Status = scheduleBookingDTO.Status.ToString();
-                scheduleBookingEntity.CreatedDate = scheduleBookingDTO.CreatedDate;
+                scheduleBookingEntity.Id = scheduleBookingFormDTO.Id;
+                scheduleBookingEntity.CustomerId = scheduleBookingFormDTO.CustomerId;
+                scheduleBookingEntity.DriverId = scheduleBookingFormDTO.DriverId;
+                scheduleBookingEntity.PickUpLocation = scheduleBookingFormDTO.PickUpLocation;
+                scheduleBookingEntity.PickUpLat = scheduleBookingFormDTO.PickUpLat;
+                scheduleBookingEntity.PickUpLong = scheduleBookingFormDTO.PickUpLong;
+                scheduleBookingEntity.DestinationLocation = scheduleBookingFormDTO.DestinationLocation;
+                scheduleBookingEntity.DestinationLat = scheduleBookingFormDTO.DestinationLat;
+                scheduleBookingEntity.DestinationLong = scheduleBookingFormDTO.DestinationLong;
+                scheduleBookingEntity.ScheduleTime = scheduleBookingFormDTO.ScheduleTime;
+                scheduleBookingEntity.Status = scheduleBookingFormDTO.Status.ToString();
+                scheduleBookingEntity.CreatedDate = scheduleBookingFormDTO.CreatedDate;
             }
             catch (Exception ex)
             {

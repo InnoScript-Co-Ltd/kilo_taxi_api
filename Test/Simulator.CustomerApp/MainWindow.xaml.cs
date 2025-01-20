@@ -199,7 +199,16 @@ namespace Simulator.CustomerApp
 
                 });
             });
-            connection.On("ReceiveTripComplete", async (OrderFormDTO orderDTO,PromotionUsageDTO promotionUsageDto,List<OrderExtraDemandDTO> orderExtraDemandDtos) =>
+            connection.On("ReceiveDriverLocation", async (VehicleLocation vehicleLocation) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    var jsonSerializedModelOrderDTO = JsonSerializer.Serialize(vehicleLocation);
+                    lblLogs.Text += Environment.NewLine + $"receive driver location {vehicleLocation.Lat}:{vehicleLocation.Long}";
+
+                });
+            });
+            connection.On("ReceiveTripComplete", async (OrderFormDTO orderDTO,PromotionUsageInfoDTO promotionUsageDto,List<OrderExtraDemandDTO> orderExtraDemandDtos) =>
             {
                 Dispatcher.Invoke(() =>
                 {

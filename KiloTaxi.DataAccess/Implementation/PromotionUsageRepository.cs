@@ -1,10 +1,13 @@
 using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -18,7 +21,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbContext;
         }
 
-        public PromotionUsagePagingDTO GetAllPromotionUsage(PageSortParam pageSortParam)
+        public ResponseDTO<PromotionUsagePagingDTO> GetAllPromotionUsage(PageSortParam pageSortParam)
         {
             try
             {
@@ -75,12 +78,13 @@ namespace KiloTaxi.DataAccess.Implementation
                         pageSortParam.CurrentPage * pageSortParam.PageSize
                     ),
                 };
-
-                return new PromotionUsagePagingDTO
-                {
-                    Paging = pagingResult,
-                    promotionUsages = promotionUsages,
-                };
+                
+                ResponseDTO<PromotionUsagePagingDTO> responseDto = new ResponseDTO<PromotionUsagePagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "promotion usages retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new PromotionUsagePagingDTO { Paging = pagingResult, promotionUsages = promotionUsages };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -89,30 +93,31 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public PromotionUsageDTO AddPromotionUsage(PromotionUsageDTO promotionUsageDTO)
+        public PromotionUsageInfoDTO AddPromotionUsage(PromotionUsageFormDTO promotionUsageFormDTO)
         {
             try
             {
                 PromotionUsage promotionUsageEntity = new PromotionUsage();
                 PromotionUsageConverter.ConvertModelToEntity(
-                    promotionUsageDTO,
+                    promotionUsageFormDTO,
                     ref promotionUsageEntity
                 );
 
                 var customer = _dbKiloTaxiContext.Customers.FirstOrDefault(c =>
-                    c.Id == promotionUsageDTO.CustomerId
+                    c.Id == promotionUsageFormDTO.CustomerId
                 );
 
                 _dbKiloTaxiContext.Add(promotionUsageEntity);
                 _dbKiloTaxiContext.SaveChanges();
 
-                promotionUsageDTO.Id = promotionUsageEntity.Id;
+                promotionUsageFormDTO.Id = promotionUsageEntity.Id;
 
                 LoggerHelper.Instance.LogInfo(
                     $"Promotion added successfully with Id: {promotionUsageEntity.Id}"
                 );
 
-                return promotionUsageDTO;
+                var promotionUsageInfoDTO = PromotionUsageConverter.ConvertEntityToModel(promotionUsageEntity);
+                return promotionUsageInfoDTO;
             }
             catch (Exception ex)
             {
@@ -121,20 +126,20 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public bool UpdatePromotionUsage(PromotionUsageDTO promotionUsageDTO)
+        public bool UpdatePromotionUsage(PromotionUsageFormDTO promotionUsageFormDTO)
         {
             try
             {
                 var promotionUsageEntity = _dbKiloTaxiContext.PromotionUsages.FirstOrDefault(
-                    usage => usage.Id == promotionUsageDTO.Id
+                    usage => usage.Id == promotionUsageFormDTO.Id
                 );
-                if (promotionUsageDTO == null)
+                if (promotionUsageFormDTO == null)
                 {
                     return false;
                 }
 
                 PromotionUsageConverter.ConvertModelToEntity(
-                    promotionUsageDTO,
+                    promotionUsageFormDTO,
                     ref promotionUsageEntity
                 );
                 _dbKiloTaxiContext.SaveChanges();
@@ -145,13 +150,13 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating promotion usage with Id: {promotionUsageDTO.Id}"
+                    $"Error occurred while updating promotion usage with Id: {promotionUsageFormDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public PromotionUsageDTO GetPromotionUsageById(int id)
+        public PromotionUsageInfoDTO GetPromotionUsageById(int id)
         {
             try
             {
@@ -203,7 +208,7 @@ namespace KiloTaxi.DataAccess.Implementation
                 throw;
             }
         }
-       public PromotionUsageDTO findByCustomerId(int customerId)
+       public PromotionUsageInfoDTO findByCustomerId(int customerId)
        {
            var promotionUsage=_dbKiloTaxiContext.PromotionUsages.FirstOrDefault(p=>p.CustomerId==customerId);
            if (promotionUsage == null)
@@ -211,7 +216,7 @@ namespace KiloTaxi.DataAccess.Implementation
                return null;
            }
 
-           PromotionUsageDTO promotionUsageDTO = PromotionUsageConverter.ConvertEntityToModel(promotionUsage);
+           PromotionUsageInfoDTO promotionUsageDTO = PromotionUsageConverter.ConvertEntityToModel(promotionUsage);
            return promotionUsageDTO;
        }
     }

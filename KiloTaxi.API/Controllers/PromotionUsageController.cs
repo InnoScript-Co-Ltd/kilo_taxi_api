@@ -2,6 +2,8 @@ using KiloTaxi.Common.Enums;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers
@@ -21,17 +23,17 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<PromotionUsageController>
         [HttpGet]
-        public ActionResult<PromotionUsagePagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ResponseDTO<PromotionUsagePagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                PromotionUsagePagingDTO promotionUsagePagingDTO =
+                var responseDto =
                     _promotionUsageRepository.GetAllPromotionUsage(pageSortParam);
-                if (!promotionUsagePagingDTO.promotionUsages.Any())
+                if (!responseDto.Payload.promotionUsages.Any())
                 {
                     return NoContent();
                 }
-                return Ok(promotionUsagePagingDTO);
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -42,7 +44,7 @@ namespace KiloTaxi.API.Controllers
 
         // GET: api/<PromotionUsageController>/5
         [HttpGet("{id}")]
-        public ActionResult<PromotionUsageDTO> Get(int id)
+        public ActionResult<ResponseDTO<PromotionUsageInfoDTO>> Get(int id)
         {
             try
             {
@@ -56,7 +58,15 @@ namespace KiloTaxi.API.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(result);
+                
+                ResponseDTO<PromotionUsageInfoDTO> responseDto = new ResponseDTO<PromotionUsageInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "promotion usage retrieved successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = result,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -67,23 +77,27 @@ namespace KiloTaxi.API.Controllers
 
         // POST api/<PromotionController>
         [HttpPost]
-        public ActionResult<PromotionUsageDTO> Post([FromBody] PromotionUsageDTO promotionUsageDTO)
+        public ActionResult<ResponseDTO<PromotionUsageInfoDTO>> Post([FromBody] PromotionUsageFormDTO promotionUsageFormDTO)
         {
             try
             {
-                if (promotionUsageDTO == null)
+                if (promotionUsageFormDTO == null)
                 {
                     return BadRequest();
                 }
 
-                var createdPromotion = _promotionUsageRepository.AddPromotionUsage(
-                    promotionUsageDTO
+                var createdPromotionUsage = _promotionUsageRepository.AddPromotionUsage(
+                    promotionUsageFormDTO
                 );
-                return CreatedAtAction(
-                    nameof(Get),
-                    new { id = createdPromotion.Id },
-                    createdPromotion
-                );
+                
+                var response = new ResponseDTO<PromotionUsageInfoDTO>
+                {
+                    StatusCode = 201,
+                    Message = "promotion usage Register Success.",
+                    TimeStamp = DateTime.Now,
+                    Payload = createdPromotionUsage,
+                };
+                return response;
             }
             catch (Exception ex)
             {
@@ -94,21 +108,29 @@ namespace KiloTaxi.API.Controllers
 
         // PUT api/<PromotionController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] PromotionUsageDTO promotionUsageDTO)
+        public ActionResult<ResponseDTO<PromotionUsageInfoDTO>> Put(int id, [FromBody] PromotionUsageFormDTO promotionUsageFormDTO)
         {
             try
             {
-                if (promotionUsageDTO == null || id != promotionUsageDTO.Id)
+                if (promotionUsageFormDTO == null || id != promotionUsageFormDTO.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = _promotionUsageRepository.UpdatePromotionUsage(promotionUsageDTO);
+                var result = _promotionUsageRepository.UpdatePromotionUsage(promotionUsageFormDTO);
                 if (!result)
                 {
                     return NotFound();
                 }
-                return Ok();
+                
+                ResponseDTO<PromotionUsageInfoDTO> responseDto = new ResponseDTO<PromotionUsageInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "promotion usage Updated Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -119,7 +141,7 @@ namespace KiloTaxi.API.Controllers
 
         // DELETE api/<PromotionController>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ResponseDTO<PromotionUsageInfoDTO>> Delete(int id)
         {
             try
             {
@@ -135,7 +157,14 @@ namespace KiloTaxi.API.Controllers
                     return NotFound();
                 }
 
-                return NoContent();
+                ResponseDTO<PromotionUsageInfoDTO> responseDto = new ResponseDTO<PromotionUsageInfoDTO>
+                {
+                    StatusCode = 204,
+                    Message = "promotion usage Deleted Successfully.",
+                    TimeStamp = DateTime.Now,
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {

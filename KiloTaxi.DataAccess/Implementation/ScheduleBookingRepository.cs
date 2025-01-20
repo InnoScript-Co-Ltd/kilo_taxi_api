@@ -1,10 +1,13 @@
 using System.Linq.Expressions;
+using System.Net;
 using KiloTaxi.Converter;
 using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.EntityFramework;
 using KiloTaxi.EntityFramework.EntityModel;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace KiloTaxi.DataAccess.Implementation
@@ -18,7 +21,7 @@ namespace KiloTaxi.DataAccess.Implementation
             _dbKiloTaxiContext = dbContext;
         }
 
-        public ScheduleBookingPagingDTO GetAllScheduleBooking(PageSortParam pageSortParam)
+        public ResponseDTO<ScheduleBookingPagingDTO> GetAllScheduleBooking(PageSortParam pageSortParam)
         {
             try
             {
@@ -78,12 +81,13 @@ namespace KiloTaxi.DataAccess.Implementation
                         pageSortParam.CurrentPage * pageSortParam.PageSize
                     ),
                 };
-
-                return new ScheduleBookingPagingDTO()
-                {
-                    Paging = pagingResult,
-                    ScheduleBookings = scheduleBookings,
-                };
+                
+                ResponseDTO<ScheduleBookingPagingDTO> responseDto = new ResponseDTO<ScheduleBookingPagingDTO>();
+                responseDto.StatusCode = (int)HttpStatusCode.OK;
+                responseDto.Message = "schedule bookings retrieved successfully";
+                responseDto.TimeStamp = DateTime.Now;
+                responseDto.Payload = new ScheduleBookingPagingDTO { Paging = pagingResult, ScheduleBookings = scheduleBookings };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -95,13 +99,13 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public ScheduleBookingDTO AddScheduleBooking(ScheduleBookingDTO scheduleBookingDTO)
+        public ScheduleBookingInfoDTO AddScheduleBooking(ScheduleBookingFormDTO scheduleBookingFormDTO)
         {
             try
             {
                 ScheduleBooking scheduleBookingEntity = new ScheduleBooking();
                 ScheduleBookingConverter.ConvertModelToEntity(
-                    scheduleBookingDTO,
+                    scheduleBookingFormDTO,
                     ref scheduleBookingEntity
                 );
 
@@ -110,7 +114,8 @@ namespace KiloTaxi.DataAccess.Implementation
 
                 LoggerHelper.Instance.LogInfo($"Schedule Booking added successfully");
 
-                return scheduleBookingDTO;
+                var scheduleBookingInfoDTO = ScheduleBookingConverter.ConvertEntityToModel(scheduleBookingEntity);
+                return scheduleBookingInfoDTO;
             }
             catch (Exception ex)
             {
@@ -119,12 +124,12 @@ namespace KiloTaxi.DataAccess.Implementation
             }
         }
 
-        public bool UpdateScheduleBooking(ScheduleBookingDTO scheduleBookingDTO)
+        public bool UpdateScheduleBooking(ScheduleBookingFormDTO scheduleBookingFormDTO)
         {
             try
             {
                 var scheduleBookingEntity = _dbKiloTaxiContext.ScheduleBookings.FirstOrDefault(
-                    ScheduleBooking => ScheduleBooking.Id == scheduleBookingDTO.Id
+                    ScheduleBooking => ScheduleBooking.Id == scheduleBookingFormDTO.Id
                 );
                 if (scheduleBookingEntity == null)
                 {
@@ -132,7 +137,7 @@ namespace KiloTaxi.DataAccess.Implementation
                 }
 
                 ScheduleBookingConverter.ConvertModelToEntity(
-                    scheduleBookingDTO,
+                    scheduleBookingFormDTO,
                     ref scheduleBookingEntity
                 );
                 _dbKiloTaxiContext.SaveChanges();
@@ -143,13 +148,13 @@ namespace KiloTaxi.DataAccess.Implementation
             {
                 LoggerHelper.Instance.LogError(
                     ex,
-                    $"Error occurred while updating schedule booking with Id: {scheduleBookingDTO.Id}"
+                    $"Error occurred while updating schedule booking with Id: {scheduleBookingFormDTO.Id}"
                 );
                 throw;
             }
         }
 
-        public ScheduleBookingDTO getScheduleBookingById(int id)
+        public ScheduleBookingInfoDTO getScheduleBookingById(int id)
         {
             try
             {

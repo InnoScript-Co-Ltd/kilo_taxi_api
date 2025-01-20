@@ -1,6 +1,8 @@
 ﻿using KiloTaxi.DataAccess.Interface;
 using KiloTaxi.Logging;
 using KiloTaxi.Model.DTO;
+using KiloTaxi.Model.DTO.Request;
+using KiloTaxi.Model.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KiloTaxi.API.Controllers;
@@ -21,18 +23,18 @@ namespace KiloTaxi.API.Controllers;
 
         //GET: api/<CityController>
         [HttpGet]
-        public ActionResult<TravelRatePagingDTO> Get([FromQuery] PageSortParam pageSortParam)
+        public ActionResult<ResponseDTO<TravelRatePagingDTO>> Get([FromQuery] PageSortParam pageSortParam)
         {
             try
             {
-                TravelRatePagingDTO travelRatePagingDTO = _travelRateRepository.GetAllTravelRate(pageSortParam);
-                if (!travelRatePagingDTO.TravelRates.Any())
+                var responseDto = _travelRateRepository.GetAllTravelRate(pageSortParam);
+                if (!responseDto.Payload.TravelRates.Any())
                 {
                     return NoContent();
                 }
                 // Add a custom header
                 //Response.Headers.Add("X-Custom-Header", "foo");
-                return Ok(travelRatePagingDTO);
+                return Ok(responseDto);
        
             }
             catch (Exception ex) {
@@ -42,7 +44,7 @@ namespace KiloTaxi.API.Controllers;
             }
         }
         [HttpGet("{id}")]
-        public ActionResult<TravelRateDTO> Get(int id)
+        public ActionResult<ResponseDTO<TravelRateInfoDTO>> Get(int id)
         {
             try
             {
@@ -55,7 +57,14 @@ namespace KiloTaxi.API.Controllers;
                 {
                     return NotFound();
                 }
-                return Ok(result);
+                
+                ResponseDTO<TravelRateInfoDTO> responseDto = new ResponseDTO<TravelRateInfoDTO>
+                {
+                    StatusCode = Ok().StatusCode,
+                    Message = "travel rate retrieved successfully.",
+                    Payload = result,
+                };
+                return responseDto;
             }
             catch (Exception ex)
             {
@@ -66,16 +75,24 @@ namespace KiloTaxi.API.Controllers;
         
         // POST api/<CityController>
         [HttpPost]
-        public ActionResult<TravelRateDTO> Post([FromBody] TravelRateDTO travelRateDTO)
+        public ActionResult<ResponseDTO<TravelRateInfoDTO>> Post([FromBody] TravelRateFormDTO travelRateFormDTO)
         {
             try
             {
-                if (travelRateDTO == null)
+                if (travelRateFormDTO == null)
                 {
                     return BadRequest();
                 }
-                var createdTravelRate = _travelRateRepository.AddTravelRate(travelRateDTO);
-                return CreatedAtAction(nameof(Get), new { id = createdTravelRate.Id }, createdTravelRate);
+                var createdTravelRate = _travelRateRepository.AddTravelRate(travelRateFormDTO);
+                
+                var response = new ResponseDTO<TravelRateInfoDTO>
+                {
+                    StatusCode = 201,
+                    Message = "travel rate Register Success.",
+                    Payload = createdTravelRate,
+                    TimeStamp = DateTime.Now,
+                };
+                return response;
             }
             catch (Exception ex)
             {
@@ -86,21 +103,28 @@ namespace KiloTaxi.API.Controllers;
         }
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] TravelRateDTO travelRateDTO)
+        public ActionResult<ResponseDTO<TravelRateInfoDTO>> Put(int id, [FromBody] TravelRateFormDTO travelRateFormDTO)
         {
             try
             {
-                if(travelRateDTO == null || id !=travelRateDTO.Id)
+                if(travelRateFormDTO == null || id !=travelRateFormDTO.Id)
                 {
                     return BadRequest();
                 }
-                var result= _travelRateRepository.UpdateTravelRate(travelRateDTO);
+                var result= _travelRateRepository.UpdateTravelRate(travelRateFormDTO);
 
                 if (!result)
                 {
                     return NotFound();
                 }
-                return Ok();
+                
+                ResponseDTO<TravelRateInfoDTO> responseDto = new ResponseDTO<TravelRateInfoDTO>
+                {
+                    StatusCode = 200,
+                    Message = "travel rate Updated Successfully.",
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch (Exception ex)
             {
@@ -112,7 +136,7 @@ namespace KiloTaxi.API.Controllers;
         }
 
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ResponseDTO<TravelRateInfoDTO>> Delete(int id)
         {
             try
             {
@@ -122,7 +146,13 @@ namespace KiloTaxi.API.Controllers;
                     return NotFound();
                 }
 
-                return NoContent();
+                ResponseDTO<TravelRateInfoDTO> responseDto = new ResponseDTO<TravelRateInfoDTO>
+                {
+                    StatusCode = 204,
+                    Message = "travel rate Deleted Successfully.",
+                    Payload = null,
+                };
+                return Ok(responseDto);
             }
             catch(Exception ex)
             {

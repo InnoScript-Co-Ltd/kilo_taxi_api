@@ -13,6 +13,15 @@ namespace KiloTaxi.Model.DTO
         public string? SortField { get; set; } = "id";
         public SortDirection SortDir { get; set; } = SortDirection.ASC;
         public string? SearchTerm { get; set; }
+        
+        public int? Id  { get; set; }
+        public string? Name { get; set; }
+        public string? Phone { get; set; }
+        public DateTime? RegisterFrom { get; set; }
+        public DateTime? RegisterTo { get; set; }
+        public string? Township { get; set; }
+        public string? City { get; set; }
+        public string? Status { get; set; }
     }
 
     public enum SortDirection
